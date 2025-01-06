@@ -1,7 +1,9 @@
+import AllRoutes from "./components/AllRoutes";
+
 function App() {
   return (
     <div>
-      <h1 className="text-3xl font-bold underline">Rev-App</h1>
+      <AllRoutes/>
     </div>
   );
 }

@@ -7,12 +7,13 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 // import { Toaster } from "react-hot-toast";
 import { store } from "./redux/store";
+import ReactToastify from "./utils/react-toastify/ReactToastiry";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-    {/* <Toaster position="top-center" reverseOrder={false} /> */}
+      <ReactToastify />
       <App />
     </BrowserRouter>
   </Provider>

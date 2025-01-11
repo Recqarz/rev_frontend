@@ -7,6 +7,11 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 // import {toast} from "react-hot-toast";
 import { getLoginRequestSuccess, updateRole } from "../redux/user/userAction";
+import {
+  toastLoading,
+  toastUpdate,
+} from "../utils/react-toastify/ReactToastiry";
+import { baseURL } from "../utils/urls/baseURL";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,24 +22,29 @@ const Login = () => {
 
   const obj = { userCode, password };
 
-  const handleLoginFunc = () => {
+  const handleForm = (e) => {
+    e.preventDefault()
+    const toastId = toastLoading("Loading....");
     axios
-      .post(`http://localhost:8080/api/v1/user/login`, obj)
+      .post(`${baseURL}/api/v1/user/login`, obj)
       .then((res) => {
-        const { accessToken, role } = res.data.data;
+        const { accessToken, role } = res?.data?.data;
         console.log(accessToken, role);
         if (role === loginRole) {
+          toastUpdate(toastId, 200, "Login success!");
           localStorage.setItem("revRole", role);
           localStorage.setItem("revToken", accessToken);
           navigate(`/${role}/dashboard`);
           dispatch(getLoginRequestSuccess(accessToken));
           dispatch(updateRole(role));
         } else {
-          alert("Invalid role selected");
+          // alert("Invalid role selected");
+          toastUpdate(toastId, 400, "Oops! Invalid role selected!");
         }
       })
       .catch((err) => {
-        console.log("err", err.response.data.error);
+        toastUpdate(toastId, 401, "Oops! Login failed!");
+        console.log("err", err?.response?.data?.error);
       });
   };
   const handleChangeRoleFunc = (e) => {
@@ -43,6 +53,7 @@ const Login = () => {
 
   return (
     <div className="py-5 overflow-hidden mt-5">
+    <form onSubmit={handleForm}>
       <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
         <div
           className="hidden lg:block lg:w-1/2 bg-cover"
@@ -63,6 +74,7 @@ const Login = () => {
             <select
               className="w-full text-grey border-2 rounded-lg p-2 pl-2 pr-2 dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
               onChange={handleChangeRoleFunc}
+              required
             >
               <option value="">Select Role</option>
               <option value="admin">Admin</option>
@@ -86,6 +98,7 @@ const Login = () => {
               placeholder="suman.saurav@recqarz.com"
               value={userCode}
               onChange={(e) => setUserCode(e.target.value)}
+              required
             />
           </div>
 
@@ -103,6 +116,7 @@ const Login = () => {
               placeholder="*******"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
           <div className="flex justify-end">
@@ -110,14 +124,16 @@ const Login = () => {
           </div>
           <div className="mt-8 flex justify-center">
             <button
+            type="submit"
               className="bg-green-700 text-white font-bold py-2 px-4 w-1/4 rounded hover:bg-green-600"
-              onClick={handleLoginFunc}
+              
             >
               Login
             </button>
           </div>
         </div>
       </div>
+      </form>
       <div className="lg:flex lg:justify-center gap-4 -mb-8 hidden lg:block">
         <img className="w-[18%] h-24" src={bildinglogo1} alt="build" />
         <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />

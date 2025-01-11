@@ -3,53 +3,32 @@ import buildingImage from '../assets/image/building.jpg'
 import bildinglogo1 from '../assets/image/buildingdesign.png'
 import bildinglogo2 from '../assets/image/buildingdesigning.png'
 import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import axios from 'axios'
-// import {toast} from "react-hot-toast";
-import { getLoginRequestSuccess, updateRole } from '../redux/user/userAction'
-import {
-  toastLoading,
-  toastUpdate,
-} from '../utils/react-toastify/ReactToastiry'
-import { baseURL } from '../utils/urls/baseURL'
+import { useDispatch, useSelector } from 'react-redux'
+import { userLogin } from '../redux/auth/authAction'
+
+const obj = {
+  role: '',
+  userCode: '',
+  password: '',
+}
 
 const Login = () => {
+  const [formData, setFormData] = useState(obj)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const [loginRole, setLoginRole] = useState('')
-  const [userCode, setUserCode] = useState('')
-  const [password, setPassword] = useState('')
 
-  const obj = { userCode, password }
+  const handleInput = (e) => {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
 
   const handleForm = (e) => {
     e.preventDefault()
-    const toastId = toastLoading('Loading....')
-    axios
-      .post(`${baseURL}/api/v1/user/login`, obj)
-      .then((res) => {
-        const { accessToken, role } = res?.data?.data
-        console.log(accessToken, role)
-        if (role === loginRole) {
-          toastUpdate(toastId, 200, 'Login success!')
-          localStorage.setItem('revRole', role)
-          localStorage.setItem('revToken', accessToken)
-          navigate(`/${role}/dashboard`)
-          dispatch(getLoginRequestSuccess(accessToken))
-          dispatch(updateRole(role))
-        } else {
-          // alert("Invalid role selected");
-          toastUpdate(toastId, 400, 'Oops! Invalid role selected!')
-        }
-      })
-      .catch((err) => {
-        toastUpdate(toastId, 401, 'Oops! Login failed!')
-        console.log('err', err?.response?.data?.error)
-      })
+    dispatch(userLogin(formData, navigate))
   }
-  const handleChangeRoleFunc = (e) => {
-    setLoginRole(e.target.value)
-  }
+
+  const auth = useSelector((store) => store.authReducer)
+  console.log(auth)
 
   return (
     <div className="py-5 overflow-hidden mt-5">
@@ -72,8 +51,10 @@ const Login = () => {
                 <span className="text-red-500 ml-1 text-xl">*</span>
               </div>
               <select
-                className="w-full text-grey border-2 rounded-lg p-2 pl-2 pr-2 dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
-                onChange={handleChangeRoleFunc}
+                className="w-full text-grey border-2 rounded-lg p-2 pl-2 pr-2"
+                name="role"
+                value={formData?.role}
+                onChange={handleInput}
                 required
               >
                 <option value="">Select Role</option>
@@ -95,10 +76,11 @@ const Login = () => {
               <input
                 className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
                 type="text"
-                placeholder="suman.saurav@recqarz.com"
-                value={userCode}
-                onChange={(e) => setUserCode(e.target.value)}
                 required
+                name="userCode"
+                value={formData?.userCode}
+                placeholder="Email or User-Code"
+                onChange={handleInput}
               />
             </div>
 
@@ -113,10 +95,11 @@ const Login = () => {
               <input
                 className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full placeholder-gray-500"
                 type="password"
-                placeholder="*******"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="password"
                 required
+                name="password"
+                value={formData?.password}
+                onChange={handleInput}
               />
             </div>
             <div className="flex justify-end">
@@ -124,8 +107,8 @@ const Login = () => {
             </div>
             <div className="mt-8 flex justify-center">
               <button
-                type="submit"
                 className="bg-green-700 text-white font-bold py-2 px-4 w-1/4 rounded hover:bg-green-600"
+                type="submit"
               >
                 Login
               </button>
@@ -133,7 +116,7 @@ const Login = () => {
           </div>
         </div>
       </form>
-      <div className="lg:flex lg:justify-center gap-4 -mb-8 hidden lg:block">
+      <div className="lg:flex lg:justify-center gap-4 -mb-8 hidden">
         <img className="w-[18%] h-24" src={bildinglogo1} alt="build" />
         <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
         <img className="w-[18%] h-24" src={bildinglogo1} alt="build" />

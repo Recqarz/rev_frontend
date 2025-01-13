@@ -4,7 +4,7 @@ import bildinglogo1 from '../assets/image/buildingdesign.png'
 import bildinglogo2 from '../assets/image/buildingdesigning.png'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { userLogin } from '../redux/auth/authAction'
+import { checkCredentialAndsendOtp } from '../redux/auth/authAction'
 
 const obj = {
   role: '',
@@ -24,7 +24,8 @@ const Login = () => {
 
   const handleForm = (e) => {
     e.preventDefault()
-    dispatch(userLogin(formData, navigate))
+    console.log(formData)
+    dispatch(checkCredentialAndsendOtp(formData, navigate))
   }
 
   const auth = useSelector((store) => store.authReducer)

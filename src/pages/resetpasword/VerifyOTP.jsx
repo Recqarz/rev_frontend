@@ -1,10 +1,57 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import buildingImage from "../../assets/image/building.jpg";
-import React from "react";
+import React, { useState } from "react";
 import bildinglogo1 from "../../assets/image/buildingdesign.png";
 import bildinglogo2 from "../../assets/image/buildingdesigning.png";
+import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { verifyOtpAndLogin } from "../../redux/auth/authAction";
 
 const VerifyOTP = () => {
+  const [otpEmail, setOtpEmail] = useState(["", "", "", "", "", ""]);
+  const [otpSms, setOtpSms] = useState(["", "", "", "", "", ""]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const { userCode } = location.state || {};
+
+  const handleOtpChange = (e, otpType, index) => {
+    const value = e.target.value;
+    if (/\D/.test(value)) return; // Prevent non-numeric input
+
+    const updatedOtp = [...otpType];
+    updatedOtp[index] = value;
+
+    if (index < 5 && value) {
+      // Move focus to the next input when a number is entered
+      const nextInput = document.querySelector(
+        `input[name="${otpType === otpEmail ? "email" : "sms"}-${index + 1}"]`
+      );
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+
+    otpType === otpEmail ? setOtpEmail(updatedOtp) : setOtpSms(updatedOtp);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(
+      verifyOtpAndLogin(
+        {
+          userCode,
+          eOtp: otpEmail.join(""),
+          mOtp: otpSms.join(""),
+        },
+        navigate
+      )
+    );
+    // console.log("Email OTP: ", otpEmail.join(""));
+    // console.log("SMS OTP: ", otpSms.join(""));
+  };
+
   return (
     <div className="mt-5 overflow-hidden">
       <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -21,15 +68,16 @@ const VerifyOTP = () => {
               Verify OTP
             </h2>
 
-            <form className="mt-6">
+            <form className="mt-6" onSubmit={handleSubmit}>
               {/* Email OTP */}
               <h3 className="text-lg font-medium text-gray-700 mb-4">
                 Enter OTP (Email)
               </h3>
               <div className="flex justify-center gap-3 mb-6">
-                {[...Array(6)].map((_, index) => (
+                {otpEmail.map((_, index) => (
                   <input
                     key={index}
+                    name={`email-${index}`}
                     className="w-12 h-12 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     type="text"
                     maxLength="1"
@@ -37,6 +85,8 @@ const VerifyOTP = () => {
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     required
+                    value={otpEmail[index]}
+                    onChange={(e) => handleOtpChange(e, otpEmail, index)}
                   />
                 ))}
               </div>
@@ -46,9 +96,10 @@ const VerifyOTP = () => {
                 Enter OTP (SMS)
               </h3>
               <div className="flex justify-center gap-3 mb-6">
-                {[...Array(6)].map((_, index) => (
+                {otpSms.map((_, index) => (
                   <input
                     key={index}
+                    name={`sms-${index}`}
                     className="w-12 h-12 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     type="text"
                     maxLength="1"
@@ -56,24 +107,20 @@ const VerifyOTP = () => {
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     required
+                    value={otpSms[index]}
+                    onChange={(e) => handleOtpChange(e, otpSms, index)}
                   />
                 ))}
               </div>
 
-              {/* Buttons */}
+              {/* Submit Button */}
               <div className="flex items-center justify-center gap-4">
                 <button
                   className="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-                  type="button"
+                  type="submit"
                 >
                   Verify
                 </button>
-                {/* <a
-                  className="text-green-600 font-semibold text-sm hover:text-green-800"
-                  href="#"
-                >
-                  Resend OTP
-                </a> */}
               </div>
             </form>
 

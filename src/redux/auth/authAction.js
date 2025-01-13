@@ -65,7 +65,7 @@ export const verifyOtpAndLogin = (data, navigate) => async (dispatch) => {
     dispatch({ type: USER_LOGIN_SUCCESS, payload: res?.data?.data });
 
     toastUpdate(toastId, 200, "Login success!");
-    navigate(`${res?.data?.data?.role}/dashboard`);
+    navigate(`/${res?.data?.data?.role}/dashboard`);
   } catch (error) {
     console.log(error);
     dispatch({ type: USER_LOGIN_ERROR });

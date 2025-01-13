@@ -1,9 +1,10 @@
 import React from 'react'
+import Navbar from '../../../components/Navbar'
 
-const AuditorDash = () => {
+const AuditorDash = ({ isOpen, toggleSidebar }) => {
   return (
-    <div>
-      AuditorDash
+    <div className="w-full">
+      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
     </div>
   )
 }

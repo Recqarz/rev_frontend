@@ -1,11 +1,12 @@
 import React from 'react'
+import Navbar from '../../../components/Navbar'
 
-const SuperVisorDash = () => {
+const SuperVisorDash = ({ isOpen, toggleSidebar }) => {
   return (
-    <div>
-      SuperVisorDash
+    <div className="w-full">
+      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
     </div>
   )
 }
 
-export default SuperVisorDash;
+export default SuperVisorDash

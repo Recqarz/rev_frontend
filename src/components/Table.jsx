@@ -131,14 +131,15 @@ const Table = () => {
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-5 mt-6">
+    <div className="">
+      <div className="flex flex-col gap-5 mt-24">
         <div className="flex justify-end mx-4 md:mx-10">
           <button className="rounded-md px-6 bg-[#073c4e] py-1 text-[#3fb597] font-medium">
             ADD
           </button>
         </div>
-        <div className="shadow-lg rounded-lg mx-4 md:mx-10 overflow-x-auto custom-scrollbar">
+        {/* -----------------------------------------------custom-scrollbar */}
+        <div className="shadow-lg rounded-lg mx-4 md:mx-10 overflow-x-auto custom-scrollbar ">
           <table className="min-w-full  divide-y divide-gray-200">
             <thead>
               <tr className="bg-[#073c4e] text-white">

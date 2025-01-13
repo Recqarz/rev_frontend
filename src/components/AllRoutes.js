@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import Sidebar from './Sidebar'
@@ -11,40 +11,52 @@ import FieldExecutiveDash from '../pages/admin/admin_fieldexecutive/FieldExecuti
 import SuperVisorDash from '../pages/admin/admin_supervisor/SuperVisorDash'
 import AuditorDash from '../pages/admin/admin_auditor/AuditorDash'
 const AllRoutes = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   return (
     <>
-      <div className="flex">
-        <div className="fixed top-0 left-0 bottom-0 h-[100vh] z-30">
-          <Sidebar />
+      <div className="flex w-full">
+        <div>
+          <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         </div>
-        <div className="flex-1 md:ml-[200px]">
+        <div className="w-full">
           <Routes>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route
+              path="/admin/dashboard"
+              element={<AdminDashboard toggleSidebar={toggleSidebar} />}
+            />
             <Route
               path="/admin/coordinator/dashboard"
-              element={<CoordinatorDash />}
+              element={<CoordinatorDash toggleSidebar={toggleSidebar} />}
             />
             <Route
               path="/admin/field-executive/dashboard"
-              element={<FieldExecutiveDash />}
+              element={<FieldExecutiveDash toggleSidebar={toggleSidebar} />}
             />
             <Route
               path="/admin/supervisor/dashboard"
               element={<SuperVisorDash />}
             />
-            <Route path="/admin/auditor/dashboard" element={<AuditorDash />} />
+            <Route
+              path="/admin/auditor/dashboard"
+              element={<AuditorDash toggleSidebar={toggleSidebar} />}
+            />
 
             <Route
               path="/coordinator/dashboard"
-              element={<CoordinatorDashboard />}
+              element={<CoordinatorDashboard toggleSidebar={toggleSidebar} />}
             />
             <Route
               path="/fieldexecutive/dashboard"
-              element={<FieldExecutive />}
+              element={<FieldExecutive toggleSidebar={toggleSidebar} />}
             />
             <Route
               path="/supervisor/dashboard"
-              element={<SupervisorDashboard />}
+              element={<SupervisorDashboard toggleSidebar={toggleSidebar} />}
             />
             <Route path="/auditor/dashboard" element={<AuditorDashboard />} />
           </Routes>

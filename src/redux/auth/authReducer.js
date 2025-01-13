@@ -21,7 +21,7 @@ const authReducer = (state = initialData, { type, payload }) => {
       return { ...state, isLoading: true, isError: false, isSuccess: false };
     }
     case USER_LOGIN_SUCCESS: {
-      //   console.log(payload);
+        // console.log(payload);
       sessionStorage.setItem("accessToken", payload?.accessToken);
       sessionStorage.setItem("firstName", payload?.firstName);
       sessionStorage.setItem("lastName", payload?.lastName);

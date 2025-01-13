@@ -1,36 +1,35 @@
-import React, { useState } from "react";
-import buildingImage from "../assets/image/building.jpg";
-import bildinglogo1 from "../assets/image/buildingdesign.png";
-import bildinglogo2 from "../assets/image/buildingdesigning.png";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { checkCredentialAndsendOtp } from "../redux/auth/authAction"
-
+import React, { useState } from 'react'
+import buildingImage from '../assets/image/building.jpg'
+import bildinglogo1 from '../assets/image/buildingdesign.png'
+import bildinglogo2 from '../assets/image/buildingdesigning.png'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { checkCredentialAndsendOtp } from '../redux/auth/authAction'
 
 const obj = {
-  role: "",
-  userCode: "",
-  password: "",
-};
+  role: '',
+  userCode: '',
+  password: '',
+}
 
 const Login = () => {
-  const [formData, setFormData] = useState(obj);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [formData, setFormData] = useState(obj)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
 
   const handleForm = (e) => {
-    e.preventDefault();
-    console.log(formData);
-    dispatch(checkCredentialAndsendOtp(formData,navigate));
-  };
+    e.preventDefault()
+    console.log(formData)
+    dispatch(checkCredentialAndsendOtp(formData, navigate))
+  }
 
-  const auth = useSelector((store) => store.authReducer);
-  console.log(auth);
+  const auth = useSelector((store) => store.authReducer)
+  console.log(auth)
 
   return (
     <div className="py-5 overflow-hidden mt-5">
@@ -125,7 +124,7 @@ const Login = () => {
         <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

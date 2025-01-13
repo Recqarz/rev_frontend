@@ -1,8 +1,11 @@
 import React from 'react'
+import Navbar from '../../components/Navbar'
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ isOpen, toggleSidebar }) => {
   return (
-    <div>AdminDashboard</div>
+    <div className="w-full">
+      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+    </div>
   )
 }
 

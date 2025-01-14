@@ -5,8 +5,12 @@ import { RxDashboard } from 'react-icons/rx'
 import { FaUsers } from 'react-icons/fa'
 import { IoBriefcase, IoLogOut } from 'react-icons/io5'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { updateRole } from '../redux/auth/authAction'
+import { USER_LOGOUT_SUCCESS } from '../redux/auth/authType'
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const dispatch=useDispatch();
   const navigate = useNavigate()
   const location = useLocation()
   const [isUsersOpen, setIsUsersOpen] = useState(false)
@@ -29,6 +33,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     }
     navigate(path)
   }
+
+
+const handleLogoutFunc=()=>{
+  dispatch({type:USER_LOGOUT_SUCCESS});
+}
+
+
 
   return (
     <aside
@@ -154,7 +165,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <div className="pt-4 border-t border-blue-100">
             <ul className="space-y-2">
               <li
-                onClick={() => navigate('/')}
+                onClick={handleLogoutFunc}
                 className="cursor-pointer flex items-center px-4 py-2 text-white text-[14px] hover:bg-[#51677E] hover:text-white rounded-lg transition-colors"
               >
                 <span className="mr-3">

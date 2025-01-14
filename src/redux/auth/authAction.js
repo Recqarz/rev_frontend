@@ -20,6 +20,7 @@ import {
   USER_RESET_PASSWORD_REQUEST,
   USER_RESET_PASSWORD_SUCCESS,
   USER_RESET_PASSWORD_ERROR,
+
 } from "./authType";
 
 // check credential and send otp for login
@@ -149,3 +150,6 @@ export const resetPasswordForForgetPass = (data, navigate) => (dispatch) => {
       });
   }
 };
+
+
+

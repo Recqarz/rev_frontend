@@ -24,6 +24,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     '/admin/field-executive/dashboard',
     '/admin/supervisor/dashboard',
     '/admin/auditor/dashboard',
+    "/admin/dashboard/all/users"
   ]
 
   const handleNavigation = (path) => {
@@ -39,7 +40,9 @@ const handleLogoutFunc=()=>{
   dispatch({type:USER_LOGOUT_SUCCESS});
 }
 
-
+const handleAllUser=()=>{
+  navigate("/admin/dashboard/all/users")
+}
 
   return (
     <aside
@@ -85,15 +88,21 @@ const handleLogoutFunc=()=>{
                   isParentActive(userPaths) ? 'bg-[#51677E] text-white' : ''
                 }`}
               >
-                <div className="flex items-center text-white">
+                <div className="flex items-center text-white"
+                onClick={handleAllUser}
+                >
                   <span className="mr-3">
-                    <FaUsers className="text-[20px]" />
+                    <FaUsers className={`text-[20px]  ${
+                      isActive("/admin/dashboard/all/users")
+                        ? 'bg-[#51677E] text-white'
+                        : ''
+                    }`} />
                   </span>
                   Users
                 </div>
               </li>
 
-              {isUsersOpen && (
+              {/* {isUsersOpen && (
                 <div className="ml-8 space-y-1">
                   <li
                     onClick={() =>
@@ -142,7 +151,7 @@ const handleLogoutFunc=()=>{
                     Auditor
                   </li>
                 </div>
-              )}
+              )} */}
 
               {/* Cases */}
               <li

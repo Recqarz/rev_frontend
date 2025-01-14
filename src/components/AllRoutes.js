@@ -10,6 +10,7 @@ import CoordinatorDash from '../pages/admin/admin_coordinator/CoordinatorDash'
 import FieldExecutiveDash from '../pages/admin/admin_fieldexecutive/FieldExecutiveDash'
 import SuperVisorDash from '../pages/admin/admin_supervisor/SuperVisorDash'
 import AuditorDash from '../pages/admin/admin_auditor/AuditorDash'
+import AllUser from '../pages/admin/users/AllUser'
 const AllRoutes = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -29,6 +30,14 @@ const AllRoutes = () => {
               path="/admin/dashboard"
               element={<AdminDashboard toggleSidebar={toggleSidebar} />}
             />
+
+            <Route
+              path="/admin/dashboard/all/users"
+              element={<AllUser toggleSidebar={toggleSidebar} />}
+            />
+
+
+
             <Route
               path="/admin/coordinator/dashboard"
               element={<CoordinatorDash toggleSidebar={toggleSidebar} />}

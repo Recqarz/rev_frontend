@@ -10,7 +10,7 @@ import { updateRole } from '../redux/auth/authAction'
 import { USER_LOGOUT_SUCCESS } from '../redux/auth/authType'
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
-  const dispatch=useDispatch();
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const [isUsersOpen, setIsUsersOpen] = useState(false)
@@ -24,7 +24,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     '/admin/field-executive/dashboard',
     '/admin/supervisor/dashboard',
     '/admin/auditor/dashboard',
-    "/admin/dashboard/all/users"
+    '/admin/dashboard/all/users',
   ]
 
   const handleNavigation = (path) => {
@@ -35,14 +35,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     navigate(path)
   }
 
+  const handleLogoutFunc = () => {
+    dispatch({ type: USER_LOGOUT_SUCCESS })
+  }
 
-const handleLogoutFunc=()=>{
-  dispatch({type:USER_LOGOUT_SUCCESS});
-}
-
-const handleAllUser=()=>{
-  navigate("/admin/dashboard/all/users")
-}
+  const handleAllUser = () => {
+    navigate('/admin/dashboard/all/users')
+  }
 
   return (
     <aside
@@ -83,20 +82,24 @@ const handleAllUser=()=>{
 
               {/* Users */}
               <li
-                onClick={() => setIsUsersOpen(!isUsersOpen)}
+                // onClick={() => setIsUsersOpen(!isUsersOpen)}
+                onClick={() => handleNavigation('/admin/dashboard/all/users')}
                 className={`flex items-center justify-between px-4 py-2 text-black text-[14px] hover:bg-[#51677E] hover:text-white rounded-lg cursor-pointer transition-colors ${
                   isParentActive(userPaths) ? 'bg-[#51677E] text-white' : ''
                 }`}
               >
-                <div className="flex items-center text-white"
-                onClick={handleAllUser}
+                <div
+                  className="flex items-center text-white"
+                  onClick={handleAllUser}
                 >
                   <span className="mr-3">
-                    <FaUsers className={`text-[20px]  ${
-                      isActive("/admin/dashboard/all/users")
-                        ? 'bg-[#51677E] text-white'
-                        : ''
-                    }`} />
+                    <FaUsers
+                      className={`text-[20px]  ${
+                        isActive('/admin/dashboard/all/users')
+                          ? 'bg-[#51677E] text-white'
+                          : ''
+                      }`}
+                    />
                   </span>
                   Users
                 </div>

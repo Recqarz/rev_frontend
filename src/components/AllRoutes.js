@@ -1,39 +1,69 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import Sidebar from "./Sidebar";
-import CoordinatorDashboard from "../pages/coordinator/CoordinatorDashboard";
-import AuditorDashboard from "../pages/auditor/AuditorDashboard";
-import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
-import FieldExecutive from "../pages/field_executive/FieldExecutive";
-import CoordinatorDash from "../pages/admin/admin_coordinator/CoordinatorDash";
-import FieldExecutiveDash from "../pages/admin/admin_fieldexecutive/FieldExecutiveDash";
-import SuperVisorDash from "../pages/admin/admin_supervisor/SuperVisorDash";
-import AuditorDash from "../pages/admin/admin_auditor/AuditorDash";
+import React, { useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import AdminDashboard from '../pages/admin/AdminDashboard'
+import Sidebar from './Sidebar'
+import CoordinatorDashboard from '../pages/coordinator/CoordinatorDashboard'
+import AuditorDashboard from '../pages/auditor/AuditorDashboard'
+import SupervisorDashboard from '../pages/supervisor/SupervisorDashboard'
+import FieldExecutive from '../pages/field_executive/FieldExecutive'
+import CoordinatorDash from '../pages/admin/admin_coordinator/CoordinatorDash'
+import FieldExecutiveDash from '../pages/admin/admin_fieldexecutive/FieldExecutiveDash'
+import SuperVisorDash from '../pages/admin/admin_supervisor/SuperVisorDash'
+import AuditorDash from '../pages/admin/admin_auditor/AuditorDash'
 const AllRoutes = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   return (
     <>
       <div className="flex w-full">
-        <div className="fixed top-0 left-0 bottom-0 h-[100vh] z-30">
-          <Sidebar />
+        <div>
+          <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         </div>
-        <div className="flex-1 md:ml-[200px]">
+        <div className="w-full">
           <Routes>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/coordinator/dashboard" element={<CoordinatorDash />} />
-            <Route path="/admin/field-executive/dashboard" element={<FieldExecutiveDash />} />
-            <Route path="/admin/supervisor/dashboard" element={<SuperVisorDash/>} />
-            <Route path="/admin/auditor/dashboard" element={<AuditorDash />} />
+            <Route
+              path="/admin/dashboard"
+              element={<AdminDashboard toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coordinator/dashboard"
+              element={<CoordinatorDash toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/field-executive/dashboard"
+              element={<FieldExecutiveDash toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/supervisor/dashboard"
+              element={<SuperVisorDash />}
+            />
+            <Route
+              path="/admin/auditor/dashboard"
+              element={<AuditorDash toggleSidebar={toggleSidebar} />}
+            />
 
-            <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
-            <Route path="/fieldexecutive/dashboard" element={<FieldExecutive />} />
-            <Route path="/supervisor/dashboard" element={<SupervisorDashboard/>} />
+            <Route
+              path="/coordinator/dashboard"
+              element={<CoordinatorDashboard toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/fieldexecutive/dashboard"
+              element={<FieldExecutive toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/supervisor/dashboard"
+              element={<SupervisorDashboard toggleSidebar={toggleSidebar} />}
+            />
             <Route path="/auditor/dashboard" element={<AuditorDashboard />} />
           </Routes>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default AllRoutes;
+export default AllRoutes

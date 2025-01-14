@@ -1,12 +1,11 @@
 import React from 'react'
-import { useSelector } from 'react-redux';
+import Navbar from '../../components/Navbar'
 
-const AdminDashboard = () => {
-      const loginStatus=useSelector((store)=>store
-    );
-      console.log("Store", loginStatus);
+const AdminDashboard = ({ isOpen, toggleSidebar }) => {
   return (
-    <div>Welcome to Admin Dashboard</div>
+    <div className="w-full">
+      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+    </div>
   )
 }
 

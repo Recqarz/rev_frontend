@@ -5,17 +5,16 @@ import bildinglogo1 from "../../assets/image/buildingdesign.png";
 import bildinglogo2 from "../../assets/image/buildingdesigning.png";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { verifyOTPForForgetPass } from "../../redux/auth/authAction";
+import { verifyOtpAndLogin } from "../../redux/auth/authAction";
 
-const VerifyOTP = () => {
+const VerifyOTPLogin = () => {
   const [otpEmail, setOtpEmail] = useState(["", "", "", "", "", ""]);
   const [otpSms, setOtpSms] = useState(["", "", "", "", "", ""]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const location = useLocation();
-  const { userData } = location.state || {};
-  console.log("userData", userData);
+  const { userCode } = location.state || {};
 
   const handleOtpChange = (e, otpType, index) => {
     const value = e.target.value;
@@ -36,18 +35,20 @@ const VerifyOTP = () => {
     otpType === otpEmail ? setOtpEmail(updatedOtp) : setOtpSms(updatedOtp);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmitForLogin = (e) => {
     e.preventDefault();
     dispatch(
-      verifyOTPForForgetPass(
+      verifyOtpAndLogin(
         {
-          userData,
+          userCode,
           eOtp: otpEmail.join(""),
           mOtp: otpSms.join(""),
         },
         navigate
       )
     );
+    // console.log("Email OTP: ", otpEmail.join(""));
+    // console.log("SMS OTP: ", otpSms.join(""));
   };
 
   return (
@@ -66,7 +67,7 @@ const VerifyOTP = () => {
               Verify OTP
             </h2>
 
-            <form className="mt-6" onSubmit={handleSubmit}>
+            <form className="mt-6" onSubmit={handleSubmitForLogin}>
               {/* Email OTP */}
               <h3 className="text-lg font-medium text-gray-700 mb-4">
                 Enter OTP (Email)
@@ -145,4 +146,4 @@ const VerifyOTP = () => {
   );
 };
 
-export default VerifyOTP;
+export default VerifyOTPLogin;

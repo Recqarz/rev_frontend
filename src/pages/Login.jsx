@@ -1,34 +1,36 @@
-import React, { useState } from "react";
-import buildingImage from "../assets/image/building.jpg";
-import bildinglogo1 from "../assets/image/buildingdesign.png";
-import bildinglogo2 from "../assets/image/buildingdesigning.png";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { userLogin } from "../redux/auth/authAction";
+import React, { useState } from 'react'
+import buildingImage from '../assets/image/building.jpg'
+import bildinglogo1 from '../assets/image/buildingdesign.png'
+import bildinglogo2 from '../assets/image/buildingdesigning.png'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { checkCredentialAndsendOtp } from '../redux/auth/authAction'
 
 const obj = {
-  role: "",
+// role: "",
   userCode: "",
   password: "",
 };
 
+
 const Login = () => {
-  const [formData, setFormData] = useState(obj);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [formData, setFormData] = useState(obj)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
 
   const handleForm = (e) => {
-    e.preventDefault();
-    dispatch(userLogin(formData,navigate));
-  };
+    e.preventDefault()
+    console.log(formData)
+    dispatch(checkCredentialAndsendOtp(formData, navigate))
+  }
 
-  const auth = useSelector((store) => store.authReducer);
-  console.log(auth);
+  const auth = useSelector((store) => store.authReducer)
+  console.log(auth)
 
   return (
     <div className="py-5 overflow-hidden mt-5">
@@ -43,28 +45,6 @@ const Login = () => {
               Login
             </h2>
 
-            <div className="mt-4">
-              <div className="flex mt-10">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Select Role
-                </label>
-                <span className="text-red-500 ml-1 text-xl">*</span>
-              </div>
-              <select
-                className="w-full text-grey border-2 rounded-lg p-2 pl-2 pr-2"
-                name="role"
-                value={formData?.role}
-                onChange={handleInput}
-                required
-              >
-                <option value="">Select Role</option>
-                <option value="admin">Admin</option>
-                <option value="coordinator">Coordinator</option>
-                <option value="fieldexecutive">Field-Executive</option>
-                <option value="supervisor">Supervisor</option>
-                <option value="auditor">Auditor</option>
-              </select>
-            </div>
 
             <div className="mt-4">
               <div className="flex">
@@ -103,7 +83,7 @@ const Login = () => {
               />
             </div>
             <div className="flex justify-end">
-              <Link to="/resetpassword">Forget Password?</Link>
+              <Link to="/forget/password">Forget Password?</Link>
             </div>
             <div className="mt-8 flex justify-center">
               <button
@@ -123,7 +103,7 @@ const Login = () => {
         <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

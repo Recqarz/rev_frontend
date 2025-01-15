@@ -2,17 +2,18 @@ import {
   USER_LOGIN_ERROR,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
+  USER_LOGOUT_SUCCESS,
 } from "./authType";
 
 const initialData = {
   isLoading: false,
   isError: false,
   isSuccess: false,
-  role: sessionStorage.getItem("role"),
-  firstName: sessionStorage.getItem("firstName"),
-  lastName: sessionStorage.getItem("lastName"),
-  accessToken: sessionStorage.getItem("accessToken"),
-  isLogin: false,
+  role: localStorage.getItem("role") || "",
+  firstName: localStorage.getItem("firstName"),
+  lastName: localStorage.getItem("lastName"),
+  accessToken: localStorage.getItem("accessToken"),
+  isLogin: localStorage.getItem("accessToken") ? true : false,
 };
 
 const authReducer = (state = initialData, { type, payload }) => {
@@ -21,11 +22,11 @@ const authReducer = (state = initialData, { type, payload }) => {
       return { ...state, isLoading: true, isError: false, isSuccess: false };
     }
     case USER_LOGIN_SUCCESS: {
-      //   console.log(payload);
-      sessionStorage.setItem("accessToken", payload?.accessToken);
-      sessionStorage.setItem("firstName", payload?.firstName);
-      sessionStorage.setItem("lastName", payload?.lastName);
-      sessionStorage.setItem("role", payload?.role);
+      // console.log(payload);
+      localStorage.setItem("accessToken", payload?.accessToken);
+      localStorage.setItem("firstName", payload?.firstName);
+      localStorage.setItem("lastName", payload?.lastName);
+      localStorage.setItem("role", payload?.role);
 
       return {
         ...state,
@@ -35,11 +36,27 @@ const authReducer = (state = initialData, { type, payload }) => {
         firstName: payload?.firstName,
         lastName: payload?.lastName,
         role: payload?.role,
+        isLogin: true,
       };
     }
     case USER_LOGIN_ERROR: {
       return { ...state, isLoading: false, isSuccess: false, isError: true };
     }
+    case USER_LOGOUT_SUCCESS: {
+      localStorage.removeItem("accessToken", payload?.accessToken);
+      localStorage.removeItem("firstName", payload?.firstName);
+      localStorage.removeItem("lastName", payload?.lastName);
+      localStorage.removeItem("role", payload?.role);
+      return {
+        ...state,
+        accessToken: "",
+        firstName: "",
+        lastName: "",
+        role: "",
+        isLogin: false,
+      };
+    }
+  
     default:
       return state;
   }

@@ -1,10 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import buildingImage from "../../assets/image/building.jpg";
-import React from "react";
+import React, { useState } from "react";
 import bildinglogo1 from "../../assets/image/buildingdesign.png";
 import bildinglogo2 from "../../assets/image/buildingdesigning.png";
+import { useDispatch } from "react-redux";
+import { checkMailForForgetPass } from "../../redux/auth/authAction";
+
 
 const ResetDashboard = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [userData, setUserData] = useState("");
+
+
+
+  const handleResetPassword = () => {
+    dispatch(checkMailForForgetPass(userData, navigate))
+  };
+
   return (
     <div className="mt-16">
       <div className="flex items-center justify-center bg-white px-4 sm:px-6 lg:px-8">
@@ -32,22 +45,27 @@ const ResetDashboard = () => {
                 className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
                 type="email"
                 placeholder="abc@gmail.com"
+                value={userData}
+                onChange={(e)=>setUserData(e.target.value)}
               />
             </div>
 
             <div className="mt-8 flex justify-center">
-              <Link to="/verifyotp">
-                <button className="bg-green-700 text-white font-bold py-2 px-4 w-full sm:w-auto rounded hover:bg-green-600">
-                  Send OTP
-                </button>
-              </Link>
+              {/* <Link to="/verifyotp"> */}
+              <button
+                onClick={handleResetPassword}
+                className="bg-green-700 text-white font-bold py-2 px-4 w-full sm:w-auto rounded hover:bg-green-600"
+              >
+                Send OTP
+              </button>
+              {/* </Link> */}
             </div>
             <div className="mt-4 flex items-center justify-center gap-1">
               <Link to="/login">
+                <p className="text-blue-900 text-sm font-semibold">
                 ⬅️
-                <a href="#" className="text-blue-900 text-sm font-semibold">
                   Go Back
-                </a>
+                </p>
               </Link>
             </div>
           </div>

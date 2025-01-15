@@ -4,7 +4,7 @@ import { MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
 import { HiUserAdd } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 
-const Table = ({ allUser }) => {
+const BankTable = ({ allBank }) => {
   const handleUpdateStatusFunc = (item) => {
     console.log(item)
   }
@@ -13,7 +13,7 @@ const Table = ({ allUser }) => {
     <div className="">
       <div className="flex flex-col gap-5 mt-24">
         <div className="flex justify-end mx-4">
-          <Link to="/admin/dashboard/all/users/add">
+          <Link to="/admin/dashboard/all/banks/add">
             <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
               ADD
             </div>
@@ -24,18 +24,20 @@ const Table = ({ allUser }) => {
           <table className="min-w-full  divide-y divide-gray-200">
             <thead>
               <tr className="bg-[#073c4e] text-white">
-                <th className="w-1/7 py-2 px-6 text-left text-xs">ID</th>
-                <th className="w-1/4 py-2 px-6 text-left text-xs">NAME</th>
-                <th className="w-1/4 py-2 px-6 text-left text-xs">USER CODE</th>
-                <th className="w-1/4 py-2 px-6 text-left text-xs">EMAIL</th>
-                <th className="w-1/4 py-2 px-6 text-left text-xs">MOBILE</th>
+                <th className="w-1/7 py-2 px-6 text-left text-xs">SL NO.</th>
+                <th className="w-1/4 py-2 px-6 text-left text-xs">BANK NAME</th>
+                <th className="w-1/4 py-2 px-6 text-left text-xs">
+                  BRANCH NAME
+                </th>
+                <th className="w-1/4 py-2 px-6 text-left text-xs">IFSC CODE</th>
+                {/* <th className="w-1/4 py-2 px-6 text-left text-xs">MOBILE</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">ROLE</th>
-                <th className="w-1/4 py-2 px-6 text-left text-xs">STATUS</th>
+                <th className="w-1/4 py-2 px-6 text-left text-xs">STATUS</th> */}
                 <th className="w-1/4 py-2 px-6 text-left text-xs">ACTION</th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              {(allUser ?? [])?.map((row, index) => (
+              {(allBank ?? [])?.map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
@@ -44,15 +46,15 @@ const Table = ({ allUser }) => {
                     {index + 1}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {row.firstName}
+                    {row.bankName}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 text-sm">
-                    {row.userCode}
+                    {row.branchName}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 truncate">
-                    {row.email}
+                    {row.IFSC}
                   </td>
-                  <td className="py-3 px-6 border-b border-gray-200">
+                  {/* <td className="py-3 px-6 border-b border-gray-200">
                     {row.mobile}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
@@ -66,7 +68,7 @@ const Table = ({ allUser }) => {
                     >
                       {row.isActive ? 'Active' : 'Inactive'}
                     </span>
-                  </td>
+                  </td> */}
 
                   <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
                     <div
@@ -109,4 +111,4 @@ const Table = ({ allUser }) => {
   )
 }
 
-export default Table
+export default BankTable

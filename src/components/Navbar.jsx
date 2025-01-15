@@ -28,7 +28,7 @@ const Navbar = ({ toggleSidebar }) => {
         <div className="relative group">
           {/* Dropdown Button */}
           <div className="cursor-pointer flex items-center">
-            <RiArrowDropDownLine className="text-[#073c4e] h-8 w-7 mr-3" />
+            <RiArrowDropDownLine className="text-[#073c4e] h-8 w-7" />
           </div>
 
           {/* Dropdown Menu */}

@@ -11,6 +11,10 @@ import FieldExecutiveDash from '../pages/admin/admin_fieldexecutive/FieldExecuti
 import SuperVisorDash from '../pages/admin/admin_supervisor/SuperVisorDash'
 import AuditorDash from '../pages/admin/admin_auditor/AuditorDash'
 import AllUser from '../pages/admin/users/AllUser'
+import AddUser from '../pages/admin/users/AddUser'
+import AllBank from '../pages/admin/banks/AllBank'
+import AddBankForm from './AddBankForm'
+import AddBank from '../pages/admin/banks/AddBank'
 const AllRoutes = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -36,8 +40,18 @@ const AllRoutes = () => {
               element={<AllUser toggleSidebar={toggleSidebar} />}
             />
 
-
-
+            <Route
+              path="/admin/dashboard/all/users/add"
+              element={<AddUser toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/dashboard/all/banks"
+              element={<AllBank toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/dashboard/all/banks/add"
+              element={<AddBank toggleSidebar={toggleSidebar} />}
+            />
             <Route
               path="/admin/coordinator/dashboard"
               element={<CoordinatorDash toggleSidebar={toggleSidebar} />}

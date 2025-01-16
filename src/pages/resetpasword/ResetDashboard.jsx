@@ -21,7 +21,7 @@ const ResetDashboard = () => {
   return (
     <div className="mt-16">
       <div className="flex items-center justify-center bg-white px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-sm sm:max-w-md lg:max-w-4xl">
+        <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-sm sm:max-w-md lg:max-w-3xl">
           {/* Left Image Section */}
           <div
             className="hidden lg:block lg:w-1/2 bg-cover"

@@ -1,11 +1,11 @@
 import {
-  GET_USER_DATA_REQUEST,
-  GET_USER_DATA_SUCCESS,
-  GET_USER_DATA_ERROR,
-  ADD_USER_DATA_REQUEST,
-  ADD_USER_DATA_SUCCESS,
-  ADD_USER_DATA_ERROR,
-} from './userType'
+  ADD_BANK_DATA_ERROR,
+  ADD_BANK_DATA_REQUEST,
+  ADD_BANK_DATA_SUCCESS,
+  GET_BANK_DATA_ERROR,
+  GET_BANK_DATA_REQUEST,
+  GET_BANK_DATA_SUCCESS,
+} from './bankType'
 
 const initialData = {
   isLoading: false,
@@ -13,32 +13,31 @@ const initialData = {
   data: [],
 }
 
-export const allUserReducer = (state = initialData, { type, payload }) => {
+export const allBankReducer = (state = initialData, { type, payload }) => {
   switch (type) {
-    case GET_USER_DATA_REQUEST:
-    case ADD_USER_DATA_REQUEST: {
+    case GET_BANK_DATA_REQUEST:
+    case ADD_BANK_DATA_REQUEST: {
       return {
         ...state,
         isLoading: true,
       }
     }
-    case GET_USER_DATA_SUCCESS: {
+    case GET_BANK_DATA_SUCCESS: {
       return {
         ...state,
         isLoading: false,
         data: payload,
       }
     }
-    case ADD_USER_DATA_SUCCESS: {
+
+    case ADD_BANK_DATA_SUCCESS: {
       return {
         ...state,
         data: [...state.data, payload],
       }
     }
-    case GET_USER_DATA_ERROR: 
-    case ADD_USER_DATA_ERROR: 
-    
-    {
+    case GET_BANK_DATA_ERROR:
+    case ADD_BANK_DATA_ERROR: {
       return {
         ...state,
         isError: true,
@@ -48,6 +47,3 @@ export const allUserReducer = (state = initialData, { type, payload }) => {
       return { ...state }
   }
 }
-
-
-

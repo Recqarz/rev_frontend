@@ -1,10 +1,34 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 // import '../index.css'
-import { MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
-import { HiUserAdd } from 'react-icons/hi'
+import { MdOutlineEdit } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 
-const Table = ({ allUser }) => {
+const UserTable = ({ allUser }) => {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterRole, setFilterRole] = useState('')
+  const [filteredData, setFilteredData] = useState(allUser || [])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const lowerCaseQuery = searchQuery.toLowerCase()
+
+      // Filter data based on search query and selected role
+      const filtered = (allUser ?? []).filter((user) => {
+        const matchesSearch =
+          user.firstName.toLowerCase().includes(lowerCaseQuery) ||
+          user.email.toLowerCase().includes(lowerCaseQuery)
+        const matchesRole = filterRole ? user.role === filterRole : true
+
+        return matchesSearch && matchesRole
+      })
+
+      console.log('Filtered Data:', filtered)
+      setFilteredData(filtered)
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(timer) // Cleanup on searchQuery or filterRole change
+  }, [searchQuery, filterRole, allUser])
+
   const handleUpdateStatusFunc = (item) => {
     console.log(item)
   }
@@ -12,7 +36,32 @@ const Table = ({ allUser }) => {
   return (
     <div className="">
       <div className="flex flex-col gap-5 mt-24">
-        <div className="flex justify-end mx-4">
+        <div className="flex justify-between items-center mx-4">
+          <div className="flex justify-between items-center mx-4">
+            <div className="flex gap-2">
+              {/* Search Bar */}
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                type="text"
+                placeholder="Search by name or email"
+                className="px-4 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
+              />
+              {/* Filter Dropdown */}
+              <select
+                className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+              >
+                <option value="">Filter by Role</option>
+                <option value="admin">Admin</option>
+                <option value="fieldExecutive">Filed Executive</option>
+                <option value="coordinator">Co ordinator</option>
+                <option value="auditor">Auditor</option>
+                <option value="supervisor">Supervisor</option>
+              </select>
+            </div>
+          </div>
           <Link to="/admin/dashboard/all/users/add">
             <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
               ADD
@@ -35,7 +84,7 @@ const Table = ({ allUser }) => {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {(allUser ?? [])?.map((row, index) => (
+              {filteredData?.map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
@@ -109,4 +158,4 @@ const Table = ({ allUser }) => {
   )
 }
 
-export default Table
+export default UserTable

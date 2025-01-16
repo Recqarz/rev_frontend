@@ -1,42 +1,45 @@
 import axios from 'axios'
 import {
-  GET_USER_DATA_REQUEST,
-  GET_USER_DATA_SUCCESS,
-  GET_USER_DATA_ERROR,
-  ADD_USER_DATA_REQUEST,
-  ADD_USER_DATA_SUCCESS,
-  ADD_USER_DATA_ERROR,
-} from './userType'
+  ADD_BANK_DATA_ERROR,
+  ADD_BANK_DATA_REQUEST,
+  ADD_BANK_DATA_SUCCESS,
+  GET_BANK_DATA_ERROR,
+  GET_BANK_DATA_REQUEST,
+  GET_BANK_DATA_SUCCESS,
+} from './bankType'
+
 import {
   toastLoading,
   toastUpdate,
 } from '../../utils/react-toastify/ReactToastiry'
 
-export const getAllUserData = () => (dispatch) => {
-  dispatch({ type: GET_USER_DATA_REQUEST })
+export const getAllBankData = () => (dispatch) => {
+  dispatch({ type: GET_BANK_DATA_REQUEST })
+
   const token = localStorage.getItem('accessToken')
   return axios
-    .get(`http://localhost:8080/api/v1/admin/user-list`, {
+    .get(`http://localhost:8080/api/v1/admin/bank-list`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     .then((res) => {
-      dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data?.users })
+      dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data?.data })
     })
     .catch((err) => {
       console.log('err')
-      dispatch({ type: GET_USER_DATA_ERROR })
+      dispatch({ type: GET_BANK_DATA_ERROR })
     })
 }
 
-export const addUserData =
+
+export const addBankData =
   (data, accessToken, navigate) => async (dispatch) => {
     const toastId = toastLoading('Loading...')
     try {
-      dispatch({ type: ADD_USER_DATA_REQUEST })
+      dispatch({ type: ADD_BANK_DATA_REQUEST })
       const response = await axios.post(
-        `http://localhost:8080/api/v1/admin/create-user`,
+        `http://localhost:8080/api/v1/admin/create-bank`,
         data,
         {
           headers: {
@@ -46,11 +49,11 @@ export const addUserData =
         }
       )
       console.log('create user response--->', response.data)
-      dispatch({ type: ADD_USER_DATA_SUCCESS, payload: response?.data })
-      toastUpdate(toastId, 200, 'User Added Successfully')
+      dispatch({ type: ADD_BANK_DATA_SUCCESS, payload: response?.data })
+      toastUpdate(toastId, 200, 'Bank Added Successfully')
     } catch (error) {
-      console.error('Error creating user data:', error?.response?.data?.error)
+      console.error('Error creating bank data:', error?.response?.data?.error)
       toastUpdate(toastId, 400, error?.response?.data?.error)
-      dispatch({ type: ADD_USER_DATA_ERROR })
+      dispatch({ type: ADD_BANK_DATA_ERROR })
     }
   }

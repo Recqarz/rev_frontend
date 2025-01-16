@@ -5,7 +5,7 @@ import { RiArrowDropDownLine } from 'react-icons/ri'
 
 const Navbar = ({ toggleSidebar }) => {
   return (
-    <nav className="bg-gray-50  p-4 flex justify-between lg:justify-end items-center shadow-sm fixed top-0 left-0 right-0 z-30">
+    <nav className="bg-gray-50 p-1 flex justify-between lg:justify-end items-center shadow-sm fixed top-0 left-0 right-0 z-30">
       {/* Toggle Button for Mobile/Tablet */}
       <button
         className="block lg:hidden text-xl  text-[#073c4e]"
@@ -42,9 +42,6 @@ const Navbar = ({ toggleSidebar }) => {
               </li>
               <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer">
                 Accounts
-              </li>
-              <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer">
-                Signout
               </li>
             </ul>
           </div>

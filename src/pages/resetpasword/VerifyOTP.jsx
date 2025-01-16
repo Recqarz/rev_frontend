@@ -51,9 +51,9 @@ const VerifyOTP = () => {
   };
 
   return (
-    <div className="mt-5 overflow-hidden">
+    <div className="mt-0 overflow-hidden">
       <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-md sm:max-w-lg lg:max-w-4xl">
+        <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-md sm:max-w-lg lg:max-w-3xl">
           {/* Left Image Section */}
           <div
             className="hidden lg:block lg:w-1/2 bg-cover"
@@ -76,7 +76,7 @@ const VerifyOTP = () => {
                   <input
                     key={index}
                     name={`email-${index}`}
-                    className="w-12 h-12 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
+                    className="w-8 h-8 md:w-10 md:h-10 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     type="text"
                     maxLength="1"
                     pattern="[0-9]"
@@ -98,7 +98,7 @@ const VerifyOTP = () => {
                   <input
                     key={index}
                     name={`sms-${index}`}
-                    className="w-12 h-12 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
+                    className="w-8 h-8 md:w-10 md:h-10 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     type="text"
                     maxLength="1"
                     pattern="[0-9]"
@@ -135,11 +135,11 @@ const VerifyOTP = () => {
         </div>
       </div>
 
-      <div className="lg:flex lg:justify-center gap-4 hidden lg:block -mt-16">
-        <img className="w-[18%] h-24" src={bildinglogo1} alt="build" />
-        <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
-        <img className="w-[18%] h-24" src={bildinglogo1} alt="build" />
-        <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
+      <div className="lg:flex lg:justify-center gap-4 hidden lg:block -mt-20">
+        <img className="w-[18%] h-20" src={bildinglogo1} alt="build" />
+        <img className="w-[18%] h-20" src={bildinglogo2} alt="build2" />
+        <img className="w-[18%] h-20" src={bildinglogo1} alt="build" />
+        <img className="w-[18%] h-20" src={bildinglogo2} alt="build2" />
       </div>
     </div>
   );

@@ -1,41 +1,42 @@
-import React, { useState } from 'react'
-import buildingImage from '../assets/image/building.jpg'
-import bildinglogo1 from '../assets/image/buildingdesign.png'
-import bildinglogo2 from '../assets/image/buildingdesigning.png'
-import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { checkCredentialAndsendOtp } from '../redux/auth/authAction'
+import React, { useState } from 'react';
+import buildingImage from '../assets/image/building.jpg';
+import bildinglogo1 from '../assets/image/buildingdesign.png';
+import bildinglogo2 from '../assets/image/buildingdesigning.png';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { checkCredentialAndsendOtp } from '../redux/auth/authAction';
+import { IoIosEye } from "react-icons/io";
+import { IoIosEyeOff } from "react-icons/io";
 
 const obj = {
-// role: "",
-  userCode: "",
-  password: "",
+  userCode: '',
+  password: '',
 };
 
-
 const Login = () => {
-  const [formData, setFormData] = useState(obj)
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const [formData, setFormData] = useState(obj);
+  const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleInput = (e) => {
-    const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
-  }
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleForm = (e) => {
-    e.preventDefault()
-    console.log(formData)
-    dispatch(checkCredentialAndsendOtp(formData, navigate))
-  }
+    e.preventDefault();
+    console.log(formData);
+    dispatch(checkCredentialAndsendOtp(formData, navigate));
+  };
 
-  const auth = useSelector((store) => store.authReducer)
-  console.log(auth)
+  const auth = useSelector((store) => store.authReducer);
+  console.log(auth);
 
   return (
-    <div className="py-5 overflow-hidden mt-5">
+    <div className="py-5 overflow-hidden mt-16">
       <form onSubmit={handleForm}>
-        <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
+        <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-3xl">
           <div
             className="hidden lg:block lg:w-1/2 bg-cover"
             style={{ backgroundImage: `url(${buildingImage})` }}
@@ -44,7 +45,6 @@ const Login = () => {
             <h2 className="text-4xl font-semibold text-center text-green-600">
               Login
             </h2>
-
 
             <div className="mt-4">
               <div className="flex">
@@ -72,16 +72,26 @@ const Login = () => {
                 <span className="text-red-500 ml-1 text-xl">*</span>
               </div>
 
-              <input
-                className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full placeholder-gray-500"
-                type="password"
-                placeholder="password"
-                required
-                name="password"
-                value={formData?.password}
-                onChange={handleInput}
-              />
+              <div className="relative">
+                <input
+                  className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full placeholder-gray-500"
+                  type={showPassword ? 'text' : 'password'} // Toggle input type
+                  placeholder="Password"
+                  required
+                  name="password"
+                  value={formData?.password}
+                  onChange={handleInput}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)} // Toggle visibility
+                >
+                  {showPassword ? <IoIosEye style={{fontSize:"18px"}}/> : <IoIosEyeOff style={{fontSize:"18px"}}/>}
+                </button>
+              </div>
             </div>
+
             <div className="flex justify-end">
               <Link to="/forget/password">Forget Password?</Link>
             </div>
@@ -103,7 +113,7 @@ const Login = () => {
         <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

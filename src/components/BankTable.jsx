@@ -43,7 +43,7 @@ const BankTable = ({ allBank }) => {
 
   return (
     <div className="flex justify-center">
-      <div className="flex flex-col gap-5 mt-24 w-[90%]">
+      <div className="flex flex-col gap-5 w-[90%]">
         <div className="flex justify-end mx-4">
           <Link to="/admin/dashboard/all/banks/add">
             <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">

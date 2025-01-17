@@ -4,8 +4,7 @@ import Navbar from '../../../components/Navbar'
 
 const AddBank = ({ isOpen, toggleSidebar }) => {
   return (
-    <div className="w-full">
-      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+    <div className="">
       <AddBankForm />
     </div>
   )

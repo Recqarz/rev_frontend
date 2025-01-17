@@ -1,71 +1,69 @@
 import React, { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import Layout from './Layout'
 import AdminDashboard from '../pages/admin/AdminDashboard'
-import Sidebar from './Sidebar'
 import CoordinatorDashboard from '../pages/coordinator/CoordinatorDashboard'
-import AuditorDashboard from '../pages/auditor/AuditorDashboard'
-import SupervisorDashboard from '../pages/supervisor/SupervisorDashboard'
 import FieldExecutive from '../pages/field_executive/FieldExecutive'
+import SupervisorDashboard from '../pages/supervisor/SupervisorDashboard'
+import AuditorDashboard from '../pages/auditor/AuditorDashboard'
 import AllUser from '../pages/admin/users/AllUser'
 import AddUser from '../pages/admin/users/AddUser'
 import AllBank from '../pages/admin/banks/AllBank'
-import AddBankForm from './AddBankForm'
 import AddBank from '../pages/admin/banks/AddBank'
+import AllCases from '../pages/admin/cases/AllCases'
+import AllFieldExecutive from '../pages/coordinator/filedexecutive/AllFieldExecutive'
+import AllCoordinatorCases from '../pages/coordinator/cases/AllCoordinatorCases'
+
+const roleBasedRoutes = {
+  admin: [
+    { path: '/admin/dashboard', element: <AdminDashboard /> },
+    { path: '/admin/dashboard/all/users', element: <AllUser /> },
+    { path: '/admin/dashboard/all/users/add', element: <AddUser /> },
+    { path: '/admin/dashboard/all/banks', element: <AllBank /> },
+    { path: '/admin/dashboard/all/banks/add', element: <AddBank /> },
+    { path: '/admin/dashboard/cases', element: <AllCases /> },
+  ],
+  coordinator: [
+    { path: '/coordinator/dashboard', element: <CoordinatorDashboard /> },
+    { path: '/coordinator/fieldexecutives', element: <AllFieldExecutive /> },
+    { path: '/coordinator/cases', element: <AllCoordinatorCases /> },
+  ],
+  fieldExecutive: [
+    { path: '/fieldexecutive/dashboard', element: <FieldExecutive /> },
+  ],
+  supervisor: [
+    { path: '/supervisor/dashboard', element: <SupervisorDashboard /> },
+  ],
+  auditor: [{ path: '/auditor/dashboard', element: <AuditorDashboard /> }],
+}
+
 const AllRoutes = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // const role = useSelector((state) => state.auth.role) // Fetch role from Redux
+  const { role } = useSelector((store) => store.authReducer) // Fetch role from Redux
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
+  const routes = roleBasedRoutes[role] || []
+
   return (
-    <>
-      <div className="flex w-full">
-        <div>
-          <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        </div>
-        <div className="w-full">
-          <Routes>
-            <Route
-              path="/admin/dashboard"
-              element={<AdminDashboard toggleSidebar={toggleSidebar} />}
-            />
-
-            <Route
-              path="/admin/dashboard/all/users"
-              element={<AllUser toggleSidebar={toggleSidebar} />}
-            />
-
-            <Route
-              path="/admin/dashboard/all/users/add"
-              element={<AddUser toggleSidebar={toggleSidebar} />}
-            />
-            <Route
-              path="/admin/dashboard/all/banks"
-              element={<AllBank toggleSidebar={toggleSidebar} />}
-            />
-            <Route
-              path="/admin/dashboard/all/banks/add"
-              element={<AddBank toggleSidebar={toggleSidebar} />}
-            />
-
-            <Route
-              path="/coordinator/dashboard"
-              element={<CoordinatorDashboard toggleSidebar={toggleSidebar} />}
-            />
-            <Route
-              path="/fieldexecutive/dashboard"
-              element={<FieldExecutive toggleSidebar={toggleSidebar} />}
-            />
-            <Route
-              path="/supervisor/dashboard"
-              element={<SupervisorDashboard toggleSidebar={toggleSidebar} />}
-            />
-            <Route path="/auditor/dashboard" element={<AuditorDashboard />} />
-          </Routes>
-        </div>
-      </div>
-    </>
+    <Routes>
+      {routes.map(({ path, element }) => (
+        <Route
+          key={path}
+          path={path}
+          element={
+            <Layout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+              {element}
+            </Layout>
+          }
+        />
+      ))}
+      <Route path="*" element={<Navigate to={`/${role}/dashboard`} />} />
+    </Routes>
   )
 }
 

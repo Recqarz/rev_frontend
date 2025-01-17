@@ -14,9 +14,7 @@ const AllBank = ({ isOpen, toggleSidebar }) => {
   return (
     <div className="w-full">
       <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
-      <BankTable
-      allBank={allBank}
-      />
+      <BankTable allBank={allBank} />
     </div>
   )
 }

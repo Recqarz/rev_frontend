@@ -1,45 +1,45 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 // import '../index.css'
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
-import { HiUserAdd } from "react-icons/hi";
-import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { bankDataUpdate } from "../redux/banks/bankAction";
+import { MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
+import { HiUserAdd } from 'react-icons/hi'
+import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { bankDataUpdate } from '../redux/banks/bankAction'
 
 const BankTable = ({ allBank }) => {
-  const dispatch=useDispatch();
-   const [bankId, setBankId]=useState("");
-  const [updateBankDataStatus, setupdateBankDataStatus] = useState(false);
+  const dispatch = useDispatch()
+  const [bankId, setBankId] = useState('')
+  const [updateBankDataStatus, setupdateBankDataStatus] = useState(false)
   const [bankUpdateData, setBankUpdateData] = useState({
-    bankName: "",
-    branchName: "",
-    IFSC: "",
-  });
-  const accessToken=useSelector((store)=>store.authReducer.accessToken);
+    bankName: '',
+    branchName: '',
+    IFSC: '',
+  })
+  const accessToken = useSelector((store) => store.authReducer.accessToken)
 
   const handleUpdateStatusFunc = (item) => {
     setBankId(item._id)
-    setupdateBankDataStatus(true);
+    setupdateBankDataStatus(true)
     setBankUpdateData({
       bankName: item.bankName,
       branchName: item.branchName,
       IFSC: item.IFSC,
-    });
-  };
+    })
+  }
 
   const handleChangeBankData = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setBankUpdateData((prevUserData) => ({
       ...prevUserData,
       [name]: value,
-    }));
-  };
+    }))
+  }
 
   const handleUpdateBankFunc = (e) => {
-    e.preventDefault();
-    dispatch(bankDataUpdate(bankUpdateData, accessToken, bankId));
-    setupdateBankDataStatus(false);
-  };
+    e.preventDefault()
+    dispatch(bankDataUpdate(bankUpdateData, accessToken, bankId))
+    setupdateBankDataStatus(false)
+  }
 
   return (
     <div className="flex justify-center">
@@ -83,7 +83,6 @@ const BankTable = ({ allBank }) => {
                   <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
                     {row?.IFSC}
                   </td>
-                  
 
                   <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
                     <div
@@ -98,36 +97,35 @@ const BankTable = ({ allBank }) => {
             </tbody>
           </table>
         </div>
-        <div className="shadow-lg mt-4 mx-4 py-1 flex justify-center lg:justify-end rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
+
+        {/*---------------------- Pagination---------------------------- */}
+        {/* <div className="shadow-lg mt-4 mx-4 py-1 flex justify-center lg:justify-end rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
           <div className="flex flex-col gap-1.5 md:flex-row md:gap-14 justify-center items-center">
-            {/* <div>Rows per page: {rowsPerPage}</div> */}
-            {/* <div>
-              {indexOfFirstRow + 1}-{Math.min(indexOfLastRow, data.length)} of{" "}
-              {data.length}
-            </div> */}
+            <div>Rows per page: 1</div>
+            <div>1 of 2</div>
             <div className="flex gap-4 lg:mr-6">
-              {/* <button
-                onClick={handlePrevious}
+              <button
+                // onClick={handlePrevious}
                 className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
               >
                 &lt;
-              </button> */}
-              {/* <button
-                onClick={handleNext}
+              </button>
+              <button
+                // onClick={handleNext}
                 className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
               >
                 &gt;
-              </button> */}
+              </button>
             </div>
           </div>
-        </div>
+        </div>*/}
 
         {updateBankDataStatus && (
           <div
             id="authentication-modal"
             aria-hidden="true"
             className={`${
-              updateBankDataStatus ? "flex" : "hidden"
+              updateBankDataStatus ? 'flex' : 'hidden'
             } overflow-x-hidden overflow-y-auto fixed inset-0 z-50 justify-center items-center backdrop-blur-sm`}
           >
             <div className="relative w-full max-w-md px-0 h-full md:h-auto">
@@ -231,7 +229,7 @@ const BankTable = ({ allBank }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BankTable;
+export default BankTable

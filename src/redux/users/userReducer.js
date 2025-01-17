@@ -8,13 +8,19 @@ import {
   UPDATE_USER_DATA_ERROR,
   UPDATE_USER_DATA_REQUEST,
   UPDATE_USER_DATA_SUCCESS,
-} from "./userType";
+} from './userType'
 
 const initialData = {
   isLoading: false,
   isError: false,
-  data: [],
-};
+  data: {
+    message: '',
+    currentPage: 1,
+    totalPages: 1,
+    totalUser: 0,
+    users: [],
+  },
+}
 
 export const allUserReducer = (state = initialData, { type, payload }) => {
   switch (type) {
@@ -24,32 +30,32 @@ export const allUserReducer = (state = initialData, { type, payload }) => {
       return {
         ...state,
         isLoading: true,
-      };
+      }
     }
     case GET_USER_DATA_SUCCESS: {
       return {
         ...state,
         isLoading: false,
         data: payload,
-      };
+      }
     }
     case ADD_USER_DATA_SUCCESS: {
       return {
         ...state,
         isLoading: false,
         data: [...state.data, payload],
-      };
+      }
     }
     case UPDATE_USER_DATA_SUCCESS: {
-      const updatedData = state.data.map((user) =>
+      const updatedData = state?.data?.users.map((user) =>
         user._id === payload._id ? { ...user, ...payload } : user
-      );
+      )
 
       return {
         ...state,
-        data: updatedData,
         isLoading: false,
-      };
+        data: { ...state.data, users: updatedData },
+      }
     }
     case GET_USER_DATA_ERROR:
     case ADD_USER_DATA_ERROR:
@@ -57,9 +63,9 @@ export const allUserReducer = (state = initialData, { type, payload }) => {
       return {
         ...state,
         isError: true,
-      };
+      }
     }
     default:
-      return { ...state };
+      return { ...state }
   }
-};
+}

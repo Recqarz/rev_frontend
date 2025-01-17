@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { Route, Routes } from "react-router-dom";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import Sidebar from "./Sidebar";
-import CoordinatorDashboard from "../pages/coordinator/CoordinatorDashboard";
-import AuditorDashboard from "../pages/auditor/AuditorDashboard";
-import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
-import FieldExecutive from "../pages/field_executive/FieldExecutive";
-import AllUser from "../pages/admin/users/AllUser";
-import AddUser from "../pages/admin/users/AddUser";
-import AllBank from "../pages/admin/banks/AllBank";
-import AddBankForm from "./AddBankForm";
-import AddBank from "../pages/admin/banks/AddBank";
+import React, { useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import AdminDashboard from '../pages/admin/AdminDashboard'
+import Sidebar from './Sidebar'
+import CoordinatorDashboard from '../pages/coordinator/CoordinatorDashboard'
+import AuditorDashboard from '../pages/auditor/AuditorDashboard'
+import SupervisorDashboard from '../pages/supervisor/SupervisorDashboard'
+import FieldExecutive from '../pages/field_executive/FieldExecutive'
+import AllUser from '../pages/admin/users/AllUser'
+import AddUser from '../pages/admin/users/AddUser'
+import AllBank from '../pages/admin/banks/AllBank'
+import AddBankForm from './AddBankForm'
+import AddBank from '../pages/admin/banks/AddBank'
 const AllRoutes = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+    setIsSidebarOpen(!isSidebarOpen)
+  }
 
   return (
     <>
@@ -66,7 +66,7 @@ const AllRoutes = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default AllRoutes;
+export default AllRoutes

@@ -83,29 +83,28 @@ const BankTable = ({ allBank }) => {
             </tbody>
           </table>
         </div>
-        <div className="shadow-lg mt-4 mx-4 py-1 flex justify-center lg:justify-end rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
+
+        {/*---------------------- Pagination---------------------------- */}
+        {/* <div className="shadow-lg mt-4 mx-4 py-1 flex justify-center lg:justify-end rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
           <div className="flex flex-col gap-1.5 md:flex-row md:gap-14 justify-center items-center">
-            {/* <div>Rows per page: {rowsPerPage}</div> */}
-            {/* <div>
-              {indexOfFirstRow + 1}-{Math.min(indexOfLastRow, data.length)} of{" "}
-              {data.length}
-            </div> */}
+            <div>Rows per page: 1</div>
+            <div>1 of 2</div>
             <div className="flex gap-4 lg:mr-6">
-              {/* <button
-                onClick={handlePrevious}
+              <button
+                // onClick={handlePrevious}
                 className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
               >
                 &lt;
-              </button> */}
-              {/* <button
-                onClick={handleNext}
+              </button>
+              <button
+                // onClick={handleNext}
                 className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
               >
                 &gt;
-              </button> */}
+              </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

@@ -11,23 +11,47 @@ import {
   toastLoading,
   toastUpdate,
 } from '../../utils/react-toastify/ReactToastiry'
+import { baseURL } from '../../utils/urls/baseURL'
 
-export const getAllUserData = () => (dispatch) => {
+// export const getAllUserData = () => (dispatch) => {
+//   dispatch({ type: GET_USER_DATA_REQUEST })
+//   const token = localStorage.getItem('accessToken')
+//   return axios
+//     .get(`${baseURL}/api/v1/admin/user-list`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     })
+//     .then((res) => {
+//       dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data?.users })
+//     })
+//     .catch((err) => {
+//       console.log('err')
+//       dispatch({ type: GET_USER_DATA_ERROR })
+//     })
+// }
+
+export const getAllUserData = (queryString) => async (dispatch) => {
   dispatch({ type: GET_USER_DATA_REQUEST })
   const token = localStorage.getItem('accessToken')
-  return axios
-    .get(`http://localhost:8080/api/v1/admin/user-list`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((res) => {
-      dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data?.users })
-    })
-    .catch((err) => {
-      console.log('err')
-      dispatch({ type: GET_USER_DATA_ERROR })
-    })
+
+  try {
+    // const queryString = new URLSearchParams(filters).toString(); // Build query string dynamically
+    const response = await axios
+      .get(`${baseURL}/api/v1/admin/user-list?${queryString}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      .then((res) => {
+        console.log('res--->', res)
+        dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data })
+      })
+  } catch (error) {
+    console.error('Error fetching user data:', error?.response?.data?.message)
+    dispatch({ type: GET_USER_DATA_ERROR })
+  }
 }
 
 export const addUserData =
@@ -36,7 +60,7 @@ export const addUserData =
     try {
       dispatch({ type: ADD_USER_DATA_REQUEST })
       const response = await axios.post(
-        `http://localhost:8080/api/v1/admin/create-user`,
+        `${baseURL}/api/v1/admin/create-user`,
         data,
         {
           headers: {

@@ -12,19 +12,21 @@ import {
   toastLoading,
   toastUpdate,
 } from '../../utils/react-toastify/ReactToastiry'
+import { baseURL } from '../../utils/urls/baseURL'
 
 export const getAllBankData = () => (dispatch) => {
   dispatch({ type: GET_BANK_DATA_REQUEST })
 
   const token = localStorage.getItem('accessToken')
   return axios
-    .get(`http://localhost:8080/api/v1/admin/bank-list`, {
+    .get(`${baseURL}/api/v1/admin/bank-list`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     .then((res) => {
-      dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data?.data })
+      console.log(res?.data?.banks)
+      dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data?.banks })
     })
     .catch((err) => {
       console.log('err')
@@ -32,14 +34,13 @@ export const getAllBankData = () => (dispatch) => {
     })
 }
 
-
 export const addBankData =
   (data, accessToken, navigate) => async (dispatch) => {
     const toastId = toastLoading('Loading...')
     try {
       dispatch({ type: ADD_BANK_DATA_REQUEST })
       const response = await axios.post(
-        `http://localhost:8080/api/v1/admin/create-bank`,
+        `${baseURL}/api/v1/admin/create-bank`,
         data,
         {
           headers: {

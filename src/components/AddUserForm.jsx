@@ -11,8 +11,8 @@ const AddUserForm = () => {
   const dispatch = useDispatch()
 
   //get banks
-  const allBank = useSelector((state) => state?.allBankReducer?.data?.banks)
-  const {accessToken} = useSelector((store) => store?.authReducer)
+  const allBank = useSelector((state) => state?.allBankReducer?.data)
+  const { accessToken } = useSelector((store) => store?.authReducer)
 
   useEffect(() => {
     dispatch(getAllBankData())
@@ -163,7 +163,7 @@ const AddUserForm = () => {
 
   const handleSubmit = (values, { resetForm }) => {
     console.log('Form data===>', values)
-    dispatch(addUserData(values,accessToken, navigate))
+    dispatch(addUserData(values, accessToken, navigate))
     resetForm()
   }
 

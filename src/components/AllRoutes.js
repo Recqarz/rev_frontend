@@ -6,10 +6,6 @@ import CoordinatorDashboard from '../pages/coordinator/CoordinatorDashboard'
 import AuditorDashboard from '../pages/auditor/AuditorDashboard'
 import SupervisorDashboard from '../pages/supervisor/SupervisorDashboard'
 import FieldExecutive from '../pages/field_executive/FieldExecutive'
-import CoordinatorDash from '../pages/admin/admin_coordinator/CoordinatorDash'
-import FieldExecutiveDash from '../pages/admin/admin_fieldexecutive/FieldExecutiveDash'
-import SuperVisorDash from '../pages/admin/admin_supervisor/SuperVisorDash'
-import AuditorDash from '../pages/admin/admin_auditor/AuditorDash'
 import AllUser from '../pages/admin/users/AllUser'
 import AddUser from '../pages/admin/users/AddUser'
 import AllBank from '../pages/admin/banks/AllBank'
@@ -51,22 +47,6 @@ const AllRoutes = () => {
             <Route
               path="/admin/dashboard/all/banks/add"
               element={<AddBank toggleSidebar={toggleSidebar} />}
-            />
-            <Route
-              path="/admin/coordinator/dashboard"
-              element={<CoordinatorDash toggleSidebar={toggleSidebar} />}
-            />
-            <Route
-              path="/admin/field-executive/dashboard"
-              element={<FieldExecutiveDash toggleSidebar={toggleSidebar} />}
-            />
-            <Route
-              path="/admin/supervisor/dashboard"
-              element={<SuperVisorDash />}
-            />
-            <Route
-              path="/admin/auditor/dashboard"
-              element={<AuditorDash toggleSidebar={toggleSidebar} />}
             />
 
             <Route

@@ -6,7 +6,8 @@ import UserTable from '../../../components/UserTable'
 
 const AllUser = ({ isOpen, toggleSidebar }) => {
   const dispatch = useDispatch()
-  const allUser = useSelector((state) => state.allUserReducer.data)
+
+  // console.log('allUser-->', allUser)
 
   useEffect(() => {
     dispatch(getAllUserData())
@@ -15,7 +16,7 @@ const AllUser = ({ isOpen, toggleSidebar }) => {
   return (
     <div className="w-full">
       <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
-      <UserTable allUser={allUser} />
+      <UserTable/>
     </div>
   )
 }

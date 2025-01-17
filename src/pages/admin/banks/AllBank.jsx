@@ -6,7 +6,7 @@ import BankTable from '../../../components/BankTable'
 
 const AllBank = ({ isOpen, toggleSidebar }) => {
   const dispatch = useDispatch()
-  const allBank = useSelector((state) => state?.allBankReducer?.data?.banks)
+  const allBank = useSelector((state) => state?.allBankReducer?.data)
   useEffect(() => {
     dispatch(getAllBankData())
   }, [dispatch])
@@ -14,9 +14,7 @@ const AllBank = ({ isOpen, toggleSidebar }) => {
   return (
     <div className="w-full">
       <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
-      <BankTable
-      allBank={allBank}
-      />
+      <BankTable allBank={allBank} />
     </div>
   )
 }

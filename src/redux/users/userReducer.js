@@ -10,7 +10,13 @@ import {
 const initialData = {
   isLoading: false,
   isError: false,
-  data: [],
+  data: {
+    message: '',
+    currentPage:1,
+    totalPages: 1,
+    totalUser: 0,
+    users: [],
+  },
 }
 
 export const allUserReducer = (state = initialData, { type, payload }) => {
@@ -35,10 +41,8 @@ export const allUserReducer = (state = initialData, { type, payload }) => {
         data: [...state.data, payload],
       }
     }
-    case GET_USER_DATA_ERROR: 
-    case ADD_USER_DATA_ERROR: 
-    
-    {
+    case GET_USER_DATA_ERROR:
+    case ADD_USER_DATA_ERROR: {
       return {
         ...state,
         isError: true,
@@ -48,6 +52,3 @@ export const allUserReducer = (state = initialData, { type, payload }) => {
       return { ...state }
   }
 }
-
-
-

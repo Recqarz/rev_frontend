@@ -4,7 +4,7 @@ import Navbar from './Navbar'
 
 const Layout = ({ children, isSidebarOpen, toggleSidebar }) => {
   return (
-    <div className="flex w-full h-screen">
+    <div className="flex w-full">
       {/* Sidebar */}
       <div>
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
@@ -12,10 +12,8 @@ const Layout = ({ children, isSidebarOpen, toggleSidebar }) => {
 
       {/* Main Content Area */}
       <div className="flex flex-col w-full">
-        {/* Navbar */}
         <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        {/* Main Content */}
-        <div className="p-6 mt-24">{children}</div>
+        <div className="p-6 mt-12">{children}</div>
       </div>
     </div>
   )

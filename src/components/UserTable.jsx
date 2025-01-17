@@ -4,8 +4,10 @@ import { MdOutlineEdit } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { getAllUserData, updateUserData } from '../redux/users/userAction'
+import Pagination from './Pagination'
 
 const UserTable = () => {
+  const dispatch = useDispatch()
   const { isLoading, isError, data } = useSelector(
     (state) => state.allUserReducer
   )
@@ -23,7 +25,8 @@ const UserTable = () => {
   })
   const accessToken = useSelector((store) => store.authReducer.accessToken)
   const [searchQuery, setSearchQuery] = useState('')
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(10)
+  console.log('table limit--->', limit)
   const [filterRole, setFilterRole] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [currentPageState, setCurrentPageState] = useState(currentPage)
@@ -33,9 +36,6 @@ const UserTable = () => {
     isActive: '',
   })
 
-  const dispatch = useDispatch()
-
-  // Debounce logic for filters
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilters({
@@ -45,13 +45,12 @@ const UserTable = () => {
       })
     }, 500) // 500ms debounce delay
 
-    return () => clearTimeout(timer) // Cleanup debounce timer
+    return () => clearTimeout(timer)
   }, [searchQuery, filterRole, filterStatus])
 
   // Fetch data when debounced filters or current page changes
   useEffect(() => {
     const { search, role, isActive } = debouncedFilters
-
     const filters = {
       search,
       role,
@@ -59,12 +58,10 @@ const UserTable = () => {
       page: currentPageState,
       limit,
     }
-
     // Remove undefined or empty filter values
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(([_, value]) => value !== '')
     )
-
     const queryString = new URLSearchParams(cleanedFilters).toString()
     dispatch(getAllUserData(queryString))
   }, [debouncedFilters, currentPageState, dispatch, limit])
@@ -76,7 +73,11 @@ const UserTable = () => {
     setCurrentPageState(1) // Reset to the first page
   }
 
-  const handleUpdateStatusFunc = (item) => {
+  const handleLimit = (val) => {
+    setLimit(val)
+  }
+
+  const handleEditUser = (item) => {
     setChangeStatusModal(true)
     setUserId(item._id)
     setUserData({
@@ -105,22 +106,14 @@ const UserTable = () => {
     setChangeStatusModal(false)
   }
 
-  const handleNextPage = () => {
-    if (currentPageState < totalPages) {
-      setCurrentPageState((prev) => prev + 1)
-    }
-  }
-
-  const handlePreviousPage = () => {
-    if (currentPageState > 1) {
-      setCurrentPageState((prev) => prev - 1)
-    }
+  const handleCurrentPageState = (val) => {
+    setCurrentPageState((prev) => prev + val)
   }
 
   return (
     <div className="">
-      <div className="flex flex-col gap-5 mt-24">
-        <div className="flex justify-between gap-2 items-center mx-4">
+      <div className="flex flex-col gap-5">
+        <div className="flex justify-between gap-2 items-center">
           <div className="flex items-center">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search Bar */}
@@ -175,20 +168,6 @@ const UserTable = () => {
               </button>
             </div>
           </div>
-          {/* <div className="flex flex-col space-y-2 max-w-sm">
-            <label htmlFor="page-limit" className="text-gray-800 font-medium">
-              Page Limit
-            </label>
-            <select
-              id="page-limit"
-              className="p-3 border border-gray-300 rounded-md bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none hover:bg-gray-100 cursor-pointer"
-              onChange={(e) => setLimit(Number(e.target.value))}
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </select>
-          </div> */}
           <Link to="/admin/dashboard/all/users/add">
             <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
               ADD
@@ -197,7 +176,7 @@ const UserTable = () => {
         </div>
 
         {/* Table Section */}
-        <div className="shadow-lg rounded-lg mx-4 overflow-x-auto custom-scrollbar">
+        <div className="shadow-lg rounded-lg overflow-x-auto custom-scrollbar">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr className="bg-[#073c4e] text-white text-sm">
@@ -244,7 +223,7 @@ const UserTable = () => {
                   <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
                     <div
                       className="rounded-full hover:bg-gray-300 py-1 px-1"
-                      onClick={() => handleUpdateStatusFunc(row)}
+                      onClick={() => handleEditUser(row)}
                     >
                       <MdOutlineEdit className="text-xl text-[#3fb597]" />
                     </div>
@@ -256,7 +235,7 @@ const UserTable = () => {
         </div>
 
         {/* Pagination Section */}
-        <div className="shadow-lg  mx-4 py-2 flex justify-center gap-2 items-center rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
+        {/* <div className="shadow-lg  mx-4  flex justify-center gap-2 items-center rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
           <button
             onClick={handlePreviousPage}
             disabled={currentPageState === 1}
@@ -291,8 +270,18 @@ const UserTable = () => {
             <option value={30}>30</option>
             <option value={50}>50</option>
           </select>
-        </div>
+        </div> */}
 
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalData={totalUser}
+          limit={limit}
+          handleLimit={handleLimit}
+          handleCurrentPageState={handleCurrentPageState}
+        />
+
+        {/* Edit Modal Section */}
         {changeStatusModal && (
           <div
             id="authentication-modal"
@@ -398,7 +387,6 @@ const UserTable = () => {
                         defaultValue={userData.userCode}
                         className="bg-gray-200 border border-gray-400 p-1 w-full rounded-lg text-gray-400 cursor-not-allowed focus:outline-none focus:border-blue-400"
                         required
-                        
                       />
                     </div>
 

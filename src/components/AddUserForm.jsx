@@ -169,7 +169,7 @@ const AddUserForm = () => {
 
   return (
     <div>
-      <div className="flex justify-center mt-24">
+      <div className="flex justify-center">
         <h3 className="text-xl font-semibold">Add User</h3>
       </div>
 

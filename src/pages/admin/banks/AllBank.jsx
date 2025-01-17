@@ -12,8 +12,7 @@ const AllBank = ({ isOpen, toggleSidebar }) => {
   }, [dispatch])
   // console.log('all bank---->', allBank)
   return (
-    <div className="w-full">
-      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+    <div className="">
       <BankTable allBank={allBank} />
     </div>
   )

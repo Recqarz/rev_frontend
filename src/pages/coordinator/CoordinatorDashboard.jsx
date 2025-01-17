@@ -1,9 +1,7 @@
 import React from 'react'
 
 const CoordinatorDashboard = () => {
-  return (
-    <div>CoordinatorDashboard</div>
-  )
+  return <div>Coordinator Dashboard</div>
 }
 
 export default CoordinatorDashboard

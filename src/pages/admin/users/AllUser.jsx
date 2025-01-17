@@ -14,9 +14,8 @@ const AllUser = ({ isOpen, toggleSidebar }) => {
   }, [dispatch])
 
   return (
-    <div className="w-full">
-      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
-      <UserTable/>
+    <div className="">
+      <UserTable />
     </div>
   )
 }

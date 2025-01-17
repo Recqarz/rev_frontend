@@ -5,10 +5,14 @@ import bildinglogo1 from "../../assets/image/buildingdesign.png";
 import bildinglogo2 from "../../assets/image/buildingdesigning.png";
 import { useDispatch } from "react-redux";
 import { resetPasswordForForgetPass } from "../../redux/auth/authAction";
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,14 +58,22 @@ const ResetPassword = () => {
                   </label>
                   <span className="text-red-500 ml-1 text-xl">*</span>
                 </div>
-                <input
-                  className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
-                  type="text"
-                  placeholder="********"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <input
+                    className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <span
+                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <IoIosEye style={{fontSize:"18px"}}/> : <IoIosEyeOff style={{fontSize:"18px"}}/>}
+                  </span>
+                </div>
               </div>
 
               <div className="mt-4">
@@ -71,14 +83,22 @@ const ResetPassword = () => {
                   </label>
                   <span className="text-red-500 ml-1 text-xl">*</span>
                 </div>
-                <input
-                  className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
-                  type="text"
-                  placeholder="********"
-                  value={confirmPass}
-                  onChange={(e) => setConfirmPass(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <input
+                    className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="********"
+                    value={confirmPass}
+                    onChange={(e) => setConfirmPass(e.target.value)}
+                    required
+                  />
+                  <span
+                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <IoIosEye style={{fontSize:"18px"}}/> : <IoIosEyeOff style={{fontSize:"18px"}}/>}
+                  </span>
+                </div>
               </div>
 
               <div className="mt-8 flex justify-center">

@@ -6,6 +6,9 @@ import {
   ADD_USER_DATA_REQUEST,
   ADD_USER_DATA_SUCCESS,
   ADD_USER_DATA_ERROR,
+  UPDATE_USER_DATA_REQUEST,
+  UPDATE_USER_DATA_SUCCESS,
+  UPDATE_USER_DATA_ERROR,
 } from './userType'
 import {
   toastLoading,
@@ -69,7 +72,6 @@ export const addUserData =
           },
         }
       )
-      console.log('create user response--->', response.data)
       dispatch({ type: ADD_USER_DATA_SUCCESS, payload: response?.data })
       toastUpdate(toastId, 200, 'User Added Successfully')
     } catch (error) {
@@ -78,3 +80,28 @@ export const addUserData =
       dispatch({ type: ADD_USER_DATA_ERROR })
     }
   }
+
+export const updateUserData = (data, accessToken, id) => async (dispatch) => {
+  const toastId = toastLoading('Loading...')
+  dispatch({ type: UPDATE_USER_DATA_REQUEST })
+  return axios
+    .patch(`${baseURL}/api/v1/admin/user/update/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((res) => {
+      console.log(res)
+      dispatch({
+        type: UPDATE_USER_DATA_SUCCESS,
+        payload: res?.data?.data?.updatedUserDetails,
+      })
+      toastUpdate(toastId, 200, res?.data?.message)
+    })
+    .catch((err) => {
+      console.log('err', err)
+      toastUpdate(toastId, 400, err?.response?.data?.error)
+      dispatch({ type: UPDATE_USER_DATA_ERROR })
+    })
+}

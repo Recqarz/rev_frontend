@@ -10,7 +10,7 @@ const AllBank = ({ isOpen, toggleSidebar }) => {
   useEffect(() => {
     dispatch(getAllBankData())
   }, [dispatch])
-  console.log('all bank---->', allBank)
+  // console.log('all bank---->', allBank)
   return (
     <div className="w-full">
       <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />

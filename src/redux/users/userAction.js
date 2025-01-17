@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios";
 import {
   GET_USER_DATA_REQUEST,
   GET_USER_DATA_SUCCESS,
@@ -6,15 +6,19 @@ import {
   ADD_USER_DATA_REQUEST,
   ADD_USER_DATA_SUCCESS,
   ADD_USER_DATA_ERROR,
-} from './userType'
+  UPDATE_USER_DATA_REQUEST,
+  UPDATE_USER_DATA_SUCCESS,
+  UPDATE_USER_DATA_ERROR,
+} from "./userType";
 import {
   toastLoading,
   toastUpdate,
-} from '../../utils/react-toastify/ReactToastiry'
+} from "../../utils/react-toastify/ReactToastiry";
+import { baseURL } from "../../utils/urls/baseURL";
 
 export const getAllUserData = () => (dispatch) => {
-  dispatch({ type: GET_USER_DATA_REQUEST })
-  const token = localStorage.getItem('accessToken')
+  dispatch({ type: GET_USER_DATA_REQUEST });
+  const token = localStorage.getItem("accessToken");
   return axios
     .get(`http://localhost:8080/api/v1/admin/user-list`, {
       headers: {
@@ -22,35 +26,58 @@ export const getAllUserData = () => (dispatch) => {
       },
     })
     .then((res) => {
-      dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data?.users })
+      dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data?.users });
     })
     .catch((err) => {
-      console.log('err')
-      dispatch({ type: GET_USER_DATA_ERROR })
-    })
-}
+      console.log("err");
+      dispatch({ type: GET_USER_DATA_ERROR });
+    });
+};
 
 export const addUserData =
   (data, accessToken, navigate) => async (dispatch) => {
-    const toastId = toastLoading('Loading...')
+    const toastId = toastLoading("Loading...");
     try {
-      dispatch({ type: ADD_USER_DATA_REQUEST })
+      dispatch({ type: ADD_USER_DATA_REQUEST });
       const response = await axios.post(
-        `http://localhost:8080/api/v1/admin/create-user`,
+        `${baseURL}/api/v1/admin/create-user`,
         data,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
-      )
-      console.log('create user response--->', response.data)
-      dispatch({ type: ADD_USER_DATA_SUCCESS, payload: response?.data })
-      toastUpdate(toastId, 200, 'User Added Successfully')
+      );
+      dispatch({ type: ADD_USER_DATA_SUCCESS, payload: response?.data });
+      toastUpdate(toastId, 200, "User Added Successfully");
     } catch (error) {
-      console.error('Error creating user data:', error?.response?.data?.error)
-      toastUpdate(toastId, 400, error?.response?.data?.error)
-      dispatch({ type: ADD_USER_DATA_ERROR })
+      console.error("Error creating user data:", error?.response?.data?.error);
+      toastUpdate(toastId, 400, error?.response?.data?.error);
+      dispatch({ type: ADD_USER_DATA_ERROR });
     }
-  }
+  };
+
+export const updateUserData = (data, accessToken, id) => (dispatch) => {
+  const toastId = toastLoading("Loading...");
+  dispatch({ type: UPDATE_USER_DATA_REQUEST });
+  return axios
+    .patch(`${baseURL}/api/v1/admin/user/update/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then((res) => {
+      dispatch({
+        type: UPDATE_USER_DATA_SUCCESS,
+        payload: res?.data?.data?.updatedUserDetails,
+      });
+      toastUpdate(toastId, 200, res?.data?.message);
+    })
+    .catch((err) => {
+      console.log("err", err?.response?.data?.error);
+      toastUpdate(toastId, 400, err?.response?.data?.error);
+      dispatch({ type: UPDATE_USER_DATA_ERROR });
+    });
+};

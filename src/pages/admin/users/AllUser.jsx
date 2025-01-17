@@ -1,27 +1,23 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Navbar from "../../../components/Navbar";
-import Table from "../../../components/Table";
-import { getAllUserData } from "../../../redux/users/userAction";
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import Navbar from '../../../components/Navbar'
+import { getAllUserData } from '../../../redux/users/userAction'
+import UserTable from '../../../components/UserTable'
 
 const AllUser = ({ isOpen, toggleSidebar }) => {
-  const dispatch = useDispatch();
-  const allUser = useSelector((state) => state.allUserReducer.data);
+  const dispatch = useDispatch()
+
+  // console.log('allUser-->', allUser)
 
   useEffect(() => {
-    dispatch(getAllUserData());
-  }, [dispatch]);
-
-
+    dispatch(getAllUserData())
+  }, [dispatch])
 
   return (
-    <div className="w-full">
-      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
-        <Table
-          allUser={allUser}
-        />
+    <div className="">
+      <UserTable />
     </div>
-  );
-};
+  )
+}
 
-export default AllUser;
+export default AllUser

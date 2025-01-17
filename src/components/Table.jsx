@@ -1,19 +1,23 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 // import '../index.css'
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
+import { HiUserAdd } from 'react-icons/hi'
+import { Link } from 'react-router-dom'
 
 const Table = ({ allUser }) => {
   const handleUpdateStatusFunc = (item) => {
-    console.log(item);
-  };
+    console.log(item)
+  }
 
   return (
     <div className="">
       <div className="flex flex-col gap-5 mt-24">
-        <div className="flex justify-end mx-4 md:mx-10">
-          <button className="rounded-md px-6 bg-[#073c4e] py-1 text-[#3fb597] font-medium">
-            ADD
-          </button>
+        <div className="flex justify-end mx-4">
+          <Link to="/admin/dashboard/all/users/add">
+            <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
+              ADD
+            </div>
+          </Link>
         </div>
         {/* -----------------------------------------------custom-scrollbar */}
         <div className="shadow-lg rounded-lg mx-4 overflow-x-auto custom-scrollbar ">
@@ -22,23 +26,28 @@ const Table = ({ allUser }) => {
               <tr className="bg-[#073c4e] text-white">
                 <th className="w-1/7 py-2 px-6 text-left text-xs">ID</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">NAME</th>
+                <th className="w-1/4 py-2 px-6 text-left text-xs">USER CODE</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">EMAIL</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">MOBILE</th>
+                <th className="w-1/4 py-2 px-6 text-left text-xs">ROLE</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">STATUS</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">ACTION</th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              {allUser?.map((row, index) => (
+              {(allUser ?? [])?.map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
                 >
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {index+1}
+                    {index + 1}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
                     {row.firstName}
+                  </td>
+                  <td className="py-3 px-6 border-b border-gray-200 text-sm">
+                    {row.userCode}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 truncate">
                     {row.email}
@@ -47,12 +56,15 @@ const Table = ({ allUser }) => {
                     {row.mobile}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
+                    {row.role}
+                  </td>
+                  <td className="py-3 px-6 border-b border-gray-200">
                     <span
                       className={`text-white py-1 px-2 rounded-full text-xs 
-                      ${row.isActive === true ? "bg-green-500" : "bg-red-500"}
+                      ${row.isActive === true ? 'bg-green-500' : 'bg-red-500'}
                       `}
                     >
-                      {row.isActive ? "Active" : "Inactive"}
+                      {row.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
 
@@ -94,7 +106,7 @@ const Table = ({ allUser }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Table;
+export default Table

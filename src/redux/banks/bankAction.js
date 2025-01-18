@@ -12,6 +12,7 @@ import {
 } from './bankType'
 
 import {
+  toastError,
   toastLoading,
   toastUpdate,
 } from '../../utils/react-toastify/ReactToastiry'
@@ -31,10 +32,11 @@ export const getAllBankData = (queryString) => async (dispatch) => {
       dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data })
     })
     .catch((err) => {
-      console.log('err')
-      dispatch({ type: GET_BANK_DATA_ERROR })
-    })
-}
+      console.log(err?.response?.data?.error);
+      dispatch({ type: GET_BANK_DATA_ERROR });
+      toastError(err?.response?.data?.error);
+    });
+};
 
 export const addBankData =
   (data, accessToken, navigate) => async (dispatch) => {

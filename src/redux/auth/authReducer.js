@@ -10,12 +10,13 @@ const initialData = {
   isLoading: false,
   isError: false,
   isSuccess: false,
-  role: localStorage.getItem('role') || '',
-  firstName: localStorage.getItem('firstName'),
-  lastName: localStorage.getItem('lastName'),
-  accessToken: localStorage.getItem('accessToken'),
-  isLogin: localStorage.getItem('accessToken') ? true : false,
-}
+  role: localStorage.getItem("role") || "",
+  firstName: localStorage.getItem("firstName") || "",
+  lastName: localStorage.getItem("lastName") || "",
+  accessToken: localStorage.getItem("accessToken") || "",
+  isLogin: localStorage.getItem("accessToken") ? true : false,
+  isActive: localStorage.getItem("isActive") || false,
+};
 
 const authReducer = (state = initialData, { type, payload }) => {
   switch (type) {
@@ -24,10 +25,11 @@ const authReducer = (state = initialData, { type, payload }) => {
     }
     case USER_LOGIN_SUCCESS: {
       // console.log(payload);
-      localStorage.setItem('accessToken', payload?.accessToken)
-      localStorage.setItem('firstName', payload?.firstName)
-      localStorage.setItem('lastName', payload?.lastName)
-      localStorage.setItem('role', payload?.role)
+      localStorage.setItem("accessToken", payload?.accessToken);
+      localStorage.setItem("firstName", payload?.firstName);
+      localStorage.setItem("lastName", payload?.lastName);
+      localStorage.setItem("role", payload?.role);
+      localStorage.setItem("isActive", payload?.isActive);
 
       return {
         ...state,
@@ -44,11 +46,12 @@ const authReducer = (state = initialData, { type, payload }) => {
       return { ...state, isLoading: false, isSuccess: false, isError: true }
     }
     case USER_LOGOUT_SUCCESS: {
-      localStorage.removeItem('accessToken', payload?.accessToken)
-      localStorage.removeItem('firstName', payload?.firstName)
-      localStorage.removeItem('lastName', payload?.lastName)
-      localStorage.removeItem('role', payload?.role)
-      toastSuccess('Logged out Success!')
+      localStorage.removeItem("accessToken", payload?.accessToken);
+      localStorage.removeItem("firstName", payload?.firstName);
+      localStorage.removeItem("lastName", payload?.lastName);
+      localStorage.removeItem("role", payload?.role);
+      localStorage.removeItem("isActive", payload?.isActive);
+      toastSuccess("Logged out success!")
       return {
         ...state,
         accessToken: '',
@@ -56,6 +59,8 @@ const authReducer = (state = initialData, { type, payload }) => {
         lastName: '',
         role: '',
         isLogin: false,
+        isActive:false
+        
       }
     }
 

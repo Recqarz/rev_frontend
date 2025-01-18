@@ -1,85 +1,63 @@
-import React, { useEffect, useState } from 'react'
-import { IoMdSearch } from 'react-icons/io'
-import { MdOutlineEdit } from 'react-icons/md'
-import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { getAllUserData, updateUserData } from '../redux/users/userAction'
-import Pagination from './Pagination'
+import React, { useCallback, useEffect, useState } from "react";
+import { IoMdSearch } from "react-icons/io";
+import { MdOutlineEdit } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { getAllUserData, updateUserData } from "../redux/users/userAction";
+import Pagination from "./Pagination";
+import { debounce } from "../utils/halper";
 
 const UserTable = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { isLoading, isError, data } = useSelector(
     (state) => state.allUserReducer
-  )
-  console.log('user data==>', data)
-  const { message, currentPage, totalPages, totalUser, users } = data
-  const [changeStatusModal, setChangeStatusModal] = useState(false)
-  const [userId, setUserId] = useState('')
+  );
+  const { message, currentPage, totalPages, totalUser, users } = data;
+  const [changeStatusModal, setChangeStatusModal] = useState(false);
+  const [userId, setUserId] = useState("");
   const [userData, setUserData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    userCode: '',
-    mobile: '',
-    role: '',
-    isActive: '',
-  })
-  const accessToken = useSelector((store) => store.authReducer.accessToken)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [limit, setLimit] = useState(10)
-  const [filterRole, setFilterRole] = useState('')
-  const [filterStatus, setFilterStatus] = useState('')
-  const [currentPageState, setCurrentPageState] = useState(currentPage)
-  const [debouncedFilters, setDebouncedFilters] = useState({
-    search: '',
-    role: '',
-    isActive: '',
-  })
+    firstName: "",
+    lastName: "",
+    email: "",
+    userCode: "",
+    mobile: "",
+    role: "",
+    isActive: "",
+  });
+  const accessToken = useSelector((store) => store.authReducer.accessToken);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [limit, setLimit] = useState(10);
+  console.log("table limit--->", limit);
+  const [filterRole, setFilterRole] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [currentPageState, setCurrentPageState] = useState(currentPage);
+
+  const handleSearch = (val) => {
+    setSearchQuery(val);
+  };
+
+  const debouncedHandleSearch = debounce(handleSearch, 500);
+
+  const handleSearchInput = (e) => {
+    debouncedHandleSearch(e.target.value);
+  };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedFilters({
-        search: searchQuery,
-        role: filterRole,
-        isActive: filterStatus,
-      })
-    }, 500) // 500ms debounce delay
-
-    return () => clearTimeout(timer)
-  }, [searchQuery, filterRole, filterStatus])
-
-  // Fetch data when debounced filters or current page changes
-  useEffect(() => {
-    const { search, role, isActive } = debouncedFilters
-    const filters = {
-      search,
-      role,
-      isActive,
-      page: currentPageState,
-      limit,
-    }
-    // Remove undefined or empty filter values
-    const cleanedFilters = Object.fromEntries(
-      Object.entries(filters).filter(([_, value]) => value !== '')
-    )
-    const queryString = new URLSearchParams(cleanedFilters).toString()
-    dispatch(getAllUserData(queryString))
-  }, [debouncedFilters, currentPageState, dispatch, limit])
-
-  const handleResetFilters = () => {
-    setSearchQuery('')
-    setFilterRole('')
-    setFilterStatus('')
-    setCurrentPageState(1) // Reset to the first page
-  }
+    dispatch(
+      getAllUserData(
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&role=${filterRole}&isActive=${filterStatus}`
+      )
+    );
+  }, [limit, currentPageState, searchQuery, filterRole, filterStatus]);
 
   const handleLimit = (val) => {
-    setLimit(val)
-  }
+    setLimit(val);
+    setCurrentPageState(1);
+  };
 
   const handleEditUser = (item) => {
-    setChangeStatusModal(true)
-    setUserId(item._id)
+    setChangeStatusModal(true);
+    setUserId(item._id);
     setUserData({
       firstName: item?.firstName,
       lastName: item?.lastName,
@@ -88,27 +66,33 @@ const UserTable = () => {
       mobile: item?.mobile,
       role: item?.role,
       isActive: item.isActive,
-    })
-  }
+    });
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setFilterRole("");
+    setFilterStatus("");
+  };
 
   const handleChangeUserData = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setUserData((prevUserData) => ({
       ...prevUserData,
-      [name]: name === 'isActive' ? value === 'true' : value, // Update the specific field dynamically
-    }))
-  }
+      [name]: name === "isActive" ? value === "true" : value, // Update the specific field dynamically
+    }));
+  };
 
   const handleUpdateFunc = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     // console.log("user", userData);
-    dispatch(updateUserData(userData, accessToken, userId))
-    setChangeStatusModal(false)
-  }
+    dispatch(updateUserData(userData, accessToken, userId));
+    setChangeStatusModal(false);
+  };
 
   const handleCurrentPageState = (val) => {
-    setCurrentPageState((prev) => prev + val)
-  }
+    setCurrentPageState((prev) => prev + val);
+  };
 
   return (
     <div className="">
@@ -122,8 +106,7 @@ const UserTable = () => {
                   <IoMdSearch />
                 </span>
                 <input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchInput}
                   type="text"
                   placeholder="Search here . . ."
                   className="px-10 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
@@ -161,8 +144,8 @@ const UserTable = () => {
                 disabled={!searchQuery && !filterRole && !filterStatus} // Disable button if no filters are applied
                 className={`px-6 py-2 text-sm rounded-lg font-medium ${
                   searchQuery || filterRole || filterStatus
-                    ? 'bg-red-400 text-white hover:bg-red-500'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? "bg-red-400 text-white hover:bg-red-500"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
                 Reset
@@ -214,10 +197,10 @@ const UserTable = () => {
                   <td className="py-3 px-6 border-b border-gray-200">
                     <span
                       className={`text-white py-1 px-2 rounded-full text-xs 
-                      ${row.isActive === true ? 'bg-green-500' : 'bg-red-500'}
+                      ${row.isActive === true ? "bg-green-500" : "bg-red-500"}
                       `}
                     >
-                      {row.isActive ? 'Active' : 'Inactive'}
+                      {row.isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
 
@@ -235,44 +218,6 @@ const UserTable = () => {
           </table>
         </div>
 
-        {/* Pagination Section */}
-        {/* <div className="shadow-lg  mx-4  flex justify-center gap-2 items-center rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPageState === 1}
-            className={`px-3 py-1 rounded hover:bg-gray-600 ${
-              currentPageState === 1 && 'cursor-not-allowed opacity-50'
-            }`}
-          >
-            {'<'}
-          </button>
-          <span>
-            {currentPage * limit - limit + 1}-
-            {totalUser <= currentPage * limit ? totalUser : currentPage * limit}{' '}
-            of {totalUser}
-          </span>
-          <button
-            onClick={handleNextPage}
-            disabled={currentPageState === totalPages}
-            className={`px-3 py-1 rounded hover:bg-gray-600 ${
-              currentPageState === totalPages && 'cursor-not-allowed opacity-50'
-            }`}
-          >
-            {'>'}
-          </button>
-          <select
-            className=" border border-gray-500 rounded-md bg-[#073c4e] shadow-sm focus:outline-none cursor-pointer"
-            onChange={(e) => setLimit(Number(e.target.value))}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-            <option value={30}>30</option>
-            <option value={50}>50</option>
-          </select>
-        </div> */}
-
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -288,7 +233,7 @@ const UserTable = () => {
             id="authentication-modal"
             aria-hidden="true"
             className={`${
-              changeStatusModal ? 'flex' : 'hidden'
+              changeStatusModal ? "flex" : "hidden"
             } overflow-x-hidden overflow-y-auto fixed inset-0 z-50 justify-center items-center backdrop-blur-sm`}
           >
             <div className="relative w-full max-w-md px-0 h-full md:h-auto">
@@ -460,7 +405,7 @@ const UserTable = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UserTable
+export default UserTable;

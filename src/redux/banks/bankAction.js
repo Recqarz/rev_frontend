@@ -12,6 +12,7 @@ import {
 } from "./bankType";
 
 import {
+  toastError,
   toastLoading,
   toastUpdate,
 } from "../../utils/react-toastify/ReactToastiry";
@@ -31,8 +32,9 @@ export const getAllBankData = () => (dispatch) => {
       dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data?.banks });
     })
     .catch((err) => {
-      console.log("err");
+      console.log(err?.response?.data?.error);
       dispatch({ type: GET_BANK_DATA_ERROR });
+      toastError(err?.response?.data?.error);
     });
 };
 
@@ -66,14 +68,17 @@ export const bankDataUpdate = (data, accessToken, id) => async (dispatch) => {
   console.log("alldata", data, accessToken, id);
   dispatch({ type: UPDATE_BANK_DATA_REQUEST });
   try {
-    const res = await axios
-      .patch(`http://localhost:8080/api/v1/admin/bank/update/${id}`, data, {
+    const res = await axios.patch(
+      `http://localhost:8080/api/v1/admin/bank/update/${id}`,
+      data,
+      {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-      });
-     
+      }
+    );
+
     console.log("res", res?.data?.data?.bankdetails);
     dispatch({
       type: UPDATE_BANK_DATA_SUCCESS,

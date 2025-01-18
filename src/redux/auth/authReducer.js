@@ -10,10 +10,11 @@ const initialData = {
   isError: false,
   isSuccess: false,
   role: localStorage.getItem("role") || "",
-  firstName: localStorage.getItem("firstName"),
-  lastName: localStorage.getItem("lastName"),
-  accessToken: localStorage.getItem("accessToken"),
+  firstName: localStorage.getItem("firstName") || "",
+  lastName: localStorage.getItem("lastName") || "",
+  accessToken: localStorage.getItem("accessToken") || "",
   isLogin: localStorage.getItem("accessToken") ? true : false,
+  isActive: localStorage.getItem("isActive") || false,
 };
 
 const authReducer = (state = initialData, { type, payload }) => {
@@ -27,6 +28,7 @@ const authReducer = (state = initialData, { type, payload }) => {
       localStorage.setItem("firstName", payload?.firstName);
       localStorage.setItem("lastName", payload?.lastName);
       localStorage.setItem("role", payload?.role);
+      localStorage.setItem("isActive", payload?.isActive);
 
       return {
         ...state,
@@ -47,6 +49,7 @@ const authReducer = (state = initialData, { type, payload }) => {
       localStorage.removeItem("firstName", payload?.firstName);
       localStorage.removeItem("lastName", payload?.lastName);
       localStorage.removeItem("role", payload?.role);
+      localStorage.removeItem("isActive", payload?.isActive);
       return {
         ...state,
         accessToken: "",
@@ -54,9 +57,10 @@ const authReducer = (state = initialData, { type, payload }) => {
         lastName: "",
         role: "",
         isLogin: false,
+        isActive: false,
       };
     }
-  
+
     default:
       return state;
   }

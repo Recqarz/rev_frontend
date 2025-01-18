@@ -11,6 +11,7 @@ const UserTable = () => {
   const { isLoading, isError, data } = useSelector(
     (state) => state.allUserReducer
   )
+  console.log('user data==>', data)
   const { message, currentPage, totalPages, totalUser, users } = data
   const [changeStatusModal, setChangeStatusModal] = useState(false)
   const [userId, setUserId] = useState('')
@@ -26,7 +27,6 @@ const UserTable = () => {
   const accessToken = useSelector((store) => store.authReducer.accessToken)
   const [searchQuery, setSearchQuery] = useState('')
   const [limit, setLimit] = useState(10)
-  console.log('table limit--->', limit)
   const [filterRole, setFilterRole] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [currentPageState, setCurrentPageState] = useState(currentPage)
@@ -136,7 +136,7 @@ const UserTable = () => {
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
               >
-                <option value="">All Role</option>
+                <option value="">Filter by Role</option>
                 <option value="admin">Admin</option>
                 <option value="fieldExecutive">Field Executive</option>
                 <option value="coordinator">Coordinator</option>
@@ -155,6 +155,7 @@ const UserTable = () => {
                 <option value="false">Inactive</option>
               </select>
 
+              {/* Reset All Filter */}
               <button
                 onClick={handleResetFilters}
                 disabled={!searchQuery && !filterRole && !filterStatus} // Disable button if no filters are applied

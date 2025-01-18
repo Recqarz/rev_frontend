@@ -52,7 +52,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   const { role } = useSelector((store) => store.authReducer) // Fetch role from Redux
   const menuItems = roleBasedMenu[role] || []
-  console.log('role-->', role)
   const isActive = (path) => location.pathname === path
 
   const handleNavigation = (path) => {
@@ -61,6 +60,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   const handleLogout = () => {
     dispatch({ type: 'USER_LOGOUT_SUCCESS' })
+    navigate('/')
   }
 
   return (

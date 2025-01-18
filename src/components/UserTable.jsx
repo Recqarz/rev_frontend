@@ -119,7 +119,7 @@ const UserTable = () => {
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
               >
-                <option value="">All Role</option>
+                <option value="">Filter by Role</option>
                 <option value="admin">Admin</option>
                 <option value="fieldExecutive">Field Executive</option>
                 <option value="coordinator">Coordinator</option>
@@ -138,6 +138,7 @@ const UserTable = () => {
                 <option value="false">Inactive</option>
               </select>
 
+              {/* Reset All Filter */}
               <button
                 onClick={handleResetFilters}
                 disabled={!searchQuery && !filterRole && !filterStatus} // Disable button if no filters are applied

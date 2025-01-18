@@ -62,7 +62,7 @@ const AllRoutes = () => {
           }
         />
       ))}
-      <Route path="*" element={<Navigate to={`/${role}/dashboard`} />} />
+      {/* <Route path="*" element={<Navigate to={`/${role}/dashboard`} />} /> */}
     </Routes>
   )
 }

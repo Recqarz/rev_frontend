@@ -1,13 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 // import '../index.css'
 import { MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
 import { HiUserAdd } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { bankDataUpdate } from '../redux/banks/bankAction'
+import { bankDataUpdate, getAllBankData } from '../redux/banks/bankAction'
+import { IoMdSearch } from 'react-icons/io'
+import Pagination from './Pagination'
 
 const BankTable = ({ allBank }) => {
   const dispatch = useDispatch()
+  const { isLoading, isError, data } = useSelector(
+    (state) => state.allBankReducer
+  )
+  const { message, currentPage, totalPages, totalBank, banks } = data
+  const [searchQuery, setSearchQuery] = useState('')
+  const [limit, setLimit] = useState(10)
+  const [currentPageState, setCurrentPageState] = useState(currentPage)
+  const [debouncedFilters, setDebouncedFilters] = useState({
+    search: '',
+  })
   const [bankId, setBankId] = useState('')
   const [updateBankDataStatus, setupdateBankDataStatus] = useState(false)
   const [bankUpdateData, setBankUpdateData] = useState({
@@ -16,6 +28,31 @@ const BankTable = ({ allBank }) => {
     IFSC: '',
   })
   const accessToken = useSelector((store) => store.authReducer.accessToken)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedFilters({
+        search: searchQuery,
+      })
+    }, 500) // 500ms debounce delay
+
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
+  useEffect(() => {
+    const { search } = debouncedFilters
+    const filters = {
+      search,
+      page: currentPageState,
+      limit,
+    }
+    // Remove undefined or empty filter values
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value !== '')
+    )
+    const queryString = new URLSearchParams(cleanedFilters).toString()
+    dispatch(getAllBankData(queryString))
+  }, [debouncedFilters, currentPageState, dispatch, limit])
 
   const handleUpdateStatusFunc = (item) => {
     setBankId(item._id)
@@ -41,10 +78,54 @@ const BankTable = ({ allBank }) => {
     setupdateBankDataStatus(false)
   }
 
+  const handleResetFilters = () => {
+    setSearchQuery('')
+    // setCurrentPageState(1) // Reset to the first page
+    // setFilterRole('')
+    // setFilterStatus('')
+  }
+
+  const handleLimit = (val) => {
+    setLimit(val)
+  }
+
+  const handleCurrentPageState = (val) => {
+    setCurrentPageState((prev) => prev + val)
+  }
+
   return (
     <div className="flex justify-center">
-      <div className="flex flex-col gap-5 w-[90%]">
-        <div className="flex justify-end mx-4">
+      <div className="flex flex-col gap-5 w-[100%]">
+        <div className="flex justify-between gap-2 items-center mx-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search Bar */}
+            <div className="relative">
+              <span className="absolute inset-y-0 left-3 top-1 flex items-center text-gray-400 text-md">
+                <IoMdSearch />
+              </span>
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                type="text"
+                placeholder="Search here . . ."
+                className="px-10 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
+              />
+            </div>
+
+            {/* Reset All Filter */}
+            <button
+              onClick={handleResetFilters}
+              disabled={!searchQuery} // Disable button if no filters are applied
+              className={`px-6 py-2 text-sm rounded-lg font-medium ${
+                searchQuery
+                  ? 'bg-red-400 text-white hover:bg-red-500'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              Reset
+            </button>
+          </div>
+
           <Link to="/admin/dashboard/all/banks/add">
             <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
               ADD
@@ -66,7 +147,7 @@ const BankTable = ({ allBank }) => {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {(allBank ?? [])?.map((row, index) => (
+              {(banks ?? [])?.map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
@@ -119,6 +200,14 @@ const BankTable = ({ allBank }) => {
             </div>
           </div>
         </div>*/}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalData={totalBank}
+          limit={limit}
+          handleLimit={handleLimit}
+          handleCurrentPageState={handleCurrentPageState}
+        />
 
         {updateBankDataStatus && (
           <div

@@ -1,97 +1,88 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 // import '../index.css'
-import { MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
-import { HiUserAdd } from 'react-icons/hi'
-import { Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { bankDataUpdate, getAllBankData } from '../redux/banks/bankAction'
-import { IoMdSearch } from 'react-icons/io'
-import Pagination from './Pagination'
+import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import { HiUserAdd } from "react-icons/hi";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { bankDataUpdate, getAllBankData } from "../redux/banks/bankAction";
+import { IoMdSearch } from "react-icons/io";
+import Pagination from "./Pagination";
+import { debounce } from "../utils/halper";
 
-const BankTable = ({ allBank }) => {
-  const dispatch = useDispatch()
+const BankTable = () => {
+  const dispatch = useDispatch();
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
-  )
-  const { message, currentPage, totalPages, totalBank, banks } = data
-  const [searchQuery, setSearchQuery] = useState('')
-  const [limit, setLimit] = useState(10)
-  const [currentPageState, setCurrentPageState] = useState(currentPage)
+  );
+  const { message, currentPage, totalPages, totalBank, banks } = data;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [limit, setLimit] = useState(10);
+  const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [debouncedFilters, setDebouncedFilters] = useState({
-    search: '',
-  })
-  const [bankId, setBankId] = useState('')
-  const [updateBankDataStatus, setupdateBankDataStatus] = useState(false)
+    search: "",
+  });
+  const [bankId, setBankId] = useState("");
+  const [updateBankDataStatus, setupdateBankDataStatus] = useState(false);
   const [bankUpdateData, setBankUpdateData] = useState({
-    bankName: '',
-    branchName: '',
-    IFSC: '',
-  })
-  const accessToken = useSelector((store) => store.authReducer.accessToken)
+    bankName: "",
+    branchName: "",
+    IFSC: "",
+  });
+  const accessToken = useSelector((store) => store.authReducer.accessToken);
+
+  const handleSearch = (val) => {
+    setSearchQuery(val);
+  };
+
+  const debouncedHandleSearch = debounce(handleSearch, 500);
+
+  const handleSearchInput = (e) => {
+    debouncedHandleSearch(e.target.value);
+  };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedFilters({
-        search: searchQuery,
-      })
-    }, 500) // 500ms debounce delay
-
-    return () => clearTimeout(timer)
-  }, [searchQuery])
-
-  useEffect(() => {
-    const { search } = debouncedFilters
-    const filters = {
-      search,
-      page: currentPageState,
-      limit,
-    }
-    // Remove undefined or empty filter values
-    const cleanedFilters = Object.fromEntries(
-      Object.entries(filters).filter(([_, value]) => value !== '')
-    )
-    const queryString = new URLSearchParams(cleanedFilters).toString()
-    dispatch(getAllBankData(queryString))
-  }, [debouncedFilters, currentPageState, dispatch, limit])
+    dispatch(
+      getAllBankData(
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}`
+      )
+    );
+  }, [limit, currentPageState, searchQuery]);
 
   const handleUpdateStatusFunc = (item) => {
-    setBankId(item._id)
-    setupdateBankDataStatus(true)
+    setBankId(item._id);
+    setupdateBankDataStatus(true);
     setBankUpdateData({
       bankName: item.bankName,
       branchName: item.branchName,
       IFSC: item.IFSC,
-    })
-  }
+    });
+  };
 
   const handleChangeBankData = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setBankUpdateData((prevUserData) => ({
       ...prevUserData,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleUpdateBankFunc = (e) => {
-    e.preventDefault()
-    dispatch(bankDataUpdate(bankUpdateData, accessToken, bankId))
-    setupdateBankDataStatus(false)
-  }
+    e.preventDefault();
+    dispatch(bankDataUpdate(bankUpdateData, accessToken, bankId));
+    setupdateBankDataStatus(false);
+  };
 
   const handleResetFilters = () => {
-    setSearchQuery('')
-    // setCurrentPageState(1) // Reset to the first page
-    // setFilterRole('')
-    // setFilterStatus('')
-  }
+    setSearchQuery("");
+  };
 
   const handleLimit = (val) => {
-    setLimit(val)
-  }
+    setLimit(val);
+  };
 
   const handleCurrentPageState = (val) => {
-    setCurrentPageState((prev) => prev + val)
-  }
+    setCurrentPageState((prev) => prev + val);
+  };
 
   return (
     <div className="flex justify-center">
@@ -104,8 +95,7 @@ const BankTable = ({ allBank }) => {
                 <IoMdSearch />
               </span>
               <input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchInput}
                 type="text"
                 placeholder="Search here . . ."
                 className="px-10 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
@@ -118,8 +108,8 @@ const BankTable = ({ allBank }) => {
               disabled={!searchQuery} // Disable button if no filters are applied
               className={`px-6 py-2 text-sm rounded-lg font-medium ${
                 searchQuery
-                  ? 'bg-red-400 text-white hover:bg-red-500'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? "bg-red-400 text-white hover:bg-red-500"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
               Reset
@@ -214,7 +204,7 @@ const BankTable = ({ allBank }) => {
             id="authentication-modal"
             aria-hidden="true"
             className={`${
-              updateBankDataStatus ? 'flex' : 'hidden'
+              updateBankDataStatus ? "flex" : "hidden"
             } overflow-x-hidden overflow-y-auto fixed inset-0 z-50 justify-center items-center backdrop-blur-sm`}
           >
             <div className="relative w-full max-w-md px-0 h-full md:h-auto">
@@ -318,7 +308,7 @@ const BankTable = ({ allBank }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BankTable
+export default BankTable;

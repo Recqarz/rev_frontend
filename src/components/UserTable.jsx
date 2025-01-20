@@ -34,6 +34,8 @@ const UserTable = () => {
 
   const handleSearch = (val) => {
     setSearchQuery(val);
+    // setCurrentPageState(1)
+
   };
 
   const debouncedHandleSearch = debounce(handleSearch, 500);

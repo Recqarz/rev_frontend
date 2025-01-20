@@ -1,9 +1,13 @@
-import React from 'react'
-import { FaBars } from 'react-icons/fa'
-import { IoIosNotifications } from 'react-icons/io'
-import { RiArrowDropDownLine } from 'react-icons/ri'
+import React from "react";
+import { FaBars } from "react-icons/fa";
+import { IoIosNotifications } from "react-icons/io";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { useSelector } from "react-redux";
 
 const Navbar = ({ toggleSidebar }) => {
+  const firstName = useSelector((store) => store.authReducer.firstName);
+  const role = useSelector((store) => store.authReducer.role);
+
   return (
     <nav className="bg-gray-50 p-1 flex justify-between lg:justify-end items-center shadow-sm fixed top-0 left-0 right-0 z-30">
       {/* Toggle Button for Mobile/Tablet */}
@@ -35,10 +39,10 @@ const Navbar = ({ toggleSidebar }) => {
           <div className="absolute top-11 right-2 bg-white border border-gray-300 shadow-lg rounded-md w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
             <ul className="flex flex-col">
               <li
-                className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer"
-                onClick={() => console.log('Profile')}
+                className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer uppercase"
+                onClick={() => console.log("Profile")}
               >
-                Profile
+                {role} ({firstName})
               </li>
               <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer">
                 Accounts
@@ -48,7 +52,7 @@ const Navbar = ({ toggleSidebar }) => {
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

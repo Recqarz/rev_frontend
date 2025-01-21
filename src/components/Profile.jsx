@@ -5,8 +5,12 @@ import { getAllBankData } from "../redux/banks/bankAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addUserData } from "../redux/users/userAction";
+import {
+  getProfileByRole,
+  updateProfileByRole,
+} from "../redux/profile/profileAction";
 
-const AddUserForm = () => {
+const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -16,9 +20,11 @@ const AddUserForm = () => {
     (state) => state.allBankReducer
   );
   const { banks } = data;
-  console.log("banks data in user form", banks);
+
+  const { data: profileData } = useSelector((state) => state.profileReducer);
 
   useEffect(() => {
+    dispatch(getProfileByRole(accessToken));
     dispatch(getAllBankData());
   }, [dispatch]);
 
@@ -35,7 +41,8 @@ const AddUserForm = () => {
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter first name",
       validation: Yup.string().required("First Name is required"),
-      initialValue: "",
+      disabled: false,
+      initialValue: profileData?.firstName || "",
     },
     {
       key: 2,
@@ -49,7 +56,8 @@ const AddUserForm = () => {
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter last name",
       validation: Yup.string().required("Last Name is required"),
-      initialValue: "",
+      disabled: false,
+      initialValue: profileData?.lastName || "",
     },
     {
       key: 3,
@@ -65,7 +73,8 @@ const AddUserForm = () => {
       validation: Yup.string()
         .email("Invalid email format")
         .required("Email is required"),
-      initialValue: "",
+      disabled: false,
+      initialValue: profileData?.email || "",
     },
     {
       key: 5,
@@ -84,6 +93,7 @@ const AddUserForm = () => {
         { key: 2, value: "+91", label: "+91" },
       ],
       validation: Yup.string().required("Mobile Code is required"),
+      disabled: true,
       initialValue: "+91",
     },
     {
@@ -102,7 +112,9 @@ const AddUserForm = () => {
         .matches(/^\d{10}$/, "Phone number must be 10 digits") // Validate 10-digit number
         .required("Mobile No. is required")
         .nullable(),
-      initialValue: "",
+      disabled: false,
+
+      initialValue: profileData?.mobile || "",
     },
     {
       key: 8,
@@ -124,7 +136,8 @@ const AddUserForm = () => {
         { key: 6, value: "superVisor", label: "Supervisor" },
       ],
       validation: Yup.string().required("Role is required"),
-      initialValue: "",
+      disabled: true,
+      initialValue: profileData?.role || "",
     },
     {
       key: 9,
@@ -148,7 +161,8 @@ const AddUserForm = () => {
         })),
       ],
       validation: Yup.string().required("Bank Name is required"),
-      initialValue: "",
+      disabled: true,
+      initialValue: profileData?.workForBank || "",
     },
   ];
   const validationSchema = Yup.object(
@@ -167,14 +181,14 @@ const AddUserForm = () => {
 
   const handleSubmit = (values, { resetForm }) => {
     console.log("Form data===>", values);
-    dispatch(addUserData(values, accessToken, navigate));
+    dispatch(updateProfileByRole(values, accessToken));
     resetForm();
   };
 
   return (
     <div>
       <div className="flex justify-center">
-        <h3 className="text-xl font-semibold">Add User</h3>
+        <h3 className="text-xl font-semibold">Profile Update</h3>
       </div>
 
       <div className="m-5 bg-white border-2 rounded-lg shadow border-gray-300">
@@ -182,6 +196,7 @@ const AddUserForm = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
+          enableReinitialize
         >
           {({ isSubmitting, resetForm }) => (
             <Form>
@@ -197,6 +212,7 @@ const AddUserForm = () => {
                       </label>
                       {item?.as === "select" ? (
                         <Field
+                          disabled={item?.disabled}
                           as="select"
                           name={item?.name}
                           id={item?.id}
@@ -210,6 +226,7 @@ const AddUserForm = () => {
                         </Field>
                       ) : (
                         <Field
+                          disabled={item?.disabled}
                           type={item?.type}
                           name={item?.name}
                           id={item?.id}
@@ -227,19 +244,19 @@ const AddUserForm = () => {
                 ))}
               </div>
               <div className="flex gap-4 justify-center md:justify-end m-4">
-                <button
+                {/* <button
                   type="button" // Use type="button" to prevent triggering form submission
                   className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 cursor-pointer"
                   onClick={() => resetForm()}
                 >
                   Reset
-                </button>
+                </button> */}
                 <button
                   type="submit"
                   className="hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg bg-[#25b992] cursor-pointer"
                   disabled={isSubmitting}
                 >
-                  Submit
+                  Update
                 </button>
               </div>
             </Form>
@@ -250,4 +267,4 @@ const AddUserForm = () => {
   );
 };
 
-export default AddUserForm;
+export default Profile;

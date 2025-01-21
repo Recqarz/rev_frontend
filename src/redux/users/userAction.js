@@ -17,23 +17,6 @@ import {
 } from "../../utils/react-toastify/ReactToastiry";
 import { baseURL } from "../../utils/urls/baseURL";
 
-// export const getAllUserData = () => (dispatch) => {
-//   dispatch({ type: GET_USER_DATA_REQUEST })
-//   const token = localStorage.getItem('accessToken')
-//   return axios
-//     .get(`${baseURL}/api/v1/admin/user-list`, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//     .then((res) => {
-//       dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data?.users })
-//     })
-//     .catch((err) => {
-//       console.log('err')
-//       dispatch({ type: GET_USER_DATA_ERROR })
-//     })
-// }
 
 export const getAllUserData = (queryString) => async (dispatch) => {
 

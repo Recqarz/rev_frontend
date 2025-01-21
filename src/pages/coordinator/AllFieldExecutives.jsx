@@ -1,38 +1,30 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
-import { MdOutlineEdit } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getAllUserData, updateUserData } from "../redux/users/userAction";
-import Pagination from "./Pagination";
-import { debounce } from "../utils/halper";
+import { getAllCaseData } from "../../redux/case/caseAction";
+import { MdKeyboardArrowRight, MdOutlineEdit } from "react-icons/md";
+import { debounce } from "../../utils/halper";
+import Pagination from "../../components/Pagination";
+import { getAllFieldExecutiveData } from "../../redux/fieldExecutive/fieldExecutiveAction";
 
-const UserTable = () => {
+const AllFieldExecutives = () => {
   const dispatch = useDispatch();
   const { isLoading, isError, data } = useSelector(
-    (state) => state.allUserReducer
+    (state) => state.allFieldExecutiveReducer
   );
-  const { message, currentPage, totalPages, totalUser, users } = data;
-  const [changeStatusModal, setChangeStatusModal] = useState(false);
-  const [userId, setUserId] = useState("");
-  const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    userCode: "",
-    mobile: "",
-    role: "",
-    isActive: "",
-  });
-  const accessToken = useSelector((store) => store.authReducer.accessToken);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [limit, setLimit] = useState(10);
-  const [filterRole, setFilterRole] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const { message, currentPage, totalPages, totalUser, fieldExecutives } = data;
   const [currentPageState, setCurrentPageState] = useState(currentPage);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterZone, setFilterZone] = useState("");
+  const [limit, setLimit] = useState(10);
+
+  // const [openDetailModal, setOpenDetailsModal] = useState(false);
 
   const handleSearch = (val) => {
     setSearchQuery(val);
+    // setCurrentPageState(1)
   };
 
   const debouncedHandleSearch = debounce(handleSearch, 500);
@@ -40,59 +32,28 @@ const UserTable = () => {
   const handleSearchInput = (e) => {
     debouncedHandleSearch(e.target.value);
   };
-
   useEffect(() => {
     dispatch(
-      getAllUserData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&role=${filterRole}&isActive=${filterStatus}`
+      getAllFieldExecutiveData(
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filterStatus}`
       )
     );
-  }, [limit, currentPageState, searchQuery, filterRole, filterStatus]);
+  }, [limit, currentPageState, searchQuery, filterStatus]);
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setFilterStatus("");
+    console.log("reset");
+  };
 
   const handleLimit = (val) => {
     setLimit(val);
     setCurrentPageState(1);
   };
 
-  const handleEditUser = (item) => {
-    setChangeStatusModal(true);
-    setUserId(item._id);
-    setUserData({
-      firstName: item?.firstName,
-      lastName: item?.lastName,
-      email: item?.email,
-      userCode: item?.userCode,
-      mobile: item?.mobile,
-      role: item?.role,
-      isActive: item.isActive,
-    });
-  };
-
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setFilterRole("");
-    setFilterStatus("");
-  };
-
-  const handleChangeUserData = (e) => {
-    const { name, value } = e.target;
-    setUserData((prevUserData) => ({
-      ...prevUserData,
-      [name]: name === "isActive" ? value === "true" : value, // Update the specific field dynamically
-    }));
-  };
-
-  const handleUpdateFunc = (e) => {
-    e.preventDefault();
-    // console.log("user", userData);
-    dispatch(updateUserData(userData, accessToken, userId));
-    setChangeStatusModal(false);
-  };
-
   const handleCurrentPageState = (val) => {
     setCurrentPageState((prev) => prev + val);
   };
-
   return (
     <div className="">
       <div className="flex flex-col gap-5">
@@ -113,18 +74,17 @@ const UserTable = () => {
               </div>
 
               {/* Filter Role Dropdown */}
-              <select
+              {/* <select
                 className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
-                value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
+                value={filterZone}
+                onChange={(e) => setFilterZone(e.target.value)}
               >
-                <option value="">Filter by Role</option>
-                <option value="admin">Admin</option>
-                <option value="fieldExecutive">Field Executive</option>
-                <option value="coordinator">Coordinator</option>
-                <option value="auditor">Auditor</option>
-                <option value="supervisor">Supervisor</option>
-              </select>
+                <option value="">Filter by Zone</option>
+                <option value="east">East</option>
+                <option value="west">West</option>
+                <option value="north">North</option>
+                <option value="south">South</option>{" "}
+              </select> */}
 
               {/* Filter Status Dropdown */}
               <select
@@ -133,25 +93,26 @@ const UserTable = () => {
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
                 <option value="">Filter by Status</option>
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
+                <option value={true}>Active</option>
+                <option value={false}>Inactive</option>
               </select>
 
               {/* Reset All Filter */}
               <button
                 onClick={handleResetFilters}
-                disabled={!searchQuery && !filterRole && !filterStatus} // Disable button if no filters are applied
+                disabled={!searchQuery && !filterStatus} // Disable button if no filters are applied
                 className={`px-6 py-2 text-sm rounded-lg font-medium ${
-                  searchQuery || filterRole || filterStatus
+                  searchQuery || filterStatus
                     ? "bg-red-400 text-white hover:bg-red-500"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
+                // className="px-6 py-2 text-sm rounded-lg font-medium bg-gray-300 text-gray-500 cursor-not-allowed"
               >
                 Reset
               </button>
             </div>
           </div>
-          <Link to="/admin/dashboard/all/users/add">
+          <Link to="/coordinator/all/cases/add">
             <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
               ADD
             </div>
@@ -163,17 +124,18 @@ const UserTable = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr className="bg-[#073c4e] text-white text-sm">
-                <th className="w-1/7 py-2 px-6 text-left text-xs">ID</th>
+                <th className="w-1/7 py-2 px-6 text-left text-xs">User Code</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">Name</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">Email</th>
                 <th className="w-1/4 py-2 px-6 text-left text-xs">Mobile</th>
-                <th className="w-1/4 py-2 px-6 text-left text-xs">Role</th>
+
                 <th className="w-1/4 py-2 px-6 text-left text-xs">Status</th>
+
                 <th className="w-1/4 py-2 px-6 text-left text-xs">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {users?.map((row, index) => (
+              {fieldExecutives?.map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
@@ -190,25 +152,30 @@ const UserTable = () => {
                   <td className="py-3 px-6 border-b border-gray-200">
                     {row?.mobile}
                   </td>
-                  <td className="py-3 px-6 border-b border-gray-200">
-                    {row?.role}
-                  </td>
+
                   <td className="py-3 px-6 border-b border-gray-200">
                     <span
                       className={`text-white py-1 px-2 rounded-full text-xs 
                       ${row.isActive === true ? "bg-green-500" : "bg-red-500"}
                       `}
                     >
-                      {row.isActive ? "Active" : "Inactive"}
+                      {row.isActive === true ? "Active" : "Inactive"}
                     </span>
                   </td>
-
-                  <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
+                  <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50">
                     <div
-                      className="rounded-full hover:bg-gray-300 py-1 px-1"
-                      onClick={() => handleEditUser(row)}
+                      className=" flex gap-2 items-center"
+                      // onClick={() => handleEditUser(row)}
                     >
-                      <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                      <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
+                        <MdOutlineEdit />
+                      </div>
+                      <div
+                        className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
+                        // onClick={(prev) => setOpenDetailsModal(!prev)}
+                      >
+                        <MdKeyboardArrowRight />
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -227,7 +194,7 @@ const UserTable = () => {
         />
 
         {/* Edit Modal Section */}
-        {changeStatusModal && (
+        {/* {changeStatusModal && (
           <div
             id="authentication-modal"
             aria-hidden="true"
@@ -401,10 +368,10 @@ const UserTable = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
 };
 
-export default UserTable;
+export default AllFieldExecutives;

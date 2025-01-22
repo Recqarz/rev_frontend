@@ -3,6 +3,7 @@ import { FaBars } from "react-icons/fa";
 import { IoIosNotifications } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ toggleSidebar }) => {
   const firstName = useSelector((store) => store.authReducer.firstName);
@@ -44,9 +45,11 @@ const Navbar = ({ toggleSidebar }) => {
               >
                 {role} ({firstName})
               </li>
-              <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer">
-                Accounts
-              </li>
+              <Link to={`/${role}/profile`}>
+                <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer">
+                  Profile
+                </li>
+              </Link>
             </ul>
           </div>
         </div>

@@ -10,19 +10,19 @@ const Navbar = ({ toggleSidebar }) => {
   const role = useSelector((store) => store.authReducer.role);
 
   return (
-    <nav className="bg-gray-50 p-1 flex justify-between lg:justify-end items-center shadow-sm fixed top-0 left-0 right-0 z-30">
+    <nav className="bg-green-50 p-2 flex justify-between lg:justify-end items-center shadow-sm fixed top-0 left-0 right-0 z-30">
       {/* Toggle Button for Mobile/Tablet */}
       <button
-        className="block lg:hidden text-xl  text-[#073c4e]"
+        className="block lg:hidden text-xl  text-[#073c4e] hover:bg-gray-300 rounded-full p-2"
         onClick={toggleSidebar}
-        aria-label="Toggle Sidebar"
+        // aria-label="Toggle Sidebar"
       >
         <FaBars />
       </button>
       <div className="flex justify-center items-center gap-2 relative">
-        <div>
+        {/* <div>
           <IoIosNotifications className="text-[#073c4e] h-6 w-6" />
-        </div>
+        </div> */}
         <div>
           <img
             className="rounded-full h-12 w-12 border-2 p-0.5 border-[#73d1ba]"
@@ -40,13 +40,13 @@ const Navbar = ({ toggleSidebar }) => {
           <div className="absolute top-11 right-2 bg-white border border-gray-300 shadow-lg rounded-md w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
             <ul className="flex flex-col">
               <li
-                className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer uppercase"
-                onClick={() => console.log("Profile")}
+                className="px-4 py-2 uppercase text-sm"
+                // onClick={() => console.log("Profile")}
               >
                 {role} ({firstName})
               </li>
               <Link to={`/${role}/profile`}>
-                <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer">
+                <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer text-sm">
                   Profile
                 </li>
               </Link>

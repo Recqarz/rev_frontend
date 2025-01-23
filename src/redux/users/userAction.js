@@ -17,9 +17,7 @@ import {
 } from "../../utils/react-toastify/ReactToastiry";
 import { baseURL } from "../../utils/urls/baseURL";
 
-
 export const getAllUserData = (queryString) => async (dispatch) => {
-
   dispatch({ type: GET_USER_DATA_REQUEST });
   const token = localStorage.getItem("accessToken");
 
@@ -32,7 +30,7 @@ export const getAllUserData = (queryString) => async (dispatch) => {
     })
 
     .then((res) => {
-      console.log("res--->", res);
+      // console.log("res--->", res);
       dispatch({ type: GET_USER_DATA_SUCCESS, payload: res?.data });
     })
     .catch((err) => {
@@ -77,7 +75,7 @@ export const updateUserData = (data, accessToken, id) => async (dispatch) => {
       },
     })
     .then((res) => {
-      console.log(res);
+      console.log("res user==>", res);
       dispatch({
         type: UPDATE_USER_DATA_SUCCESS,
         payload: res?.data?.data?.updatedUserDetails,

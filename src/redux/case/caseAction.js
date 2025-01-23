@@ -5,6 +5,9 @@ import {
   GET_CASE_DATA_ERROR,
   GET_CASE_DATA_REQUEST,
   GET_CASE_DATA_SUCCESS,
+  UPDATE_CASE_DATA_ERROR,
+  UPDATE_CASE_DATA_REQUEST,
+  UPDATE_CASE_DATA_SUCCESS,
 } from "./caseType";
 import {
   toastError,
@@ -85,4 +88,30 @@ export const addCaseData =
       toastUpdate(toastId, 400, error?.response?.data?.error);
       dispatch({ type: ADD_CASE_DATA_ERROR });
     }
+  };
+
+export const updateCaseDataId =
+  (data, accessToken, _id) => async (dispatch) => {
+    const toastId = toastLoading("Loading...");
+    dispatch({ type: UPDATE_CASE_DATA_REQUEST });
+    return axios
+      .patch(`${baseURL}/api/v1/coordinator/update-case/${_id}`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        console.log("res=>updatecase data===>", res);
+        dispatch({
+          type: UPDATE_CASE_DATA_SUCCESS,
+          payload: res?.data?.data?.updatedUserDetails,
+        });
+        toastUpdate(toastId, 200, res?.data?.message);
+      })
+      .catch((err) => {
+        console.log("err", err);
+        toastUpdate(toastId, 400, err?.response?.data?.error);
+        dispatch({ type: UPDATE_CASE_DATA_ERROR });
+      });
   };

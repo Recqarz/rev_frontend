@@ -15,9 +15,6 @@ const initialData = {
   isError: false,
   data: {
     message: "",
-    currentPage: 1,
-    totalPages: 1,
-    totalUser: 0,
     users: {},
   },
 };

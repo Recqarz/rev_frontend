@@ -20,7 +20,7 @@ export const getAllFieldExecutiveData = (queryString) => async (dispatch) => {
     })
 
     .then((res) => {
-      console.log("res--->", res);
+      // console.log("res--->", res);
       dispatch({ type: GET_FIELDEXECUTIVE_DATA_SUCCESS, payload: res?.data });
     })
     .catch((err) => {

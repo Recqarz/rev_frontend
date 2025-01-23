@@ -1,11 +1,13 @@
 import React from "react";
 import { FaTimes, FaUsers } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
-import { IoBriefcase, IoLogOut } from "react-icons/io5";
+import { IoBriefcase, IoBriefcaseSharp, IoLogOut } from "react-icons/io5";
 import { BsBank2 } from "react-icons/bs";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { MdDashboard } from "react-icons/md";
+import { FaClipboardUser } from "react-icons/fa6";
+import REV_logo_1 from "../assets/image/REV_logo_1.png";
 
 const roleBasedMenu = {
   admin: [
@@ -19,6 +21,11 @@ const roleBasedMenu = {
       name: "Dashboard",
       icon: <MdDashboard />,
       path: "/coordinator/dashboard",
+    },
+    {
+      name: "Cases",
+      icon: <IoBriefcaseSharp />,
+      path: "/coordinator/all/cases",
     },
     {
       name: "Field Executives",
@@ -65,24 +72,42 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <aside
-      className={`bg-white shadow-lg rounded-sm h-screen lg:sticky lg:h-[100vh] w-48 lg:w-56 p-4 top-0 left-0 fixed z-50 transform transition-transform ${
+      className={` bg-white shadow-lg rounded-sm h-screen lg:sticky lg:h-[100vh] w-48 lg:w-56 px-4 pt-1 pb-2 top-0 left-0 fixed z-50 transform transition-transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       } lg:translate-x-0`}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col gap-2 h-full">
         {/* Header */}
         <div className="flex items-center">
-          <button onClick={toggleSidebar} className="text-gray-500 lg:hidden">
+          <div
+            onClick={toggleSidebar}
+            className="text-gray-500 text-xl lg:hidden hover:bg-gray-300 rounded-full p-2 hover:cursor-pointer"
+          >
             <FaTimes />
-          </button>
-          <div className=" flex justify-center items-center w-full">
-            <h1 className="text-lg font-medium text-[#51677E]">REV</h1>
+          </div>
+          <div className=" flex justify-center items-center w-full ">
+            {/* <h1 className="text-lg font-medium text-[#51677E]">REV</h1> */}
+            <Link to="/coordinator/dashboard">
+              <img
+                className=" h-[52px]"
+                src={REV_logo_1}
+                alt="company_logo"
+              ></img>
+            </Link>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <div className="uppercase font-semibold flex items-center px-4 py-2 text-[14px] text-gray-500 border-b border-[#51677E]">
+            <span className="mr-3">
+              <FaClipboardUser />
+            </span>
+            {role}
           </div>
         </div>
 
         {/* Menu Items */}
         <div className="flex flex-col justify-between h-full">
-          <ul className="mt-6 space-y-1">
+          <ul className="space-y-1">
             {menuItems.map((item) => (
               <li
                 key={item.path}
@@ -100,7 +125,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          // className="mt-auto flex items-center px-4 py-2 text-gray-500 hover:[#51677E] hover:text-white rounded-lg"
           className="cursor-pointer flex items-center px-4 py-2 text-[14px] text-gray-500 hover:bg-[#51677E] hover:!text-white rounded-lg transition-colors"
         >
           <IoLogOut className="mr-3 text-[20px]" />

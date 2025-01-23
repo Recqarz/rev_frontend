@@ -4,7 +4,12 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAllBankData } from "../../redux/banks/bankAction";
-import { addCaseData, getAllCaseById } from "../../redux/case/caseAction";
+import {
+  addCaseData,
+  getAllCaseById,
+  updateCaseDataId,
+} from "../../redux/case/caseAction";
+import { formattedDate } from "../../utils/formattedDate";
 
 const AddCases = () => {
   const navigate = useNavigate();
@@ -12,7 +17,6 @@ const AddCases = () => {
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
   const { data: caseData } = useSelector((state) => state.caseReducer);
-
   // const { message, currentPage, totalPages, totalCase, cases } = data;
   //get banks
   const { accessToken } = useSelector((store) => store?.authReducer);
@@ -139,7 +143,7 @@ const AddCases = () => {
     },
     {
       key: 7,
-      label: "Visit Date",
+      label: "Visit Date (MM/DD/YYYY)",
       htmlFor: "visitDate",
       name: "visitDate",
       type: "date",
@@ -149,7 +153,7 @@ const AddCases = () => {
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter Visit Date",
       validation: Yup.string().required("Visit Date. is required").nullable(),
-      initialValue: "",
+      initialValue: formattedDate(caseData?.visitDate) || "",
     },
     {
       key: 8,
@@ -303,12 +307,15 @@ const AddCases = () => {
       },
       zone: values.zone,
       contactNo: values.contactNo,
-      visitDate: new Date(values.visitDate).getDate(), // Converts the date to timestamp
+      visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to timestamp
     };
 
-    // console.log("formattedValues===>", formattedValues);
-    dispatch(addCaseData(formattedValues, accessToken, navigate));
-    resetForm();
+    if (caseId) {
+      dispatch(updateCaseDataId(formattedValues, accessToken, caseData?._id));
+    } else {
+      dispatch(addCaseData(formattedValues, accessToken, navigate));
+      resetForm();
+    }
   };
 
   return (
@@ -326,7 +333,7 @@ const AddCases = () => {
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {({ isSubmitting, resetForm }) => (
+          {({ isSubmitting, resetForm, dirty }) => (
             <Form>
               <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
                 {AddCaseSchema?.map((item) => (
@@ -379,8 +386,12 @@ const AddCases = () => {
                 </button>
                 <button
                   type="submit"
-                  className="hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg bg-[#25b992] cursor-pointer"
-                  disabled={isSubmitting}
+                  className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
+                    dirty
+                      ? "bg-[#25b992] cursor-pointer"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                  disabled={!dirty || isSubmitting}
                 >
                   {caseId ? "Update Case" : "Add Case"}
                 </button>

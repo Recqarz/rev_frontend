@@ -48,6 +48,7 @@ const caseReducer = (state = initialData, { type, payload }) => {
       };
     }
     case UPDATE_CASE_DATA_SUCCESS: {
+      console.log("payload==>", payload);
       const updatedData = state?.data?.cases.map((item) =>
         item._id === payload._id ? { ...item, ...payload } : item
       );

@@ -11,12 +11,10 @@ import AllUser from "../pages/admin/users/AllUser";
 import AddUser from "../pages/admin/users/AddUser";
 import AllBank from "../pages/admin/banks/AllBank";
 import AddBank from "../pages/admin/banks/AddBank";
-import AllCases from "../pages/admin/cases/AllCases";
-import AllFieldExecutive from "../pages/coordinator/filedexecutive/AllFieldExecutive";
-import AllCoordinatorCases from "../pages/coordinator/cases/AllCoordinatorCases";
 import AddCases from "../pages/coordinator/AddCases";
 import AllFieldExecutives from "../pages/coordinator/AllFieldExecutives";
 import Profile from "./Profile";
+import AllCases from "../pages/coordinator/AllCases";
 
 const roleBasedRoutes = {
   admin: [
@@ -35,7 +33,7 @@ const roleBasedRoutes = {
       path: "/coordinator/all/fieldexecutives",
       element: <AllFieldExecutives />,
     },
-    { path: "/coordinator/cases", element: <AllCoordinatorCases /> },
+    { path: "/coordinator/all/cases", element: <AllCases /> },
     { path: "/coordinator/profile", element: <Profile /> },
   ],
   fieldExecutive: [

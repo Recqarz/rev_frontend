@@ -21,7 +21,6 @@ const initialData = {
     users: [],
   },
 };
-
 export const allUserReducer = (state = initialData, { type, payload }) => {
   switch (type) {
     case GET_USER_DATA_REQUEST:
@@ -47,7 +46,11 @@ export const allUserReducer = (state = initialData, { type, payload }) => {
       };
     }
     case UPDATE_USER_DATA_SUCCESS: {
-      console.log("user payload===>", payload);
+      console.log("payload===>", payload);
+      console.log("state===>", state);
+      console.log("state?.data===>", state?.data);
+      console.log("state?.data?.users===>", state?.data?.users);
+
       const updatedData = state?.data?.users.map((user) =>
         user._id === payload._id ? { ...user, ...payload } : user
       );

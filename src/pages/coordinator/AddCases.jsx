@@ -1,23 +1,29 @@
 import React, { useEffect } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, resetForm } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAllBankData } from "../../redux/banks/bankAction";
 import {
   addCaseData,
-  getAllCaseById,
+  getAllCaseData,
+  getCaseById,
   updateCaseDataId,
 } from "../../redux/case/caseAction";
 import { formattedDate } from "../../utils/formattedDate";
+import Swal from "sweetalert2";
 
 const AddCases = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
+
   const { data: caseData } = useSelector((state) => state.caseReducer);
-  // const { message, currentPage, totalPages, totalCase, cases } = data;
+  console.log(
+    "caseData clientAddress?.state==>",
+    caseData?.clientAddress?.state
+  );
   //get banks
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { isLoading, isError, data } = useSelector(
@@ -26,7 +32,7 @@ const AddCases = () => {
   const { banks } = data;
   useEffect(() => {
     if (caseId) {
-      dispatch(getAllCaseById(caseId));
+      dispatch(getCaseById(caseId));
     }
     dispatch(getAllBankData());
   }, [dispatch, caseId]);
@@ -289,7 +295,36 @@ const AddCases = () => {
     return values;
   }, {});
 
-  const handleSubmit = (values, { resetForm }) => {
+  // const handleSubmit = (values, { resetForm }) => {
+  //   const formattedValues = {
+  //     bankId: values.workForBank,
+  //     bankRefNo: values.bankRefNo,
+  //     clientName: values.clientName,
+  //     BOV_ReportNo: values.BOV_ReportNo,
+  //     clientAddress: {
+  //       addressLine1: values.addressLine1,
+  //       addressLine2: values.addressLine2,
+  //       plotNumber: values.plotNumber,
+  //       streetName: values.streetName,
+  //       landMark: values.landMark,
+  //       pincode: values.pincode,
+  //       city: values.city,
+  //       state: values.state,
+  //     },
+  //     zone: values.zone,
+  //     contactNo: values.contactNo,
+  //     visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to timestamp
+  //   };
+
+  //   if (caseId) {
+  //     dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
+  //   } else {
+  //     dispatch(addCaseData(formattedValues, accessToken, navigate));
+  //     resetForm();
+  //   }
+  // };
+
+  const handleSubmit = async (values, { resetForm }) => {
     const formattedValues = {
       bankId: values.workForBank,
       bankRefNo: values.bankRefNo,
@@ -307,14 +342,36 @@ const AddCases = () => {
       },
       zone: values.zone,
       contactNo: values.contactNo,
-      visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to timestamp
+      visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to ISO format
     };
 
-    if (caseId) {
-      dispatch(updateCaseDataId(formattedValues, accessToken, caseData?._id));
-    } else {
-      dispatch(addCaseData(formattedValues, accessToken, navigate));
-      resetForm();
+    try {
+      if (caseId) {
+        // Show confirmation dialog for updating case
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to update this case?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, update it!",
+          customClass: {
+            popup: "small-swal", // Apply custom class to the popup
+          },
+        });
+
+        if (result.isConfirmed) {
+          dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
+        }
+      } else {
+        // Add a new case
+        dispatch(addCaseData(formattedValues, accessToken, navigate));
+        resetForm(); // Reset the form after successful submission
+      }
+    } catch (error) {
+      // Handle errors and show appropriate feedback
+      console.error("Error:", error);
     }
   };
 
@@ -379,8 +436,13 @@ const AddCases = () => {
               <div className="flex gap-4 justify-center md:justify-end m-4">
                 <button
                   type="button" // Use type="button" to prevent triggering form submission
-                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 cursor-pointer"
+                  className={`hover:bg-red-500 text-white px-4 py-2 rounded-lg  ${
+                    dirty
+                      ? "bg-red-400 cursor-pointer"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
                   onClick={() => resetForm()}
+                  disabled={!dirty || isSubmitting}
                 >
                   Reset
                 </button>
@@ -388,7 +450,7 @@ const AddCases = () => {
                   type="submit"
                   className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
                     dirty
-                      ? "bg-[#25b992] cursor-pointer"
+                      ? "bg-[#1f6c57] cursor-pointer"
                       : "bg-gray-400 cursor-not-allowed"
                   }`}
                   disabled={!dirty || isSubmitting}

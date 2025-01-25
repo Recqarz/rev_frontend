@@ -10,19 +10,17 @@ import Pagination from "../../components/Pagination";
 const AllCases = () => {
   const dispatch = useDispatch();
   const { role } = useSelector((store) => store?.authReducer);
-  console.log("role==>", role);
+  const { accessToken } = useSelector((store) => store?.authReducer);
   const { isLoading, isError, data } = useSelector(
     (state) => state.caseReducer
   );
   const { message, currentPage, totalPages, totalCase, cases } = data;
-  // console.log("cases===>", cases);
   const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterZone, setFilterZone] = useState("");
   const [limit, setLimit] = useState(10);
   const [expandedRow, setExpandedRow] = useState(null);
-  console.log("expandedRow==>", expandedRow); // Track which row is expanded
 
   const handleSearch = (val) => {
     setSearchQuery(val);
@@ -36,7 +34,8 @@ const AllCases = () => {
   useEffect(() => {
     dispatch(
       getAllCaseData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filterStatus}&zone=${filterZone}`
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filterStatus}&zone=${filterZone}`,
+        accessToken
       )
     );
   }, [limit, currentPageState, searchQuery, filterStatus, filterZone]);
@@ -202,7 +201,7 @@ const AllCases = () => {
                     </td>
                     <td
                       className={`py-3 px-6 border-b border-gray-200 hover:bg-blue-50 ${
-                        expandedRow ? "bg-blue-50" : ""
+                        expandedRow === index ? "bg-blue-50" : ""
                       }`}
                     >
                       <div className="flex gap-2 items-center">
@@ -219,7 +218,11 @@ const AllCases = () => {
                           className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
                           onClick={() => toggleDetails(index)} // Toggle the details panel
                         >
-                          <MdKeyboardArrowRight />
+                          <MdKeyboardArrowRight
+                            className={`transform transition-transform duration-300 ease-in-out ${
+                              expandedRow === index ? "rotate-90" : ""
+                            }`}
+                          />
                         </div>
                       </div>
                     </td>

@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addUserData } from "../redux/users/userAction";
 import {
-  getProfileByRole,
-  updateProfileByRole,
+  getProfileByToken,
+  updateProfileByToken,
 } from "../redux/profile/profileAction";
 import { FaCamera } from "react-icons/fa";
 
@@ -18,15 +18,17 @@ const Profile = () => {
 
   //get banks
   const { accessToken } = useSelector((store) => store?.authReducer);
-  const { isLoading, isError, data } = useSelector(
-    (state) => state.allBankReducer
-  );
-  const { banks } = data;
+  const {
+    isLoading,
+    isError,
+    data: bankData,
+  } = useSelector((state) => state.allBankReducer);
+  const { banks } = bankData;
 
   const { data: profileData } = useSelector((state) => state.profileReducer);
 
   useEffect(() => {
-    dispatch(getProfileByRole(accessToken));
+    dispatch(getProfileByToken(accessToken));
     dispatch(getAllBankData());
   }, [dispatch]);
 
@@ -182,144 +184,146 @@ const Profile = () => {
   }, {});
 
   const handleSubmit = (values, { resetForm }) => {
-    dispatch(updateProfileByRole(values, accessToken));
+    dispatch(updateProfileByToken(values, accessToken));
     resetForm();
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="">
-        <div className="dark:bg-slate-800 gap-6 flex items-center justify-center">
-          <div className="bg-gray-100 dark:bg-gray-700 relative shadow-xl overflow-hidden hover:shadow-2xl group rounded-xl p-2 transition-all duration-500 transform">
-            <div className="flex items-center gap-4 relative">
-              {/* Profile Picture */}
-              <div className="relative border-2 p-1 border-[#73d1ba] rounded-full">
-                <img
-                  src={
-                    profilePic ||
-                    "https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566_640.png"
-                  }
-                  alt="profile_pic"
-                  className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full transition-all duration-500 delay-500 transform"
-                />
-                {/* Camera Icon with File Input */}
-                <label
-                  htmlFor="profilePicInput"
-                  className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700 transition duration-300"
-                >
-                  <FaCamera className="text-sm" />
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="profilePicInput"
-                  capture="user" // Opens the camera for mobile devices
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = (event) => {
-                        // Update the profile picture preview
-                        console.log("Image URL: ", event.target.result);
-                        setProfilePic(event.target.result);
-                      };
-                      reader.readAsDataURL(file);
+    <div>
+      <div className="flex flex-col gap-4 ">
+        <div className="">
+          <div className="dark:bg-slate-800 gap-6 flex items-center justify-center">
+            <div className="bg-gray-100 dark:bg-gray-700 relative shadow-xl overflow-hidden hover:shadow-2xl group rounded-xl p-2 transition-all duration-500 transform">
+              <div className="flex items-center gap-4 relative">
+                {/* Profile Picture */}
+                <div className="relative border-2 p-1 border-[#73d1ba] rounded-full">
+                  <img
+                    src={
+                      profilePic ||
+                      "https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566_640.png"
                     }
-                  }}
-                />
-              </div>
+                    alt="profile_pic"
+                    className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full transition-all duration-500 delay-500 transform"
+                  />
+                  {/* Camera Icon with File Input */}
+                  <label
+                    htmlFor="profilePicInput"
+                    className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700 transition duration-300"
+                  >
+                    <FaCamera className="text-sm" />
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="profilePicInput"
+                    capture="user" // Opens the camera for mobile devices
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          // Update the profile picture preview
+                          console.log("Image URL: ", event.target.result);
+                          setProfilePic(event.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </div>
 
-              {/* Profile Info */}
-              <div className="w-fit transition-all transform duration-500">
-                <h1 className="text-gray-600 dark:text-gray-200 font-bold">
-                  {profileData?.firstName} {profileData?.lastName}
-                </h1>
-                <p className="text-gray-400 uppercase">{profileData?.role}</p>
-                <a className="text-xs text-gray-500 dark:text-gray-200 opacity-1000 transform transition-all delay-300 duration-500">
-                  {profileData?.email}
-                </a>
+                {/* Profile Info */}
+                <div className="w-fit transition-all transform duration-500">
+                  <h1 className="text-gray-600 dark:text-gray-200 font-bold">
+                    {profileData?.firstName} {profileData?.lastName}
+                  </h1>
+                  <p className="text-gray-400 uppercase">{profileData?.role}</p>
+                  <a className="text-xs text-gray-500 dark:text-gray-200 opacity-1000 transform transition-all delay-300 duration-500">
+                    {profileData?.email}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className=" bg-gray-100  rounded-lg shadow-xl">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {({ isSubmitting, resetForm, dirty }) => (
-            <Form>
-              <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                {AddUserFormSchema?.map((item) => (
-                  <div key={item?.key} className={item?.mainDivClassname}>
-                    <div>
-                      <label
-                        htmlFor={item?.htmlFor}
-                        className="text-sm font-medium text-gray-900 block mb-2"
-                      >
-                        {item?.label}
-                      </label>
-                      {item?.as === "select" ? (
-                        <Field
-                          disabled={item?.disabled}
-                          as="select"
-                          name={item?.name}
-                          id={item?.id}
-                          className={item?.inputFieldClassName}
+        <div className=" bg-gray-100  rounded-lg shadow-xl">
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+            enableReinitialize
+          >
+            {({ isSubmitting, resetForm, dirty }) => (
+              <Form>
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
+                  {AddUserFormSchema?.map((item) => (
+                    <div key={item?.key} className={item?.mainDivClassname}>
+                      <div>
+                        <label
+                          htmlFor={item?.htmlFor}
+                          className="text-sm font-medium text-gray-900 block mb-2"
                         >
-                          {item?.options?.map((option) => (
-                            <option key={option?.key} value={option?.value}>
-                              {option?.label}
-                            </option>
-                          ))}
-                        </Field>
-                      ) : (
-                        <Field
-                          disabled={item?.disabled}
-                          type={item?.type}
+                          {item?.label}
+                        </label>
+                        {item?.as === "select" ? (
+                          <Field
+                            disabled={item?.disabled}
+                            as="select"
+                            name={item?.name}
+                            id={item?.id}
+                            className={item?.inputFieldClassName}
+                          >
+                            {item?.options?.map((option) => (
+                              <option key={option?.key} value={option?.value}>
+                                {option?.label}
+                              </option>
+                            ))}
+                          </Field>
+                        ) : (
+                          <Field
+                            disabled={item?.disabled}
+                            type={item?.type}
+                            name={item?.name}
+                            id={item?.id}
+                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                            placeholder={item?.placeholder}
+                          />
+                        )}
+                        <ErrorMessage
                           name={item?.name}
-                          id={item?.id}
-                          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                          placeholder={item?.placeholder}
+                          component="p"
+                          className="text-red-500 text-sm"
                         />
-                      )}
-                      <ErrorMessage
-                        name={item?.name}
-                        component="p"
-                        className="text-red-500 text-sm"
-                      />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-4 justify-center md:justify-end m-4">
-                {/* <button
+                  ))}
+                </div>
+                <div className="flex gap-4 justify-center md:justify-end m-4">
+                  {/* <button
                   type="button" // Use type="button" to prevent triggering form submission
                   className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 cursor-pointer"
                   onClick={() => resetForm()}
                 >
                   Reset
                 </button> */}
-                <button
-                  type="submit"
-                  className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg ${
-                    dirty
-                      ? "bg-[#25b992] cursor-pointer"
-                      : "bg-gray-400 cursor-not-allowed"
-                  }`}
-                  disabled={!dirty || isSubmitting} // Disable if not dirty or submitting
-                >
-                  Update
-                </button>
-              </div>
-            </Form>
-          )}
-        </Formik>
+                  <button
+                    type="submit"
+                    className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg ${
+                      dirty
+                        ? "bg-[#25b992] cursor-pointer"
+                        : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                    disabled={!dirty || isSubmitting} // Disable if not dirty or submitting
+                  >
+                    Update
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
       </div>
     </div>
   );

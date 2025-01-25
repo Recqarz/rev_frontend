@@ -14,9 +14,8 @@ import {
   UPDATE_PROFILE_DATA_SUCCESS,
 } from "./profileType";
 
-export const getProfileByRole = (token) => async (dispatch) => {
+export const getProfileByToken = (token) => async (dispatch) => {
   dispatch({ type: GET_PROFILE_DATA_REQUEST });
-  // const token = localStorage.getItem("accessToken");
 
   return axios
     .get(`${baseURL}/api/v1/user/details`, {
@@ -35,7 +34,7 @@ export const getProfileByRole = (token) => async (dispatch) => {
     });
 };
 
-export const updateProfileByRole = (data, accessToken) => async (dispatch) => {
+export const updateProfileByToken = (data, accessToken) => async (dispatch) => {
   const toastId = toastLoading("Loading...");
   dispatch({ type: UPDATE_PROFILE_DATA_REQUEST });
   return axios

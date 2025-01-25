@@ -17,30 +17,27 @@ import {
 import { baseURL } from "../../utils/urls/baseURL";
 import axios from "axios";
 
-export const getAllCaseData = (queryString) => async (dispatch) => {
-  dispatch({ type: GET_CASE_DATA_REQUEST });
-  const token = localStorage.getItem("accessToken");
+export const getAllCaseData =
+  (queryString, accessToken) => async (dispatch) => {
+    dispatch({ type: GET_CASE_DATA_REQUEST });
+    return axios
+      .get(`${baseURL}/api/v1/coordinator/case-list?${queryString}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
 
-  // const queryString = new URLSearchParams(filters).toString(); // Build query string dynamically
-  return axios
-    .get(`${baseURL}/api/v1/coordinator/case-list?${queryString}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+      .then((res) => {
+        dispatch({ type: GET_CASE_DATA_SUCCESS, payload: res?.data });
+      })
+      .catch((err) => {
+        console.error("Error fetching case data:", err?.response?.data?.error);
+        dispatch({ type: GET_CASE_DATA_ERROR });
+        toastError(err?.response?.data?.error);
+      });
+  };
 
-    .then((res) => {
-      // console.log("res--->", res);
-      dispatch({ type: GET_CASE_DATA_SUCCESS, payload: res?.data });
-    })
-    .catch((err) => {
-      console.error("Error fetching case data:", err?.response?.data?.error);
-      dispatch({ type: GET_CASE_DATA_ERROR });
-      toastError(err?.response?.data?.error);
-    });
-};
-
-export const getAllCaseById = (queryString) => async (dispatch) => {
+export const getCaseById = (queryString) => async (dispatch) => {
   dispatch({ type: GET_CASE_DATA_REQUEST });
   const token = localStorage.getItem("accessToken");
 
@@ -77,8 +74,8 @@ export const addCaseData =
           },
         }
       );
-      console.log(response);
-      dispatch({ type: ADD_CASE_DATA_SUCCESS, payload: response?.data });
+      // console.log("ADD_CASE_DATA_REQUEST --response ", response);
+      dispatch({ type: ADD_CASE_DATA_SUCCESS, payload: response?.data?.data });
       toastUpdate(toastId, 200, " Case Added Successfully");
     } catch (error) {
       console.error(
@@ -93,25 +90,27 @@ export const addCaseData =
 export const updateCaseDataId =
   (data, accessToken, _id) => async (dispatch) => {
     const toastId = toastLoading("Loading...");
-    dispatch({ type: UPDATE_CASE_DATA_REQUEST });
-    return axios
-      .patch(`${baseURL}/api/v1/coordinator/update-case/${_id}`, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        console.log("res=>updatecase data===>", res);
-        dispatch({
-          type: UPDATE_CASE_DATA_SUCCESS,
-          payload: res?.data?.data?.updatedUserDetails,
-        });
-        toastUpdate(toastId, 200, res?.data?.message);
-      })
-      .catch((err) => {
-        console.log("err", err);
-        toastUpdate(toastId, 400, err?.response?.data?.error);
-        dispatch({ type: UPDATE_CASE_DATA_ERROR });
+    try {
+      dispatch({ type: UPDATE_CASE_DATA_REQUEST });
+      const response = await axios.patch(
+        `${baseURL}/api/v1/coordinator/update-case/${_id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      dispatch({
+        type: UPDATE_CASE_DATA_SUCCESS,
+        payload: response?.data?.updatedCase,
       });
+      toastUpdate(toastId, 200, response?.data?.message);
+      dispatch(getCaseById(_id));
+    } catch (error) {
+      console.log("error", error);
+      toastUpdate(toastId, 400, error?.response?.data?.error);
+      dispatch({ type: UPDATE_CASE_DATA_ERROR });
+    }
   };

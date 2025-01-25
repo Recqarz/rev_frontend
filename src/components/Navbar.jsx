@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { IoIosNotifications } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { getProfileByToken } from "../redux/profile/profileAction";
 
-const Navbar = ({ toggleSidebar }) => {
-  const firstName = useSelector((store) => store.authReducer.firstName);
-  const role = useSelector((store) => store.authReducer.role);
+const Navbar = ({ toggleSidebar, profileData }) => {
+  const dispatch = useDispatch();
+  // console.log("profileData==>", profileData);
+  // useEffect(() => {
+  //   dispatch(getProfileByToken(accessToken));
+  // }, [dispatch]);
 
   return (
     <nav className="bg-green-50 p-2 flex justify-between lg:justify-end items-center shadow-sm fixed top-0 left-0 right-0 z-30">
@@ -40,12 +44,12 @@ const Navbar = ({ toggleSidebar }) => {
           <div className="absolute top-11 right-2 bg-white border border-gray-300 shadow-lg rounded-md w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
             <ul className="flex flex-col">
               <li
-                className="px-4 py-2 uppercase text-sm"
+                className="px-4 py-2 uppercase text-sm border-b"
                 // onClick={() => console.log("Profile")}
               >
-                {role} ({firstName})
+                {profileData?.firstName} ({profileData?.role})
               </li>
-              <Link to={`/${role}/profile`}>
+              <Link to={`/${profileData?.role}/profile`}>
                 <li className="px-4 py-2 hover:bg-[#073c4e] hover:text-white cursor-pointer text-sm">
                   Profile
                 </li>

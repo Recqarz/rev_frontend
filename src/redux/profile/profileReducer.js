@@ -44,10 +44,6 @@ export const profileReducer = (state = initialData, { type, payload }) => {
       };
     }
     case UPDATE_PROFILE_DATA_SUCCESS: {
-      // const updatedData = state?.data?.users.map((user) =>
-      //   user._id === payload._id ? { ...user, ...payload } : user
-      // );
-
       return {
         ...state,
         isLoading: false,

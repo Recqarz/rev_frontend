@@ -1,4 +1,3 @@
-import { UPDATE_USER_DATA_SUCCESS } from "../users/userType";
 import {
   ADD_CASE_DATA_ERROR,
   ADD_CASE_DATA_REQUEST,
@@ -23,6 +22,8 @@ const initialData = {
   },
 };
 
+// data:{...state?.data, users:payload}
+
 const caseReducer = (state = initialData, { type, payload }) => {
   switch (type) {
     case GET_CASE_DATA_REQUEST:
@@ -41,23 +42,45 @@ const caseReducer = (state = initialData, { type, payload }) => {
       };
     }
     case ADD_CASE_DATA_SUCCESS: {
-      return {
-        ...state,
-        isLoading: false,
-        data: [...state.data, payload],
-      };
-    }
-    case UPDATE_CASE_DATA_SUCCESS: {
-      console.log("payload==>", payload);
-      const updatedData = state?.data?.cases.map((item) =>
-        item._id === payload._id ? { ...item, ...payload } : item
-      );
+      // return {
+      //   ...state,
+      //   isLoading: false,
+      //   data: [...state.data, payload],
+      // };
 
       return {
         ...state,
         isLoading: false,
-        data: { ...state.data, cases: updatedData },
+        data: {
+          ...state.data,
+          cases: [...(state.data.cases || []), payload], // Append new case to existing cases
+        },
       };
+    }
+
+    case UPDATE_CASE_DATA_SUCCESS: {
+      const updatedCases = state?.data?.cases?.length
+        ? state?.data?.cases?.map((caseItem) =>
+            caseItem._id === payload._id
+              ? { ...caseItem, ...payload }
+              : caseItem
+          )
+        : [payload]; // If no cases exist, initialize with the payload
+
+      return {
+        ...state,
+        isLoading: false,
+        data: {
+          ...state.data,
+          cases: updatedCases,
+        },
+      };
+
+      // return {
+      //   ...state,
+      //   isLoading: false,
+      //   // data: { ...state.data, cases: payload },
+      // };
     }
     case GET_CASE_DATA_ERROR:
     case ADD_CASE_DATA_ERROR:

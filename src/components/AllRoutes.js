@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Layout from "./Layout";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import CoordinatorDashboard from "../pages/coordinator/CoordinatorDashboard";
@@ -15,6 +15,7 @@ import AddCases from "../pages/coordinator/AddCases";
 import AllFieldExecutives from "../pages/coordinator/AllFieldExecutives";
 import Profile from "./Profile";
 import AllCases from "../pages/coordinator/AllCases";
+import { getProfileByToken } from "../redux/profile/profileAction";
 
 const roleBasedRoutes = {
   admin: [
@@ -46,9 +47,16 @@ const roleBasedRoutes = {
 };
 
 const AllRoutes = () => {
+  const dispatch = useDispatch();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // const role = useSelector((state) => state.auth.role) // Fetch role from Redux
   const { role } = useSelector((store) => store.authReducer); // Fetch role from Redux
+  const { accessToken } = useSelector((store) => store.authReducer); // Fetch role from Redux
+  const { data: profileData } = useSelector((state) => state.profileReducer);
+
+  useEffect(() => {
+    dispatch(getProfileByToken(accessToken));
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -63,7 +71,11 @@ const AllRoutes = () => {
           key={path}
           path={path}
           element={
-            <Layout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+            <Layout
+              isSidebarOpen={isSidebarOpen}
+              toggleSidebar={toggleSidebar}
+              profileData={profileData}
+            >
               {element}
             </Layout>
           }

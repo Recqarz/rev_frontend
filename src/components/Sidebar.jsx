@@ -64,7 +64,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
 
   const handleNavigation = (path) => {
     navigate(path);
-    toggleSidebar(false);
+    // toggleSidebar(false);
   };
 
   const handleLogout = () => {
@@ -74,11 +74,11 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
 
   return (
     <aside
-      role="navigation"
-      aria-label="Sidebar Navigation"
-      className={`bg-white shadow-lg rounded-sm h-screen lg:sticky lg:h-[100vh] w-48 lg:w-56 px-4 pt-1 pb-2 top-0 left-0 fixed  z-40 transform transition-transform ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0`}
+      className={`fixed inset-y-0 left-0 px-4 pt-1 pb-2 bg-white text-white shadow-lg rounded-sm transform transition-transform duration-300 ease-in-out ${
+        isOpen
+          ? "-translate-x-full md:-translate-x-full lg:-translate-x-full"
+          : "md:translate-x-0  lg:translate-x-0 "
+      } md:static lg:static !w-[70%] md:!w-[22%] lg:!w-[18%]`}
     >
       <div className="flex flex-col gap-2 h-full">
         {/* Header */}
@@ -87,7 +87,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
             onClick={toggleSidebar}
             className="text-gray-500 text-xl lg:hidden hover:bg-gray-300 rounded-full p-2 hover:cursor-pointer"
           >
-            <FaTimes /> 
+            <FaTimes />
           </div>
           <div className=" flex justify-center items-center w-full ">
             {/* <h1 className="text-lg font-medium text-[#51677E]">REV</h1> */}
@@ -108,6 +108,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
             {profileData?.role}
           </div>
         </div>
+
         {/* Menu Items */}
         <div className="flex flex-col justify-between h-full">
           <ul className="space-y-1">

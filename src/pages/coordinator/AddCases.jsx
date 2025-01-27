@@ -40,7 +40,7 @@ const AddCases = () => {
   const AddCaseSchema = [
     {
       key: 1,
-      label: "Work for bank",
+      label: "Bank Name",
       htmlFor: "workForBank",
       as: "select",
       name: "workForBank",
@@ -295,35 +295,6 @@ const AddCases = () => {
     return values;
   }, {});
 
-  // const handleSubmit = (values, { resetForm }) => {
-  //   const formattedValues = {
-  //     bankId: values.workForBank,
-  //     bankRefNo: values.bankRefNo,
-  //     clientName: values.clientName,
-  //     BOV_ReportNo: values.BOV_ReportNo,
-  //     clientAddress: {
-  //       addressLine1: values.addressLine1,
-  //       addressLine2: values.addressLine2,
-  //       plotNumber: values.plotNumber,
-  //       streetName: values.streetName,
-  //       landMark: values.landMark,
-  //       pincode: values.pincode,
-  //       city: values.city,
-  //       state: values.state,
-  //     },
-  //     zone: values.zone,
-  //     contactNo: values.contactNo,
-  //     visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to timestamp
-  //   };
-
-  //   if (caseId) {
-  //     dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
-  //   } else {
-  //     dispatch(addCaseData(formattedValues, accessToken, navigate));
-  //     resetForm();
-  //   }
-  // };
-
   const handleSubmit = async (values, { resetForm }) => {
     const formattedValues = {
       bankId: values.workForBank,
@@ -383,7 +354,7 @@ const AddCases = () => {
         </h3>
       </div>
 
-      <div className="m-5 bg-white border-2 rounded-lg shadow border-gray-300">
+      <div className=" bg-white border-2 rounded-lg shadow border-gray-300">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}

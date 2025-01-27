@@ -60,73 +60,73 @@ const AllCases = () => {
   };
 
   return (
-    <div className="">
-      <div className="flex flex-col gap-5">
-        <div className="flex justify-between gap-2 items-center">
-          <div className="flex items-center">
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Search Bar */}
-              <div className="relative">
-                <span className="absolute inset-y-0 left-3 top-1 flex items-center text-gray-400 text-md">
-                  <IoMdSearch />
-                </span>
-                <input
-                  onChange={handleSearchInput}
-                  type="text"
-                  placeholder="Search here . . ."
-                  className="px-10 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
-                />
-              </div>
-
-              {/* Filter Role Dropdown */}
-              <select
-                className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
-                value={filterZone}
-                onChange={(e) => setFilterZone(e.target.value)}
-              >
-                <option value="">Filter by Zone</option>
-                <option value="east">East</option>
-                <option value="west">West</option>
-                <option value="north">North</option>
-                <option value="south">South</option>{" "}
-              </select>
-
-              {/* Filter Status Dropdown */}
-              <select
-                className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="">Filter by Status</option>
-                <option value="process">Process</option>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-                <option value="rejected">Rejected</option>
-              </select>
-
-              {/* Reset All Filter */}
-              <button
-                onClick={handleResetFilters}
-                disabled={!searchQuery && !filterStatus && !filterZone} // Disable button if no filters are applied
-                className={`px-6 py-2 text-sm rounded-lg font-medium ${
-                  searchQuery || filterStatus || filterZone
-                    ? "bg-red-400 text-white hover:bg-red-500"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-                // className="px-6 py-2 text-sm rounded-lg font-medium bg-gray-300 text-gray-500 cursor-not-allowed"
-              >
-                Reset
-              </button>
+    <div className="w-full">
+      <div className=" flex flex-col gap-5">
+        {/* all Search & Filter Section */}
+        <div className="w-full flex gap-3 flex-col-reverse lg:flex-row lg:justify-between lg:gap-4">
+          <div className="flex lg:gap-5 flex-wrap md:!flex-wrap gap-4 lg:justify-normal">
+            {/* Search Bar */}
+            <div className="relative">
+              <span className="absolute inset-y-0 left-3 top-1 flex items-center text-gray-400 text-md">
+                <IoMdSearch />
+              </span>
+              <input
+                onChange={handleSearchInput}
+                type="text"
+                placeholder="Search here . . ."
+                className="pl-7 md:px-10 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
+              />
             </div>
+
+            {/* Filter Role Dropdown */}
+            <select
+              className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
+              value={filterZone}
+              onChange={(e) => setFilterZone(e.target.value)}
+            >
+              <option value="">Filter by Zone</option>
+              <option value="east">East</option>
+              <option value="west">West</option>
+              <option value="north">North</option>
+              <option value="south">South</option>{" "}
+            </select>
+
+            {/* Filter Status Dropdown */}
+            <select
+              className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option value="">Filter by Status</option>
+              <option value="process">Process</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+
+            {/* Reset All Filter */}
+            <button
+              onClick={handleResetFilters}
+              disabled={!searchQuery && !filterStatus && !filterZone} // Disable button if no filters are applied
+              className={`px-6 py-2 text-sm rounded-lg font-medium ${
+                searchQuery || filterStatus || filterZone
+                  ? "bg-red-400 text-white hover:bg-red-500"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Reset
+            </button>
           </div>
 
           {/* Add Case Section only access to coordinator */}
           {role && role === "coordinator" ? (
-            <Link to="/coordinator/all/cases/add">
-              <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
-                ADD CASE
-              </div>
-            </Link>
+            <div className="flex justify-end lg:justify-normal">
+              <Link to="/coordinator/all/cases/add">
+                <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
+                  ADD
+                </div>
+              </Link>
+            </div>
           ) : null}
         </div>
 
@@ -136,6 +136,7 @@ const AllCases = () => {
             <thead>
               <tr className="bg-[#073c4e] text-white text-sm">
                 <th className="w-1/7 py-2 px-6 text-left text-xs">Case Code</th>
+
                 <th className="w-1/4 py-2 px-6 text-left text-xs">
                   Client Name
                 </th>
@@ -161,6 +162,7 @@ const AllCases = () => {
                     <td className="py-3 px-6 border-b border-gray-200">
                       {row?.caseCode}
                     </td>
+
                     <td className="py-3 px-6 border-b border-gray-200">
                       {row?.clientName}
                     </td>

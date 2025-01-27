@@ -42,12 +42,6 @@ const caseReducer = (state = initialData, { type, payload }) => {
       };
     }
     case ADD_CASE_DATA_SUCCESS: {
-      // return {
-      //   ...state,
-      //   isLoading: false,
-      //   data: [...state.data, payload],
-      // };
-
       return {
         ...state,
         isLoading: false,

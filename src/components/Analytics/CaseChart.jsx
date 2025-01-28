@@ -1,13 +1,14 @@
 import React from "react";
 import Chart from "react-apexcharts";
 
-const CaseChart = () => {
-  const caseData = [
-    { status: "process", count: 45 },
-    { status: "pending", count: 30 },
-    { status: "completed", count: 20 },
-    { status: "rejected", count: 15 },
-  ];
+const CaseChart = ({ allList }) => {
+  // Map the status data from allList and transform it to match the expected format
+  const caseData = Object.entries(allList?.cases?.status || {}).map(
+    ([status, count]) => ({
+      status,
+      count,
+    })
+  );
 
   const categories = caseData.map((item) => item.status);
   const seriesData = caseData.map((item) => item.count);

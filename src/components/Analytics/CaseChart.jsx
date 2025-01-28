@@ -13,6 +13,25 @@ const CaseChart = ({ allList }) => {
   const categories = caseData.map((item) => item.status);
   const seriesData = caseData.map((item) => item.count);
 
+  // Function to get color based on the case status
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "pending":
+        return "#FFA500"; // Orange for pending
+      case "rejected":
+        return "#FF0000"; // Red for rejected
+      case "completed":
+        return "#28A745"; // Green for completed
+      case "process":
+        return "#3498db"; // Blue for process
+      default:
+        return "#9b9b9b"; // Gray for unknown statuses
+    }
+  };
+
+  // Dynamically set the colors based on case status
+  const statusColors = caseData.map((item) => getStatusColor(item.status));
+
   const chartOptions = {
     chart: {
       type: "bar",
@@ -29,7 +48,7 @@ const CaseChart = ({ allList }) => {
     xaxis: {
       categories,
     },
-    colors: ["#FF5733", "#FFC300", "#28A745", "#C70039"], // Custom bar colors
+    colors: statusColors, // Apply dynamic colors based on status
     dataLabels: {
       enabled: true,
     },

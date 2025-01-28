@@ -55,6 +55,7 @@ export const addUserData =
           },
         }
       );
+      console.log("res user adding==>", response);
       dispatch({ type: ADD_USER_DATA_SUCCESS, payload: response?.data });
       toastUpdate(toastId, 200, "User Added Successfully");
     } catch (error) {

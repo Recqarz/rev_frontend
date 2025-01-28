@@ -16,7 +16,7 @@ const AddUserForm = () => {
     (state) => state.allBankReducer
   );
   const { banks } = data;
-  console.log("banks data in user form", banks);
+  // console.log("banks data in user form", banks);
 
   useEffect(() => {
     dispatch(getAllBankData());
@@ -121,7 +121,7 @@ const AddUserForm = () => {
         { key: 3, value: "fieldExecutive", label: "Field Executive" },
         { key: 4, value: "coordinator", label: "Co-Ordinator" },
         { key: 5, value: "auditor", label: "Auditor" },
-        { key: 6, value: "superVisor", label: "Supervisor" },
+        { key: 6, value: "supervisor", label: "Supervisor" },
       ],
       validation: Yup.string().required("Role is required"),
       initialValue: "",
@@ -168,7 +168,7 @@ const AddUserForm = () => {
   const handleSubmit = (values, { resetForm }) => {
     console.log("Form data===>", values);
     dispatch(addUserData(values, accessToken, navigate));
-    resetForm();
+    // resetForm();
   };
 
   return (

@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { MdDashboard } from "react-icons/md";
 import { FaClipboardUser } from "react-icons/fa6";
 import REV_logo_1 from "../assets/image/REV_logo_1.png";
+import Swal from "sweetalert2";
+import { toastError } from "../utils/react-toastify/ReactToastiry";
 
 const roleBasedMenu = {
   admin: [
@@ -67,9 +69,31 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
     // toggleSidebar(false);
   };
 
-  const handleLogout = () => {
-    dispatch({ type: "USER_LOGOUT_SUCCESS" });
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      // Show confirmation dialog for updating case
+      const result = await Swal.fire({
+        title: "",
+        text: "Are you sure want to logout !",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Logout",
+        customClass: {
+          popup: "small-swal", // Apply custom class to the popup
+        },
+      });
+
+      if (result.isConfirmed) {
+        dispatch({ type: "USER_LOGOUT_SUCCESS" });
+        navigate("/");
+      }
+    } catch (error) {
+      // Handle errors and show appropriate feedback
+      toastError("Something went wrong !");
+      console.error("Error:", error);
+    }
   };
 
   return (

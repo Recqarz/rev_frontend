@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
 const Pagination = ({
   currentPage,
@@ -9,29 +9,29 @@ const Pagination = ({
   handleCurrentPageState,
 }) => {
   return (
-    <div className="shadow-lg  mx-4 flex justify-center gap-2 items-center rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
+    <div className="shadow-lg flex justify-center gap-2 items-center rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
       <button
         onClick={() => handleCurrentPageState(-1)}
         disabled={currentPage === 1}
         className={`px-3 py-1 rounded hover:bg-gray-600 ${
-          currentPage === 1 && 'cursor-not-allowed opacity-50'
+          currentPage === 1 && "cursor-not-allowed opacity-50"
         }`}
       >
-        {'<'}
+        {"<"}
       </button>
       <span>
         {currentPage * limit - limit + 1}-
-        {totalData <= currentPage * limit ? totalData : currentPage * limit} of{' '}
+        {totalData <= currentPage * limit ? totalData : currentPage * limit} of{" "}
         {totalData}
       </span>
       <button
         onClick={() => handleCurrentPageState(1)}
         disabled={currentPage === totalPages}
         className={`px-3 py-1 rounded hover:bg-gray-600 ${
-          currentPage === totalPages && 'cursor-not-allowed opacity-50'
+          currentPage === totalPages && "cursor-not-allowed opacity-50"
         }`}
       >
-        {'>'}
+        {">"}
       </button>
       <select
         className=" border border-gray-500 rounded-md bg-[#073c4e] shadow-sm focus:outline-none cursor-pointer"
@@ -44,7 +44,7 @@ const Pagination = ({
         <option value={50}>50</option>
       </select>
     </div>
-  )
-}
+  );
+};
 
-export default Pagination
+export default Pagination;

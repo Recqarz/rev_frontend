@@ -1,7 +1,8 @@
 import React from "react";
 import Chart from "react-apexcharts";
+import LoaderValidator from "../core/LoaderValidator";
 
-const CaseChart = ({ allList }) => {
+const CaseChart = ({ allList, isLoading }) => {
   // Map the status data from allList and transform it to match the expected format
   const caseData = Object.entries(allList?.cases?.status || {}).map(
     ([status, count]) => ({
@@ -85,7 +86,11 @@ const CaseChart = ({ allList }) => {
   return (
     <div className="flex flex-col">
       <h1 className="text-lg font-bold text-gray-400 -mb-7">Cases</h1>
-      <Chart options={chartOptions} series={series} type="bar" height={290} />
+      {isLoading ? (
+        <LoaderValidator className={"py-24 !mt-7"} />
+      ) : (
+        <Chart options={chartOptions} series={series} type="bar" height={290} />
+      )}
     </div>
   );
 };

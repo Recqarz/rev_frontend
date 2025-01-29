@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
-import buildingImage from '../assets/image/building.jpg';
-import bildinglogo1 from '../assets/image/buildingdesign.png';
-import bildinglogo2 from '../assets/image/buildingdesigning.png';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { checkCredentialAndsendOtp } from '../redux/auth/authAction';
+import React, { useState } from "react";
+import buildingImage from "../assets/image/building.jpg";
+import revNweBuilding from "../assets/image/revNweBuilding.png";
+import revCloud1 from "../assets/image/revCloud1.png";
+import revCloud2 from "../assets/image/revCloud2.png";
+import bildinglogo1 from "../assets/image/buildingdesign.png";
+import bildinglogo2 from "../assets/image/buildingdesigning.png";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { checkCredentialAndsendOtp } from "../redux/auth/authAction";
 import { IoIosEye } from "react-icons/io";
 import { IoIosEyeOff } from "react-icons/io";
 
 const obj = {
-  userCode: '',
-  password: '',
+  userCode: "",
+  password: "",
 };
 
 const Login = () => {
@@ -34,86 +37,106 @@ const Login = () => {
   console.log(auth);
 
   return (
-    <div className="py-5 overflow-hidden mt-16">
-      <form onSubmit={handleForm}>
-        <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-3xl">
-          <div
-            className="hidden lg:block lg:w-1/2 bg-cover"
-            style={{ backgroundImage: `url(${buildingImage})` }}
-          ></div>
-          <div className="w-full p-8 lg:w-1/2">
-            <h2 className="text-4xl font-semibold text-center text-green-600">
-              Login
-            </h2>
+    <div className="w-full relative flex justify-center items-center h-screen bg-[#3b514c]">
+      <div className="relative shadow-2xl shadow-green-200 w-[80%]  h-[60%] md:h-[45%] lg:h-[85%] bg-[#68cfb4] flex flex-row">
+        <div className="w-[10%] h-full hidden lg:block"></div>
+        <div className="w-full lg:w-[50%] h-full  bg-white border flex flex-col gap-10 justify-center items-center ">
+          <div className="">
+            <h1 className="text-lg text-[#3b514c] font-semibold">
+              Welcome To REV
+            </h1>
+          </div>
+          <div className="w-[70%]">
+            <form onSubmit={handleForm} className="w-full">
+              <div className=" flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-1">
+                    <label className="block text-gray-700 text-sm font-bold">
+                      Email
+                    </label>
+                    <span className="text-red-500 text-xl -mt-1">*</span>
+                  </div>
+                  <input
+                    className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
+                    type="text"
+                    required
+                    name="userCode"
+                    value={formData?.userCode}
+                    placeholder="Email or User-Code"
+                    onChange={handleInput}
+                  />
+                </div>
 
-            <div className="mt-4">
-              <div className="flex">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Email
-                </label>
-                <span className="text-red-500 ml-1 text-xl">*</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-1">
+                    <label className="block text-gray-700 text-sm font-bold">
+                      Password
+                    </label>
+                    <span className="text-red-500 text-xl -mt-1">*</span>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full placeholder-gray-500"
+                      type={showPassword ? "text" : "password"} // Toggle input type
+                      placeholder="Password"
+                      required
+                      name="password"
+                      value={formData?.password}
+                      onChange={handleInput}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                      onClick={() => setShowPassword(!showPassword)} // Toggle visibility
+                    >
+                      {showPassword ? (
+                        <IoIosEye style={{ fontSize: "18px" }} />
+                      ) : (
+                        <IoIosEyeOff style={{ fontSize: "18px" }} />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Link to="/forget/password">
+                    <h1 className="hover:text-blue-400 font-normal">
+                      Forget Password?
+                    </h1>
+                  </Link>
+                </div>
+
+                <div className="mt-4 flex justify-center">
+                  <button
+                    className="bg-[#68cfb4] text-white font-bold py-2 px-6  rounded hover:bg-[#3b514c]"
+                    type="submit"
+                  >
+                    Login
+                  </button>
+                </div>
               </div>
-              <input
-                className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
-                type="text"
-                required
-                name="userCode"
-                value={formData?.userCode}
-                placeholder="Email or User-Code"
-                onChange={handleInput}
-              />
-            </div>
-
-            <div className="mt-4">
-              <div className="flex">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Password
-                </label>
-                <span className="text-red-500 ml-1 text-xl">*</span>
-              </div>
-
-              <div className="relative">
-                <input
-                  className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full placeholder-gray-500"
-                  type={showPassword ? 'text' : 'password'} // Toggle input type
-                  placeholder="Password"
-                  required
-                  name="password"
-                  value={formData?.password}
-                  onChange={handleInput}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-                  onClick={() => setShowPassword(!showPassword)} // Toggle visibility
-                >
-                  {showPassword ? <IoIosEye style={{fontSize:"18px"}}/> : <IoIosEyeOff style={{fontSize:"18px"}}/>}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <Link to="/forget/password">Forget Password?</Link>
-            </div>
-            <div className="mt-8 flex justify-center">
-              <button
-                className="bg-green-700 text-white font-bold py-2 px-4 w-1/4 rounded hover:bg-green-600"
-                type="submit"
-              >
-                Login
-              </button>
-            </div>
+            </form>
           </div>
         </div>
-      </form>
-      <div className="lg:flex lg:justify-center gap-4 -mb-8 hidden">
-        <img className="w-[18%] h-24" src={bildinglogo1} alt="build" />
-        <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
-        <img className="w-[18%] h-24" src={bildinglogo1} alt="build" />
-        <img className="w-[18%] h-24" src={bildinglogo2} alt="build2" />
+
+        <div className="!absolute !right-0 !bottom-0 lg:w-[50%] 2xl:w-[58%] hidden lg:block">
+          <img
+            src={`${revNweBuilding}`}
+            className=" lg:h-[25rem] 2xl:h-[32rem] w-full"
+          />
+        </div>
+        <div className="!absolute !right-32 !top-3 hidden lg:block">
+          <div className="flex gap-5">
+            <img src={`${revCloud1}`} className="lg:h-[4.5rem]" />
+            <img src={`${revCloud2}`} className="lg:h-[3.4rem] lg:mt-1" />
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
 export default Login;
+
+

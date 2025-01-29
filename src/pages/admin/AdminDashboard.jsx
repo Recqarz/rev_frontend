@@ -39,7 +39,7 @@ const AdminDashboard = () => {
       icon: <IoBriefcase className="text-4xl text-white" />,
       bgColor: "bg-green-400",
       shadowClass: "!shadow-green-400",
-      link: "",
+      link: "/admin/dashboard/cases",
     },
     {
       id: 6,
@@ -85,12 +85,12 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* user chart */}
-        <div className="flex items-center">
+        <div className="flex items-center border">
           <UserChart allList={allList} />
         </div>
 
         {/* case chart */}
-        <div className=" rounded-lg p-5">
+        <div className=" rounded-lg p-5 border">
           <div>
             <CaseChart allList={allList} />
           </div>

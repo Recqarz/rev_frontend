@@ -168,7 +168,7 @@ const AddUserForm = () => {
   const handleSubmit = (values, { resetForm }) => {
     console.log("Form data===>", values);
     dispatch(addUserData(values, accessToken, navigate));
-    // resetForm();
+    resetForm();
   };
 
   return (
@@ -177,7 +177,7 @@ const AddUserForm = () => {
         <h3 className="text-xl font-semibold">Add User</h3>
       </div>
 
-      <div className="m-5 bg-white border-2 rounded-lg shadow border-gray-300">
+      <div className=" bg-white border-2 rounded-lg shadow border-gray-300">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}

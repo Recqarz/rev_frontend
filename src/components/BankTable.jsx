@@ -8,6 +8,7 @@ import { bankDataUpdate, getAllBankData } from "../redux/banks/bankAction";
 import { IoMdSearch } from "react-icons/io";
 import Pagination from "./Pagination";
 import { debounce } from "../utils/halper";
+import SearchFilterAddSection from "./SearchFilterAddSection";
 
 const BankTable = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const BankTable = () => {
   );
   const { message, currentPage, totalPages, totalBank, banks } = data;
   const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({});
   const [limit, setLimit] = useState(10);
   const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [debouncedFilters, setDebouncedFilters] = useState({
@@ -47,6 +49,11 @@ const BankTable = () => {
       )
     );
   }, [limit, currentPageState, searchQuery]);
+
+  const filterOptions = [];
+  const handleFilterChange = (filterName, value) => {
+    setFilters((prev) => ({ ...prev, [filterName]: value }));
+  };
 
   const handleUpdateStatusFunc = (item) => {
     setBankId(item._id);
@@ -87,43 +94,19 @@ const BankTable = () => {
   return (
     <div className="flex justify-center">
       <div className="flex flex-col gap-5 w-[100%]">
-        <div className="flex justify-between gap-2 items-center mx-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="relative">
-              <span className="absolute inset-y-0 left-3 top-1 flex items-center text-gray-400 text-md">
-                <IoMdSearch />
-              </span>
-              <input
-                onChange={handleSearchInput}
-                type="text"
-                placeholder="Search here . . ."
-                className="px-10 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
-              />
-            </div>
-
-            {/* Reset All Filter */}
-            <button
-              onClick={handleResetFilters}
-              disabled={!searchQuery} // Disable button if no filters are applied
-              className={`px-6 py-2 text-sm rounded-lg font-medium ${
-                searchQuery
-                  ? "bg-red-400 text-white hover:bg-red-500"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              Reset
-            </button>
-          </div>
-
-          <Link to="/admin/dashboard/all/banks/add">
-            <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
-              ADD
-            </div>
-          </Link>
-        </div>
-        {/* -----------------------------------------------custom-scrollbar */}
-        <div className="shadow-lg rounded-lg mx-4 overflow-x-auto custom-scrollbar">
+        {/* Search, Filter Section & add section*/}
+        <SearchFilterAddSection
+          setSearchQuery={setSearchQuery}
+          filterOptions={filterOptions}
+          handleFilterChange={handleFilterChange}
+          handleResetFilters={handleResetFilters}
+          disabledReset={!searchQuery && !filters.zone && !filters.status}
+          enableReset={searchQuery || filters.zone || filters.status}
+          goToPageLink={"/admin/dashboard/all/banks/add"}
+          addBtnEnable={true}
+        />
+        {/* Table section */}
+        <div className="shadow-lg rounded-lg overflow-x-auto custom-scrollbar">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr className="bg-[#073c4e] text-white">
@@ -168,28 +151,7 @@ const BankTable = () => {
             </tbody>
           </table>
         </div>
-
-        {/*---------------------- Pagination---------------------------- */}
-        {/* <div className="shadow-lg mt-4 mx-4 py-1 flex justify-center lg:justify-end rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
-          <div className="flex flex-col gap-1.5 md:flex-row md:gap-14 justify-center items-center">
-            <div>Rows per page: 1</div>
-            <div>1 of 2</div>
-            <div className="flex gap-4 lg:mr-6">
-              <button
-                // onClick={handlePrevious}
-                className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
-              >
-                &lt;
-              </button>
-              <button
-                // onClick={handleNext}
-                className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
-              >
-                &gt;
-              </button>
-            </div>
-          </div>
-        </div>*/}
+        {/* Pagination */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

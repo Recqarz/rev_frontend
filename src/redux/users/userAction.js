@@ -55,9 +55,8 @@ export const addUserData =
           },
         }
       );
-      console.log("res user adding==>", response);
       dispatch({ type: ADD_USER_DATA_SUCCESS, payload: response?.data });
-      toastUpdate(toastId, 200, "User Added Successfully");
+      toastUpdate(toastId, 200, response?.data?.message);
     } catch (error) {
       console.error("Error creating user data:", error?.response?.data?.error);
       toastUpdate(toastId, 400, error?.response?.data?.error);
@@ -76,12 +75,13 @@ export const updateUserData = (data, accessToken, id) => async (dispatch) => {
       },
     })
     .then((res) => {
-      console.log("res user==>", res);
+      console.log("res user action==>", res);
       dispatch({
         type: UPDATE_USER_DATA_SUCCESS,
         payload: res?.data?.data?.updatedUserDetails,
       });
       toastUpdate(toastId, 200, res?.data?.message);
+      console.log("res user success==>");
     })
     .catch((err) => {
       console.log("err", err);

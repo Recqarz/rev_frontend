@@ -4,15 +4,15 @@ const UserChart = ({ allList }) => {
   const getRoleColor = (role) => {
     switch (role) {
       case "coordinator":
-        return "#38b6ffff"; // Light blue
+        return "#38b6ffff";
       case "fieldExecutive":
-        return "#d455aeff"; // Pink
+        return "#d455aeff";
       case "supervisor":
-        return "#4caf50"; // Green
+        return "#4caf50";
       case "auditor":
-        return "#f97316"; // Orange
+        return "#f97316";
       default:
-        return "#9b9b9b"; // Gray for unknown roles
+        return "#9b9b9b";
     }
   };
 
@@ -28,7 +28,7 @@ const UserChart = ({ allList }) => {
       role: role.charAt(0).toUpperCase() + role.slice(1), // Capitalize the first letter
       value, // Number of users in the role
       totalUsers: value,
-      percentage: ((value / totalUsers) * 100).toFixed(2), // Calculate percentage
+      percentage: Math.floor(((value / totalUsers) * 100).toFixed(2)), // Calculate percentage
       color: getRoleColor(role), // Dynamically set color based on role
     })
   );
@@ -57,8 +57,8 @@ const UserChart = ({ allList }) => {
                 <div
                   className="h-2 rounded-full"
                   style={{
-                    backgroundColor: item?.color, // Dynamic color for each role
-                    width: `${item?.percentage}%`, // Width as per the percentage
+                    backgroundColor: item?.color,
+                    width: `${item?.percentage}%`,
                   }}
                 />
               </div>

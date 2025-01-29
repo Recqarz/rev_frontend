@@ -39,17 +39,20 @@ export const allUserReducer = (state = initialData, { type, payload }) => {
       };
     }
     case ADD_USER_DATA_SUCCESS: {
+      // console.log("Reducer state===>", state);
+      // console.log("Reducer state?.data===>", state?.data);
+      // console.log("user reducer payload==>", payload);
       return {
         ...state,
         isLoading: false,
-        data: [...state.data, payload],
+        data: { ...state.data, users: payload.newUser },
       };
     }
     case UPDATE_USER_DATA_SUCCESS: {
-      console.log("payload===>", payload);
-      console.log("state===>", state);
-      console.log("state?.data===>", state?.data);
-      console.log("state?.data?.users===>", state?.data?.users);
+      console.log("Reducer payload===>", payload);
+      console.log("Reducer state===>", state);
+      console.log("Reducer state?.data===>", state?.data);
+      console.log("Reducer state?.data?.users===>", state?.data?.users);
 
       const updatedData = state?.data?.users.map((user) =>
         user._id === payload._id ? { ...user, ...payload } : user

@@ -7,6 +7,8 @@ import { MdKeyboardArrowRight, MdOutlineEdit } from "react-icons/md";
 import { debounce } from "../../utils/halper";
 import Pagination from "../../components/Pagination";
 import { getAllFieldExecutiveData } from "../../redux/fieldExecutive/fieldExecutiveAction";
+import SearchFilterAddSection from "../../components/SearchFilterAddSection";
+import { highlightMatch } from "../../utils/highlightMatch";
 
 const AllFieldExecutives = () => {
   const dispatch = useDispatch();
@@ -16,8 +18,9 @@ const AllFieldExecutives = () => {
   const { message, currentPage, totalPages, totalUser, fieldExecutives } = data;
   const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterZone, setFilterZone] = useState("");
+  const [filters, setFilters] = useState({
+    status: "",
+  });
   const [limit, setLimit] = useState(10);
 
   // const [openDetailModal, setOpenDetailsModal] = useState(false);
@@ -35,15 +38,31 @@ const AllFieldExecutives = () => {
   useEffect(() => {
     dispatch(
       getAllFieldExecutiveData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filterStatus}`
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}`
       )
     );
-  }, [limit, currentPageState, searchQuery, filterStatus]);
+  }, [limit, currentPageState, searchQuery, filters.status]);
 
+  const filterOptions = [
+    {
+      name: "status",
+      value: filters.status,
+      placeholder: "Filter by Status",
+      options: [
+        { label: "Process", value: "process" },
+        { label: "Pending", value: "pending" },
+        { label: "Completed", value: "completed" },
+        { label: "Rejected", value: "rejected" },
+      ],
+    },
+  ];
+
+  const handleFilterChange = (filterName, value) => {
+    setFilters((prev) => ({ ...prev, [filterName]: value }));
+  };
   const handleResetFilters = () => {
     setSearchQuery("");
-    setFilterStatus("");
-    console.log("reset");
+    setFilters({ status: "" });
   };
 
   const handleLimit = (val) => {
@@ -57,67 +76,16 @@ const AllFieldExecutives = () => {
   return (
     <div className="">
       <div className="flex flex-col gap-5">
-        <div className="flex justify-between gap-2 items-center">
-          <div className="flex items-center">
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Search Bar */}
-              <div className="relative">
-                <span className="absolute inset-y-0 left-3 top-1 flex items-center text-gray-400 text-md">
-                  <IoMdSearch />
-                </span>
-                <input
-                  onChange={handleSearchInput}
-                  type="text"
-                  placeholder="Search here . . ."
-                  className="px-10 py-2 w-64 border rounded-lg text-sm focus:ring-cyan-600 focus:border-cyan-600"
-                />
-              </div>
-
-              {/* Filter Role Dropdown */}
-              {/* <select
-                className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
-                value={filterZone}
-                onChange={(e) => setFilterZone(e.target.value)}
-              >
-                <option value="">Filter by Zone</option>
-                <option value="east">East</option>
-                <option value="west">West</option>
-                <option value="north">North</option>
-                <option value="south">South</option>{" "}
-              </select> */}
-
-              {/* Filter Status Dropdown */}
-              <select
-                className="px-4 py-2 border rounded-lg text-sm bg-white focus:ring-cyan-600 focus:border-cyan-600"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="">Filter by Status</option>
-                <option value={true}>Active</option>
-                <option value={false}>Inactive</option>
-              </select>
-
-              {/* Reset All Filter */}
-              <button
-                onClick={handleResetFilters}
-                disabled={!searchQuery && !filterStatus} // Disable button if no filters are applied
-                className={`px-6 py-2 text-sm rounded-lg font-medium ${
-                  searchQuery || filterStatus
-                    ? "bg-red-400 text-white hover:bg-red-500"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-                // className="px-6 py-2 text-sm rounded-lg font-medium bg-gray-300 text-gray-500 cursor-not-allowed"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-          <Link to="/coordinator/all/cases/add">
-            <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
-              ADD
-            </div>
-          </Link>
-        </div>
+        <SearchFilterAddSection
+          setSearchQuery={setSearchQuery}
+          filterOptions={filterOptions}
+          handleFilterChange={handleFilterChange}
+          handleResetFilters={handleResetFilters}
+          disabledReset={!searchQuery && !filters.status}
+          enableReset={searchQuery || filters.status}
+          goToPageLink={"/coordinator/all/fieldexecutives"}
+          addBtnEnable={true}
+        />
 
         {/* Table Section */}
         <div className="shadow-lg rounded-lg overflow-x-auto custom-scrollbar">
@@ -141,16 +109,16 @@ const AllFieldExecutives = () => {
                   className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
                 >
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {row?.userCode}
+                    {highlightMatch(row?.userCode, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {row?.firstName}
+                    {highlightMatch(row?.firstName, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 truncate">
-                    {row?.email}
+                    {highlightMatch(row?.email, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {row?.mobile}
+                    {highlightMatch(row?.mobile, searchQuery)}
                   </td>
 
                   <td className="py-3 px-6 border-b border-gray-200">

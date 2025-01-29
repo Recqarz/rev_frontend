@@ -83,7 +83,8 @@ const CaseChart = ({ allList }) => {
   ];
 
   return (
-    <div>
+    <div className="flex flex-col">
+      <h1 className="text-lg font-bold text-gray-400 -mb-7">Cases</h1>
       <Chart options={chartOptions} series={series} type="bar" height={290} />
     </div>
   );

@@ -226,14 +226,14 @@ const UserTable = () => {
           handleCurrentPageState={handleCurrentPageState}
         />
 
-        {/* Edit Modal Section */}
+        {/* Update Modal Section open*/}
         {changeStatusModal && (
           <div
             id="authentication-modal"
             aria-hidden="true"
             className={`${
               changeStatusModal ? "flex" : "hidden"
-            } overflow-x-hidden overflow-y-auto fixed inset-0 z-50 justify-center items-center backdrop-blur-sm`}
+            } overflow-x-hidden overflow-y-auto custom-scrollbar fixed inset-0 z-50 justify-center items-center backdrop-blur-sm`}
           >
             <div className="relative w-full max-w-md px-0 h-full md:h-auto">
               <div className="rounded-lg shadow relative dark:bg-gray-700 bg-gray-100">
@@ -261,9 +261,9 @@ const UserTable = () => {
                   className="space-y-6 px-6 lg:px-8 pb-4 sm:pb-6 xl:pb-8 overflow-y-auto max-h-[80vh]"
                   onSubmit={handleUpdateFunc}
                 >
-                  <h5 className="text-xl font-medium mb-4">
-                    Update The User Data
-                  </h5>
+                  <div className="flex justify-center items-center">
+                    <h5 className="text-xl font-medium">Update User</h5>
+                  </div>
                   <div className="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
                     <div className="mb-4">
                       <label

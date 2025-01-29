@@ -9,7 +9,7 @@ import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../utils/highlightMatch";
 
-const AllCases = () => {
+const AllCases1 = () => {
   const dispatch = useDispatch();
   const { role } = useSelector((store) => store?.authReducer);
   const { accessToken } = useSelector((store) => store?.authReducer);
@@ -284,4 +284,4 @@ const AllCases = () => {
   );
 };
 
-export default AllCases;
+export default AllCases1;

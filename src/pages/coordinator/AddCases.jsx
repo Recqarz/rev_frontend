@@ -20,10 +20,6 @@ const AddCases = () => {
   const caseId = searchParams.get("caseId");
 
   const { data: caseData } = useSelector((state) => state.caseReducer);
-  console.log(
-    "caseData clientAddress?.state==>",
-    caseData?.clientAddress?.state
-  );
   //get banks
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { isLoading, isError, data } = useSelector(

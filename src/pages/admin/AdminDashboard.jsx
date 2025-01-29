@@ -44,7 +44,7 @@ const AdminDashboard = () => {
     {
       id: 6,
       name: "Banks",
-      count: allList?.banks?.totalBanks,
+      count: allList?.banks?.totalBanks || 0,
       icon: <BsBank2 className="text-4xl text-white" />,
       bgColor: "bg-[#004badff]",
       shadowClass: "!shadow-[#004badff]",
@@ -85,14 +85,14 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* user chart */}
-        <div className="flex items-center border">
-          <UserChart allList={allList} />
+        <div className="flex items-center rounded-lg border">
+          <UserChart allList={allList} isLoading={isLoading} />
         </div>
 
         {/* case chart */}
         <div className=" rounded-lg p-5 border">
           <div>
-            <CaseChart allList={allList} />
+            <CaseChart allList={allList} isLoading={isLoading} />
           </div>
         </div>
       </div>

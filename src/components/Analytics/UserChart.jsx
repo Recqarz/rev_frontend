@@ -1,6 +1,7 @@
 import React from "react";
+import LoaderValidator from "../core/LoaderValidator";
 
-const UserChart = ({ allList }) => {
+const UserChart = ({ allList, isLoading }) => {
   const getRoleColor = (role) => {
     switch (role) {
       case "coordinator":
@@ -39,39 +40,45 @@ const UserChart = ({ allList }) => {
         <h4 className="text-lg font-semibold text-gray-400">Users</h4>
       </div>
 
-      <div className="flex flex-col gap-6">
-        {rolesData.map((item, index) => (
-          <div key={index} className="flex gap-4 items-center w-full">
-            <div className="w-[20%]">
-              <h1>{item?.role}</h1>
-            </div>
-            <div className="w-[60%] relative">
-              <div
-                className="h-2 rounded-full"
-                style={{
-                  backgroundColor: "#e0e0e0", // Light grey background for the progress bar
-                  width: "100%",
-                  height: "8px",
-                }}
-              >
+      {isLoading ? (
+        <div className="">
+          <LoaderValidator className={"py-16"} />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-6">
+          {rolesData.map((item, index) => (
+            <div key={index} className="flex gap-4 items-center w-full">
+              <div className="w-[20%]">
+                <h1>{item?.role}</h1>
+              </div>
+              <div className="w-[60%] relative">
                 <div
                   className="h-2 rounded-full"
                   style={{
-                    backgroundColor: item?.color,
-                    width: `${item?.percentage}%`,
+                    backgroundColor: "#e0e0e0", // Light grey background for the progress bar
+                    width: "100%",
+                    height: "8px",
                   }}
-                />
+                >
+                  <div
+                    className="h-2 rounded-full"
+                    style={{
+                      backgroundColor: item?.color,
+                      width: `${item?.percentage}%`,
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="w-[20%] text-gray-600">
+                <h1>
+                  {item?.percentage}% ( {item?.totalUsers} )
+                </h1>
+                {/* Display the percentage of users in each role */}
               </div>
             </div>
-            <div className="w-[20%] text-gray-600">
-              <h1>
-                {item?.percentage}% ( {item?.totalUsers} )
-              </h1>
-              {/* Display the percentage of users in each role */}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import buildingImage from "../../assets/image/building.jpg";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import bildinglogo1 from "../../assets/image/buildingdesign.png";
 import bildinglogo2 from "../../assets/image/buildingdesigning.png";
 import { useLocation } from "react-router-dom";
@@ -10,29 +10,44 @@ import { verifyOtpAndLogin } from "../../redux/auth/authAction";
 const VerifyOTPLogin = () => {
   const [otpEmail, setOtpEmail] = useState(["", "", "", "", "", ""]);
   const [otpSms, setOtpSms] = useState(["", "", "", "", "", ""]);
+  const emailRefs = useRef([]);
+  const smsRefs = useRef([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const location = useLocation();
   const { userCode } = location.state || {};
 
-  const handleOtpChange = (e, otpType, index) => {
+  const handleOtpChange = (e, otpType, index, type) => {
     const value = e.target.value;
-    if (/\D/.test(value)) return; // Prevent non-numeric input
+    if (/\D/.test(value)) return; // Allow only numeric input
 
     const updatedOtp = [...otpType];
     updatedOtp[index] = value;
 
-    if (index < 5 && value) {
-      // Move focus to the next input when a number is entered
-      const nextInput = document.querySelector(
-        `input[name="${otpType === otpEmail ? "email" : "sms"}-${index + 1}"]`
-      );
-      if (nextInput) {
-        nextInput.focus();
-      }
+    if (value && index < 5) {
+      // Move to the next input field if a number is entered
+      if (type === "email") emailRefs.current[index + 1]?.focus();
+      else smsRefs.current[index + 1]?.focus();
     }
-    otpType === otpEmail ? setOtpEmail(updatedOtp) : setOtpSms(updatedOtp);
+
+    type === "email" ? setOtpEmail(updatedOtp) : setOtpSms(updatedOtp);
+  };
+
+  const handleKeyDown = (e, otpType, index, type) => {
+    if (e.key === "Backspace") {
+      const updatedOtp = [...otpType];
+
+      if (updatedOtp[index]) {
+        // If there's a value, clear it
+        updatedOtp[index] = "";
+      } else if (index > 0) {
+        // Move to the previous input field
+        if (type === "email") emailRefs.current[index - 1]?.focus();
+        else smsRefs.current[index - 1]?.focus();
+      }
+
+      type === "email" ? setOtpEmail(updatedOtp) : setOtpSms(updatedOtp);
+    }
   };
 
   const handleSubmitForLogin = (e) => {
@@ -47,7 +62,6 @@ const VerifyOTPLogin = () => {
         navigate
       )
     );
-   
   };
 
   return (
@@ -75,6 +89,7 @@ const VerifyOTPLogin = () => {
                 {otpEmail.map((_, index) => (
                   <input
                     key={index}
+                    ref={(el) => (emailRefs.current[index] = el)}
                     name={`email-${index}`}
                     className="w-8 h-8 md:w-10 md:h-10 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     type="text"
@@ -84,7 +99,12 @@ const VerifyOTPLogin = () => {
                     autoComplete="one-time-code"
                     required
                     value={otpEmail[index]}
-                    onChange={(e) => handleOtpChange(e, otpEmail, index)}
+                    onChange={(e) =>
+                      handleOtpChange(e, otpEmail, index, "email")
+                    }
+                    onKeyDown={(e) =>
+                      handleKeyDown(e, otpEmail, index, "email")
+                    }
                   />
                 ))}
               </div>
@@ -97,6 +117,7 @@ const VerifyOTPLogin = () => {
                 {otpSms.map((_, index) => (
                   <input
                     key={index}
+                    ref={(el) => (smsRefs.current[index] = el)}
                     name={`sms-${index}`}
                     className="w-8 h-8 md:w-10 md:h-10 text-center border rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     type="text"
@@ -106,7 +127,8 @@ const VerifyOTPLogin = () => {
                     autoComplete="one-time-code"
                     required
                     value={otpSms[index]}
-                    onChange={(e) => handleOtpChange(e, otpSms, index)}
+                    onChange={(e) => handleOtpChange(e, otpSms, index, "sms")}
+                    onKeyDown={(e) => handleKeyDown(e, otpSms, index, "sms")}
                   />
                 ))}
               </div>
@@ -135,7 +157,7 @@ const VerifyOTPLogin = () => {
         </div>
       </div>
 
-      <div className="lg:flex lg:justify-center gap-4 hidden lg:block -mt-20">
+      <div className="lg:flex lg:justify-center gap-4 hidden  -mt-20">
         <img className="w-[18%] h-20" src={bildinglogo1} alt="build" />
         <img className="w-[18%] h-20" src={bildinglogo2} alt="build2" />
         <img className="w-[18%] h-20" src={bildinglogo1} alt="build" />

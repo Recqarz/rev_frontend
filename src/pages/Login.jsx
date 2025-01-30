@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import buildingImage from "../assets/image/building.jpg";
 import revNweBuilding from "../assets/image/revNweBuilding.png";
 import revCloud1 from "../assets/image/revCloud1.png";
 import revCloud2 from "../assets/image/revCloud2.png";
-import bildinglogo1 from "../assets/image/buildingdesign.png";
-import bildinglogo2 from "../assets/image/buildingdesigning.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { checkCredentialAndsendOtp } from "../redux/auth/authAction";
@@ -38,13 +35,11 @@ const Login = () => {
 
   return (
     <div className="w-full relative flex justify-center items-center h-screen bg-[#3b514c]">
-      <div className="relative shadow-2xl shadow-green-200 w-[80%]  h-[60%] md:h-[45%] lg:h-[85%] bg-[#68cfb4] flex flex-row">
+      <div className="relative shadow-2xl shadow-green-200 w-[80%]  h-[60%] md:h-[45%] lg:h-[85%] 2xl:h-[70%] bg-[#68cfb4] flex flex-row">
         <div className="w-[10%] h-full hidden lg:block"></div>
         <div className="w-full lg:w-[50%] h-full  bg-white border flex flex-col gap-10 justify-center items-center ">
           <div className="">
-            <h1 className="text-lg text-[#3b514c] font-semibold">
-              Welcome To REV
-            </h1>
+            <h1 className="text-3xl text-[#3b514c] font-semibold">Login</h1>
           </div>
           <div className="w-[70%]">
             <form onSubmit={handleForm} className="w-full">
@@ -77,7 +72,7 @@ const Login = () => {
 
                   <div className="relative">
                     <input
-                      className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full placeholder-gray-500"
+                      className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4  w-full placeholder-gray-500"
                       type={showPassword ? "text" : "password"} // Toggle input type
                       placeholder="Password"
                       required
@@ -87,7 +82,7 @@ const Login = () => {
                     />
                     <button
                       type="button"
-                      className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                      className="absolute inset-y-0 right-3 text-gray-500 cursor-pointer flex items-center p-2"
                       onClick={() => setShowPassword(!showPassword)} // Toggle visibility
                     >
                       {showPassword ? (
@@ -138,5 +133,3 @@ const Login = () => {
 };
 
 export default Login;
-
-

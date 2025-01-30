@@ -71,7 +71,11 @@ const ResetPassword = () => {
                     className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <IoIosEye style={{fontSize:"18px"}}/> : <IoIosEyeOff style={{fontSize:"18px"}}/>}
+                    {showPassword ? (
+                      <IoIosEye style={{ fontSize: "18px" }} />
+                    ) : (
+                      <IoIosEyeOff style={{ fontSize: "18px" }} />
+                    )}
                   </span>
                 </div>
               </div>
@@ -96,7 +100,11 @@ const ResetPassword = () => {
                     className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                    {showConfirmPassword ? <IoIosEye style={{fontSize:"18px"}}/> : <IoIosEyeOff style={{fontSize:"18px"}}/>}
+                    {showConfirmPassword ? (
+                      <IoIosEye style={{ fontSize: "18px" }} />
+                    ) : (
+                      <IoIosEyeOff style={{ fontSize: "18px" }} />
+                    )}
                   </span>
                 </div>
               </div>

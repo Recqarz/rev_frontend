@@ -135,9 +135,10 @@ const Profile = () => {
       options: [
         { key: 1, value: "", label: "Select Role" }, // Default empty value
         { key: 3, value: "fieldExecutive", label: "Field Executive" },
-        { key: 4, value: "coordinator", label: "Co-Ordinator" },
+        { key: 4, value: "coordinator", label: "Coordinator" },
         { key: 5, value: "auditor", label: "Auditor" },
         { key: 6, value: "superVisor", label: "Supervisor" },
+        { key: 6, value: "admin", label: "Admin" },
       ],
       validation: Yup.string().required("Role is required"),
       disabled: true,
@@ -192,8 +193,8 @@ const Profile = () => {
     <div>
       <div className="flex flex-col gap-4 ">
         <div className="">
-          <div className="dark:bg-slate-800 gap-6 flex items-center justify-center">
-            <div className="bg-gray-100 dark:bg-gray-700 relative shadow-xl overflow-hidden hover:shadow-2xl group rounded-xl p-2 transition-all duration-500 transform">
+          <div className="bg-slate-800 gap-6 flex items-center justify-center">
+            <div className="bg-slate-800 relative shadow-xl overflow-hidden hover:shadow-2xl group rounded-xl p-2 transition-all duration-500 transform">
               <div className="flex items-center gap-4 relative">
                 {/* Profile Picture */}
                 <div className="relative border-2 p-1 border-[#73d1ba] rounded-full">
@@ -235,11 +236,11 @@ const Profile = () => {
 
                 {/* Profile Info */}
                 <div className="w-fit transition-all transform duration-500">
-                  <h1 className="text-gray-600 dark:text-gray-200 font-bold">
+                  <h1 className="text-white font-bold">
                     {profileData?.firstName} {profileData?.lastName}
                   </h1>
-                  <p className="text-gray-400 uppercase">{profileData?.role}</p>
-                  <a className="text-xs text-gray-500 dark:text-gray-200 opacity-1000 transform transition-all delay-300 duration-500">
+                  <p className="text-white uppercase">{profileData?.role}</p>
+                  <a className="text-xs text-white opacity-1000 transform transition-all delay-300 duration-500">
                     {profileData?.email}
                   </a>
                 </div>

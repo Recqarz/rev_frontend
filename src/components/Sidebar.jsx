@@ -115,7 +115,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
           </div>
           <div className=" flex justify-center items-center w-full ">
             {/* <h1 className="text-lg font-medium text-[#51677E]">REV</h1> */}
-            <Link to="/coordinator/dashboard">
+            <Link to={`/${role}/dashboard`}>
               <img
                 className=" h-[52px]"
                 src={REV_logo_1}

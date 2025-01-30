@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import useGoogleMaps from "../../utils/customHooks/useGoogleMaps";
 
 const GeolocationAutoComplete = ({ onSelect }) => {
+  // console.log("onSelect==>", onSelect);
   const isGoogleMapsLoaded = useGoogleMaps(); // Load Google Maps dynamically
   const [inputValue, setInputValue] = useState("");
 
@@ -19,12 +20,11 @@ const GeolocationAutoComplete = ({ onSelect }) => {
       if (selectedPlace.geometry) {
         const locationData = {
           address: selectedPlace.formatted_address,
-          coordinates: [
-            selectedPlace.geometry.location.lng(),
-            selectedPlace.geometry.location.lat(),
-          ],
+          longitude: selectedPlace.geometry.location.lng(),
+          latitude: selectedPlace.geometry.location.lat(),
         };
         onSelect(locationData);
+        // console.log("locationData==>", locationData);
       }
     });
   }, [isGoogleMapsLoaded, onSelect]);
@@ -37,10 +37,12 @@ const GeolocationAutoComplete = ({ onSelect }) => {
       <input
         id="autocomplete"
         type="text"
+        name="clientGeolocation"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Enter a location"
         className="w-full p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        required
       />
     </div>
   );

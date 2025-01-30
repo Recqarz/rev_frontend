@@ -121,6 +121,7 @@ const AllUser = () => {
       <div className="flex flex-col gap-5">
         <SearchFilterAddSection
           setSearchQuery={setSearchQuery}
+          setCurrentPageState={setCurrentPageState}
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}

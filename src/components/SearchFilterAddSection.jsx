@@ -5,6 +5,7 @@ import { debounce } from "../utils/halper";
 
 const SearchFilterAddSection = ({
   setSearchQuery,
+  setCurrentPageState,
   filterOptions,
   handleFilterChange,
   handleResetFilters,
@@ -15,6 +16,7 @@ const SearchFilterAddSection = ({
 }) => {
   const handleSearch = (val) => {
     setSearchQuery(val);
+    setCurrentPageState(1)
   };
 
   const debouncedHandleSearch = debounce(handleSearch, 500);

@@ -90,6 +90,7 @@ const AllCases = () => {
         {/* Search, Filter Section & add section*/}
         <SearchFilterAddSection
           setSearchQuery={setSearchQuery}
+          setCurrentPageState={setCurrentPageState}
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}

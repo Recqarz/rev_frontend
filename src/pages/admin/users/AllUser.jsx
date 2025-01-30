@@ -155,16 +155,16 @@ const AllUser = () => {
                     {highlightMatch(row?.userCode, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {row?.firstName}
+                    {highlightMatch(row?.firstName, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 truncate">
-                    {row?.email}
+                    {highlightMatch(row?.email, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {row?.mobile}
+                    {highlightMatch(row?.mobile, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
-                    {row?.role}
+                    {highlightMatch(row?.role, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200">
                     <span

@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { MdDashboard } from "react-icons/md";
 import { FaClipboardUser } from "react-icons/fa6";
-import REV_logo_1 from "../assets/image/REV_logo_1.png";
+import REV_logo_2 from "../assets/image/REV_logo_2.png";
 import Swal from "sweetalert2";
 import { toastError } from "../utils/react-toastify/ReactToastiry";
 
@@ -117,8 +117,8 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
             {/* <h1 className="text-lg font-medium text-[#51677E]">REV</h1> */}
             <Link to={`/${role}/dashboard`}>
               <img
-                className=" h-[52px]"
-                src={REV_logo_1}
+                className=" h-[65px]"
+                src={REV_logo_2}
                 alt="company_logo"
               ></img>
             </Link>

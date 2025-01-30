@@ -68,11 +68,15 @@ const AdminDashboard = () => {
               <div
                 className={`flex justify-center items-center ${item?.bgColor} rounded-md`}
               >
-                {item?.icon}
+                <div className="">{item?.icon}</div>
               </div>
               <div className="flex justify-center items-center text-center p-2">
                 <div>
-                  <h1 className="font-bold text-green-700">{item?.count}</h1>
+                  {isLoading ? (
+                    <h1 className="h-3 w-7 rounded-md animate-pulse bg-[#8099a2] ml-2"></h1>
+                  ) : (
+                    <h1 className="font-bold text-green-700">{item?.count}</h1>
+                  )}
                   <h1 className="font-medium text-md text-gray-400 w-full">
                     {item?.name}
                   </h1>

@@ -26,8 +26,6 @@ const AddCases = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
-  const [formData, setFormData] = useState({});
-  // console.log("formData==>", formData);
   const [isClientGeolocation, setClientGeolocation] = useState({
     longitude: "",
     latitude: "",
@@ -319,11 +317,7 @@ const AddCases = () => {
     clientGeolocation: isClientGeolocation, // Add geoLocation manually
   };
 
-  // const formik = useFormik({ validationSchema, initialValues });
-  // console.log("dataValue==>", formik.initialValues);
-
   const handleSubmit = async (values, { resetForm }) => {
-    console.log("values==>", values);
     const formattedValues = {
       bankId: values.workForBank,
       bankRefNo: values.bankRefNo,
@@ -375,7 +369,7 @@ const AddCases = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <div className="flex justify-center">
         <h3 className="text-xl font-semibold">
           {caseId ? "Update Case" : "Add Case"}
@@ -423,6 +417,15 @@ const AddCases = () => {
                               </option>
                             ))}
                           </Field>
+                        ) : item?.type === "date" ? (
+                          <Field
+                            type={item?.type}
+                            name={item?.name}
+                            id={item?.id}
+                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                            placeholder={item?.placeholder}
+                            min={new Date().toISOString().split("T")[0]} //for date picker, can only pick today and future dates.
+                          />
                         ) : (
                           <Field
                             type={item?.type}
@@ -430,6 +433,7 @@ const AddCases = () => {
                             id={item?.id}
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                             placeholder={item?.placeholder}
+                            // min={new Date().toISOString().split("T")[0]} //for date picker, can only pick today and future dates.
                           />
                         )}
                         <ErrorMessage

@@ -35,7 +35,7 @@ const Login = () => {
 
   return (
     <div className="w-full relative flex justify-center items-center h-screen bg-[#3b514c]">
-      <div className="relative shadow-2xl shadow-green-200 w-[80%]  h-[60%] md:h-[45%] lg:h-[85%] 2xl:h-[70%] bg-[#68cfb4] flex flex-row">
+      <div className="relative shadow-2xl shadow-green-200 w-[80%]  h-[60%] md:h-[45%] lg:h-[85%] 2xl:h-[70%]  bg-[#68cfb4] flex flex-row">
         <div className="w-[10%] h-full hidden lg:block"></div>
         <div className="w-full lg:w-[50%] h-full  bg-white border flex flex-col gap-10 justify-center items-center ">
           <div className="">
@@ -46,13 +46,13 @@ const Login = () => {
               <div className=" flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <div className="flex gap-1">
-                    <label className="block text-gray-700 text-sm font-bold">
+                    <label className=" text-gray-700 text-sm font-bold">
                       Email
                     </label>
                     <span className="text-red-500 text-xl -mt-1">*</span>
                   </div>
                   <input
-                    className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none placeholder-gray-500"
+                    className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4  w-full appearance-none placeholder-gray-500"
                     type="text"
                     required
                     name="userCode"
@@ -64,7 +64,7 @@ const Login = () => {
 
                 <div className="flex flex-col gap-1">
                   <div className="flex gap-1">
-                    <label className="block text-gray-700 text-sm font-bold">
+                    <label className=" text-gray-700 text-sm font-bold">
                       Password
                     </label>
                     <span className="text-red-500 text-xl -mt-1">*</span>
@@ -80,17 +80,18 @@ const Login = () => {
                       value={formData?.password}
                       onChange={handleInput}
                     />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-3 text-gray-500 cursor-pointer flex items-center p-2"
-                      onClick={() => setShowPassword(!showPassword)} // Toggle visibility
+                    <div
+                      className="absolute inset-y-0 right-6 text-gray-500 cursor-pointer flex justify-center items-center p-2 hover:bg-gray-400"
+                      onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? (
-                        <IoIosEye style={{ fontSize: "18px" }} />
-                      ) : (
-                        <IoIosEyeOff style={{ fontSize: "18px" }} />
-                      )}
-                    </button>
+                      <span>
+                        {showPassword ? (
+                          <IoIosEye className="text-[18px]" />
+                        ) : (
+                          <IoIosEyeOff className="text-[18px]" />
+                        )}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -115,10 +116,10 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="!absolute !right-0 !bottom-0 lg:w-[50%] 2xl:w-[58%] hidden lg:block">
+        <div className="!absolute !right-0  !bottom-0 lg:w-[50%] xl:w-[50%] 2xl:w-[58%] 3xl:w-[50%]  hidden lg:block">
           <img
             src={`${revNweBuilding}`}
-            className=" lg:h-[25rem] 2xl:h-[32rem] w-full"
+            className="lg:h-[25rem] xl:h-[25rem] 2xl:h-[26rem] w-full"
           />
         </div>
         <div className="!absolute !right-32 !top-3 hidden lg:block">

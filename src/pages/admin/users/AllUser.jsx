@@ -53,7 +53,7 @@ const AllUser = () => {
       placeholder: "Filter by Role",
       options: [
         { label: "Admin", value: "admin" },
-        { label: "Field Executive", value: "filedExecutive" },
+        { label: "Field Executive", value: "fieldExecutive" },
         { label: "Coordinator", value: "coordinator" },
         { label: "Supervisor", value: "supervisor" },
       ],

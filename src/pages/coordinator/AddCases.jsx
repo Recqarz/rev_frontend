@@ -1,5 +1,12 @@
-import React, { useEffect } from "react";
-import { Formik, Form, Field, ErrorMessage, resetForm } from "formik";
+import React, { useEffect, useState } from "react";
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  resetForm,
+  useFormik,
+} from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -12,20 +19,35 @@ import {
 } from "../../redux/case/caseAction";
 import { formattedDate } from "../../utils/formattedDate";
 import Swal from "sweetalert2";
+import GeolocationAutoComplete from "../../components/google-map/GeolocationAutoComplete";
 
 const AddCases = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
-
-  const { data: caseData } = useSelector((state) => state.caseReducer);
-  //get banks
+  const [formData, setFormData] = useState({});
+  // console.log("formData==>", formData);
+  const [isClientGeolocation, setClientGeolocation] = useState({
+    longitude: "",
+    latitude: "",
+  });
+  // console.log("isClientGeolocation==>", isClientGeolocation);
   const { accessToken } = useSelector((store) => store?.authReducer);
+  const { data: caseData } = useSelector((state) => state.caseReducer);
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
   const { banks } = data;
+
+  const onSelect = (val) => {
+    // console.log("==>", val);
+    setClientGeolocation({
+      longitude: val.longitude,
+      latitude: val.latitude,
+    });
+  };
+
   useEffect(() => {
     if (caseId) {
       dispatch(getCaseById(caseId));
@@ -277,26 +299,37 @@ const AddCases = () => {
       initialValue: caseData?.clientAddress?.state || "",
     },
   ];
-  const validationSchema = Yup.object(
-    AddCaseSchema.reduce((schema, field) => {
+
+  const validationSchema = Yup.object({
+    ...AddCaseSchema.reduce((schema, field) => {
       if (field.validation) {
         schema[field.name] = field.validation;
       }
       return schema;
-    }, {})
-  );
+    }, {}),
+    // clientGeolocation: Yup.string().required("Geo Location is required"), // Add geoLocation validation manually
+    // Add geoLocation validation manually
+  });
 
-  const initialValues = AddCaseSchema.reduce((values, field) => {
-    values[field.name] = field.initialValue || ""; // Use defaultValue or fallback to an empty string
-    return values;
-  }, {});
+  const initialValues = {
+    ...AddCaseSchema.reduce((values, field) => {
+      values[field.name] = field.initialValue || "";
+      return values;
+    }, {}),
+    clientGeolocation: isClientGeolocation, // Add geoLocation manually
+  };
+
+  // const formik = useFormik({ validationSchema, initialValues });
+  // console.log("dataValue==>", formik.initialValues);
 
   const handleSubmit = async (values, { resetForm }) => {
+    console.log("values==>", values);
     const formattedValues = {
       bankId: values.workForBank,
       bankRefNo: values.bankRefNo,
       clientName: values.clientName,
       BOV_ReportNo: values.BOV_ReportNo,
+      clientGeolocation: values.clientGeolocation,
       clientAddress: {
         addressLine1: values.addressLine1,
         addressLine2: values.addressLine2,
@@ -311,7 +344,7 @@ const AddCases = () => {
       contactNo: values.contactNo,
       visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to ISO format
     };
-
+    // console.log("formattedValues==>", formattedValues);
     try {
       if (caseId) {
         // Show confirmation dialog for updating case
@@ -337,7 +370,6 @@ const AddCases = () => {
         resetForm(); // Reset the form after successful submission
       }
     } catch (error) {
-      // Handle errors and show appropriate feedback
       console.error("Error:", error);
     }
   };
@@ -357,76 +389,101 @@ const AddCases = () => {
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {({ isSubmitting, resetForm, dirty }) => (
-            <Form>
-              <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                {AddCaseSchema?.map((item) => (
-                  <div key={item?.key} className={item?.mainDivClassname}>
-                    <div>
-                      <label
-                        htmlFor={item?.htmlFor}
-                        className="text-sm font-medium text-gray-900 block mb-2"
-                      >
-                        {item?.label}
-                      </label>
-                      {item?.as === "select" ? (
-                        <Field
-                          as="select"
-                          name={item?.name}
-                          id={item?.id}
-                          className={item?.inputFieldClassName}
+          {({
+            isSubmitting,
+            resetForm,
+            dirty,
+            formik,
+            values,
+            setFieldValue,
+            errors,
+          }) => {
+            return (
+              <Form>
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
+                  {AddCaseSchema?.map((item) => (
+                    <div key={item?.key} className={item?.mainDivClassname}>
+                      <div>
+                        <label
+                          htmlFor={item?.htmlFor}
+                          className="text-sm font-medium text-gray-900 block mb-2"
                         >
-                          {item?.options?.map((option) => (
-                            <option key={option?.key} value={option?.value}>
-                              {option?.label}
-                            </option>
-                          ))}
-                        </Field>
-                      ) : (
-                        <Field
-                          type={item?.type}
+                          {item?.label}
+                        </label>
+                        {item?.as === "select" ? (
+                          <Field
+                            as="select"
+                            name={item?.name}
+                            id={item?.id}
+                            className={item?.inputFieldClassName}
+                          >
+                            {item?.options?.map((option) => (
+                              <option key={option?.key} value={option?.value}>
+                                {option?.label}
+                              </option>
+                            ))}
+                          </Field>
+                        ) : (
+                          <Field
+                            type={item?.type}
+                            name={item?.name}
+                            id={item?.id}
+                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                            placeholder={item?.placeholder}
+                          />
+                        )}
+                        <ErrorMessage
                           name={item?.name}
-                          id={item?.id}
-                          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                          placeholder={item?.placeholder}
+                          component="p"
+                          className="text-red-500 text-sm"
                         />
-                      )}
-                      <ErrorMessage
-                        name={item?.name}
-                        component="p"
-                        className="text-red-500 text-sm"
-                      />
+                      </div>
                     </div>
+                  ))}
+                  <div className="col-span-4">
+                    <GeolocationAutoComplete
+                      onSelect={(val) =>
+                        setFieldValue("clientGeolocation", {
+                          longitude: val.longitude,
+                          latitude: val.latitude,
+                        })
+                      }
+                    />
+                    <ErrorMessage
+                      name="clientGeolocation"
+                      component="p"
+                      className="text-red-500 text-sm"
+                    />
                   </div>
-                ))}
-              </div>
-              <div className="flex gap-4 justify-center md:justify-end m-4">
-                <button
-                  type="button" // Use type="button" to prevent triggering form submission
-                  className={`hover:bg-red-500 text-white px-4 py-2 rounded-lg  ${
-                    dirty
-                      ? "bg-red-400 cursor-pointer"
-                      : "bg-gray-400 cursor-not-allowed"
-                  }`}
-                  onClick={() => resetForm()}
-                  disabled={!dirty || isSubmitting}
-                >
-                  Reset
-                </button>
-                <button
-                  type="submit"
-                  className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
-                    dirty
-                      ? "bg-[#1f6c57] cursor-pointer"
-                      : "bg-gray-400 cursor-not-allowed"
-                  }`}
-                  disabled={!dirty || isSubmitting}
-                >
-                  {caseId ? "Update Case" : "Add Case"}
-                </button>
-              </div>
-            </Form>
-          )}
+                </div>
+                <div className="flex gap-4 justify-center md:justify-end m-4">
+                  <button
+                    type="button" // Use type="button" to prevent triggering form submission
+                    className={`hover:bg-red-500 text-white px-4 py-2 rounded-lg  ${
+                      dirty
+                        ? "bg-red-400 cursor-pointer"
+                        : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                    onClick={() => resetForm()}
+                    disabled={!dirty || isSubmitting}
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="submit"
+                    className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
+                      dirty
+                        ? "bg-[#1f6c57] cursor-pointer"
+                        : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                    disabled={!dirty || isSubmitting}
+                  >
+                    {caseId ? "Update Case" : "Add Case"}
+                  </button>
+                </div>
+              </Form>
+            );
+          }}
         </Formik>
       </div>
     </div>

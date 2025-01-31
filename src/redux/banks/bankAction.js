@@ -12,27 +12,29 @@ import {
 } from "./bankType";
 
 import {
+  toastError,
   toastLoading,
   toastUpdate,
 } from "../../utils/react-toastify/ReactToastiry";
 import { baseURL } from "../../utils/urls/baseURL";
 
-export const getAllBankData = () => (dispatch) => {
+export const getAllBankData = (queryString) => async (dispatch) => {
   dispatch({ type: GET_BANK_DATA_REQUEST });
 
   const token = localStorage.getItem("accessToken");
   return axios
-    .get(`${baseURL}/api/v1/admin/bank-list`, {
+    .get(`${baseURL}/api/v1/admin/bank-list?${queryString}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     .then((res) => {
-      dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data?.banks });
+      dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data });
     })
     .catch((err) => {
-      console.log("err");
+      console.log(err?.response?.data?.error);
       dispatch({ type: GET_BANK_DATA_ERROR });
+      toastError(err?.response?.data?.error);
     });
 };
 
@@ -63,25 +65,26 @@ export const addBankData =
 
 export const bankDataUpdate = (data, accessToken, id) => async (dispatch) => {
   const toastId = toastLoading("Loading...");
-  console.log("alldata", data, accessToken, id);
   dispatch({ type: UPDATE_BANK_DATA_REQUEST });
   try {
-    const res = await axios
-      .patch(`http://localhost:8080/api/v1/admin/bank/update/${id}`, data, {
+    const res = await axios.patch(
+      `http://localhost:8080/api/v1/admin/bank/update/${id}`,
+      data,
+      {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-      });
-     
+      }
+    );
     console.log("res", res?.data?.data?.bankdetails);
     dispatch({
       type: UPDATE_BANK_DATA_SUCCESS,
       payload: res?.data?.data?.bankdetails,
     });
-    toastUpdate(toastId, 200, "Success");
+    toastUpdate(toastId, 200, "Bank updated successfully!");
   } catch (err) {
-    console.log("err", err?.response?.data?.error);
+    console.log("err", err);
     toastUpdate(toastId, 400, err?.response?.data?.error);
     dispatch({ type: UPDATE_BANK_DATA_ERROR });
   }

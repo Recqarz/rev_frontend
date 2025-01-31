@@ -20,7 +20,6 @@ import {
   USER_RESET_PASSWORD_REQUEST,
   USER_RESET_PASSWORD_SUCCESS,
   USER_RESET_PASSWORD_ERROR,
-
 } from "./authType";
 
 // check credential and send otp for login
@@ -77,39 +76,40 @@ export const verifyOtpAndLogin = (data, navigate) => async (dispatch) => {
 };
 
 // send otp for forget password
-export const checkMailForForgetPass = (userData, navigate) => (dispatch) => {
-  const toastId = toastLoading("Loading...");
-  dispatch({ type: USER_FORGET_PASSWORD_REQUEST });
-  return axios
-    .post(`${baseURL}/api/v1/user/send-otp`, { userData })
-    .then((res) => {
-      dispatch({ type: USER_FORGET_PASSWORD_SUCCESS });
-      toastUpdate(
-        toastId,
-        200,
-        "OTP has been sent to your email and whatsapp!"
-      );
-      navigate(`/forget/password/verifyotp`, {
-        state: {
-          userData,
-        },
+export const checkMailForForgetPass =
+  (userData, navigate) => async (dispatch) => {
+    const toastId = toastLoading("Loading...");
+    dispatch({ type: USER_FORGET_PASSWORD_REQUEST });
+    return axios
+      .post(`${baseURL}/api/v1/user/send-otp`, { userData })
+      .then((res) => {
+        dispatch({ type: USER_FORGET_PASSWORD_SUCCESS });
+        toastUpdate(
+          toastId,
+          200,
+          "OTP has been sent to your email and whatsapp!"
+        );
+        navigate(`/forget/password/verifyotp`, {
+          state: {
+            userData,
+          },
+        });
+      })
+      .catch((err) => {
+        dispatch({ type: USER_FORGET_PASSWORD_ERROR });
+        toastUpdate(toastId, 404, err?.response?.data?.error);
       });
-    })
-    .catch((err) => {
-      dispatch({ type: USER_FORGET_PASSWORD_ERROR });
-      toastUpdate(toastId, 404, err?.response?.data?.error);
-    });
-};
+  };
 
 // verify otp for forget password
-export const verifyOTPForForgetPass = (data, navigate) => async(dispatch) => {
+export const verifyOTPForForgetPass = (data, navigate) => async (dispatch) => {
   const { userData, eOtp, mOtp } = data;
   const toastId = toastLoading("Loading...");
   dispatch({ type: USER_VERIFYOTP_REQUEST });
   return axios
     .post(`${baseURL}/api/v1/user/verify-otp`, { userData, eOtp, mOtp })
     .then((res) => {
-      console.log(res)
+      console.log(res);
       dispatch({ type: USER_VERIFYOTP_SUCCESS });
       toastUpdate(toastId, 200, "OTP has been verified successfully!");
       navigate(`/forget/password/resetpassword`, {
@@ -145,10 +145,7 @@ export const resetPasswordForForgetPass = (data, navigate) => (dispatch) => {
       .catch((err) => {
         dispatch({ type: USER_RESET_PASSWORD_ERROR });
         toastUpdate(toastId, 400, "Something went wrong");
-        console.log("err", err)
+        console.log("err", err);
       });
   }
 };
-
-
-

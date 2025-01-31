@@ -20,3 +20,19 @@
 .custom-scrollbar::-webkit-scrollbar-track {
   background-color: #f0f0f0; /* Track color */
 }
+
+/* Custom small Swal box */
+.swal2-popup.small-swal {
+  width: 330px; /* Set the desired width */
+  height: auto; /* Set the height to auto */
+  font-size: 14px; /* Optional: Adjust the font size */
+  padding: 10px; /* Adjust padding if needed */
+}
+
+.swal2-title {
+  font-size: 20px; /* Optional: Customize title size */
+}
+
+.swal2-html-container {
+  font-size: 20px; /* Optional: Customize the text size */
+}

@@ -13,7 +13,14 @@ import {
 const initialData = {
   isLoading: false,
   isError: false,
-  data: [],
+  // data: [],
+  data: {
+    message: "",
+    currentPage: 1,
+    totalPages: 1,
+    totalBank: 0,
+    banks: [],
+  },
 };
 
 export const allBankReducer = (state = initialData, { type, payload }) => {
@@ -42,15 +49,18 @@ export const allBankReducer = (state = initialData, { type, payload }) => {
     }
 
     case UPDATE_BANK_DATA_SUCCESS: {
-      const updatedData = state.data.map((bank) => {
+      const updatedData = state?.data?.banks?.map((bank) => {
         // console.log("Checking bank._id and payload._id", bank._id, payload._id);
-        return bank._id === payload._id ? { ...bank, ...payload } : bank;
+        return bank._id === payload._id ? { ...payload } : bank;
       });
       console.log("updatedData", updatedData);
       return {
         ...state,
-        data: updatedData,
         isLoading: false,
+        data: {
+          ...state?.data,
+          banks: updatedData,
+        },
       };
     }
 

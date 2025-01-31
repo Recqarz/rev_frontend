@@ -1,58 +1,112 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from "react";
 // import '../index.css'
-import { MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
-import { HiUserAdd } from 'react-icons/hi'
-import { Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { bankDataUpdate } from '../redux/banks/bankAction'
+import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import { HiUserAdd } from "react-icons/hi";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { bankDataUpdate, getAllBankData } from "../redux/banks/bankAction";
+import { IoMdSearch } from "react-icons/io";
+import Pagination from "./Pagination";
+import { debounce } from "../utils/halper";
+import SearchFilterAddSection from "./SearchFilterAddSection";
 
-const BankTable = ({ allBank }) => {
-  const dispatch = useDispatch()
-  const [bankId, setBankId] = useState('')
-  const [updateBankDataStatus, setupdateBankDataStatus] = useState(false)
+const BankTable = () => {
+  const dispatch = useDispatch();
+  const { isLoading, isError, data } = useSelector(
+    (state) => state.allBankReducer
+  );
+  const { message, currentPage, totalPages, totalBank, banks } = data;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({});
+  const [limit, setLimit] = useState(10);
+  const [currentPageState, setCurrentPageState] = useState(currentPage);
+  const [debouncedFilters, setDebouncedFilters] = useState({
+    search: "",
+  });
+  const [bankId, setBankId] = useState("");
+  const [updateBankDataStatus, setupdateBankDataStatus] = useState(false);
   const [bankUpdateData, setBankUpdateData] = useState({
-    bankName: '',
-    branchName: '',
-    IFSC: '',
-  })
-  const accessToken = useSelector((store) => store.authReducer.accessToken)
+    bankName: "",
+    branchName: "",
+    IFSC: "",
+  });
+  const accessToken = useSelector((store) => store.authReducer.accessToken);
+
+  const handleSearch = (val) => {
+    setSearchQuery(val);
+  };
+
+  const debouncedHandleSearch = debounce(handleSearch, 500);
+
+  const handleSearchInput = (e) => {
+    debouncedHandleSearch(e.target.value);
+  };
+
+  useEffect(() => {
+    dispatch(
+      getAllBankData(
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}`
+      )
+    );
+  }, [limit, currentPageState, searchQuery]);
+
+  const filterOptions = [];
+  const handleFilterChange = (filterName, value) => {
+    setFilters((prev) => ({ ...prev, [filterName]: value }));
+  };
 
   const handleUpdateStatusFunc = (item) => {
-    setBankId(item._id)
-    setupdateBankDataStatus(true)
+    setBankId(item._id);
+    setupdateBankDataStatus(true);
     setBankUpdateData({
       bankName: item.bankName,
       branchName: item.branchName,
       IFSC: item.IFSC,
-    })
-  }
+    });
+  };
 
   const handleChangeBankData = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setBankUpdateData((prevUserData) => ({
       ...prevUserData,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleUpdateBankFunc = (e) => {
-    e.preventDefault()
-    dispatch(bankDataUpdate(bankUpdateData, accessToken, bankId))
-    setupdateBankDataStatus(false)
-  }
+    e.preventDefault();
+    dispatch(bankDataUpdate(bankUpdateData, accessToken, bankId));
+    setupdateBankDataStatus(false);
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+  };
+
+  const handleLimit = (val) => {
+    setLimit(val);
+  };
+
+  const handleCurrentPageState = (val) => {
+    setCurrentPageState((prev) => prev + val);
+  };
 
   return (
     <div className="flex justify-center">
-      <div className="flex flex-col gap-5 w-[90%]">
-        <div className="flex justify-end mx-4">
-          <Link to="/admin/dashboard/all/banks/add">
-            <div className="rounded-md px-6 bg-[#073c4e] py-2 text-white font-semibold">
-              ADD
-            </div>
-          </Link>
-        </div>
-        {/* -----------------------------------------------custom-scrollbar */}
-        <div className="shadow-lg rounded-lg mx-4 overflow-x-auto custom-scrollbar">
+      <div className="flex flex-col gap-5 w-[100%]">
+        {/* Search, Filter Section & add section*/}
+        <SearchFilterAddSection
+          setSearchQuery={setSearchQuery}
+          filterOptions={filterOptions}
+          handleFilterChange={handleFilterChange}
+          handleResetFilters={handleResetFilters}
+          disabledReset={!searchQuery && !filters.zone && !filters.status}
+          enableReset={searchQuery || filters.zone || filters.status}
+          goToPageLink={"/admin/dashboard/all/banks/add"}
+          addBtnEnable={true}
+        />
+        {/* Table section */}
+        <div className="shadow-lg rounded-lg overflow-x-auto custom-scrollbar">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr className="bg-[#073c4e] text-white">
@@ -66,7 +120,7 @@ const BankTable = ({ allBank }) => {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {(allBank ?? [])?.map((row, index) => (
+              {(banks ?? [])?.map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
@@ -97,35 +151,22 @@ const BankTable = ({ allBank }) => {
             </tbody>
           </table>
         </div>
-
-        {/*---------------------- Pagination---------------------------- */}
-        {/* <div className="shadow-lg mt-4 mx-4 py-1 flex justify-center lg:justify-end rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
-          <div className="flex flex-col gap-1.5 md:flex-row md:gap-14 justify-center items-center">
-            <div>Rows per page: 1</div>
-            <div>1 of 2</div>
-            <div className="flex gap-4 lg:mr-6">
-              <button
-                // onClick={handlePrevious}
-                className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
-              >
-                &lt;
-              </button>
-              <button
-                // onClick={handleNext}
-                className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
-              >
-                &gt;
-              </button>
-            </div>
-          </div>
-        </div>*/}
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalData={totalBank}
+          limit={limit}
+          handleLimit={handleLimit}
+          handleCurrentPageState={handleCurrentPageState}
+        />
 
         {updateBankDataStatus && (
           <div
             id="authentication-modal"
             aria-hidden="true"
             className={`${
-              updateBankDataStatus ? 'flex' : 'hidden'
+              updateBankDataStatus ? "flex" : "hidden"
             } overflow-x-hidden overflow-y-auto fixed inset-0 z-50 justify-center items-center backdrop-blur-sm`}
           >
             <div className="relative w-full max-w-md px-0 h-full md:h-auto">
@@ -229,7 +270,7 @@ const BankTable = ({ allBank }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BankTable
+export default BankTable;

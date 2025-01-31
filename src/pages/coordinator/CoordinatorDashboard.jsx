@@ -1,7 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const CoordinatorDashboard = () => {
-  return <div>Coordinator Dashboard</div>
-}
+  return <div>Welcome to Coordinator Dashboard</div>;
+};
 
-export default CoordinatorDashboard
+export default CoordinatorDashboard;

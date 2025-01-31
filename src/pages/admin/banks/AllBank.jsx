@@ -10,6 +10,7 @@ import {
 } from "../../../redux/banks/bankAction";
 import SearchFilterAddSection from "../../../components/SearchFilterAddSection";
 import Pagination from "../../../components/Pagination";
+import { highlightMatch } from "../../../utils/highlightMatch";
 
 const AllBank = () => {
   const dispatch = useDispatch();
@@ -121,13 +122,13 @@ const AllBank = () => {
                     {index + 1}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {row?.bankName}
+                    {highlightMatch(row?.bankName, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
-                    {row?.branchName}
+                    {highlightMatch(row?.branchName, searchQuery)}
                   </td>
                   <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {row?.IFSC}
+                    {highlightMatch(row?.IFSC, searchQuery)}
                   </td>
 
                   <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">

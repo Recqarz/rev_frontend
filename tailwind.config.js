@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      screens: {
+        "3xl": "1536px", // Custom breakpoint for extra-large screens
+      },
       colors: {
         /** */
         primary_dark: "#073c4e",

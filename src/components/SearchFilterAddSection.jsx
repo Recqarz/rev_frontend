@@ -16,7 +16,7 @@ const SearchFilterAddSection = ({
 }) => {
   const handleSearch = (val) => {
     setSearchQuery(val);
-    setCurrentPageState(1)
+    setCurrentPageState(1);
   };
 
   const debouncedHandleSearch = debounce(handleSearch, 500);
@@ -28,7 +28,7 @@ const SearchFilterAddSection = ({
     <div className="w-full flex gap-3 flex-col-reverse lg:flex-row lg:justify-between lg:gap-4">
       <div className="flex lg:gap-5 flex-wrap md:!flex-wrap gap-4 lg:justify-normal">
         {/* Search Bar */}
-        <div className="flex items-center border rounded-lg bg-white  py-2 px-3 w-64 focus-within:ring-gray-600 focus-within:border-gray-600">
+        <div className="flex items-center border rounded-lg bg-white  py-2 px-3 w-64 focus-within:ring-cyan-600 focus-within:border-gray-600">
           <span className=" flex items-center text-gray-400 text-md">
             <IoMdSearch />
           </span>

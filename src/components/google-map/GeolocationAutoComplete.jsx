@@ -30,9 +30,9 @@ const GeolocationAutoComplete = ({ onSelect }) => {
   }, [isGoogleMapsLoaded, onSelect]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        geocode location
+        Client Geolocation
       </label>
       <input
         id="autocomplete"
@@ -40,7 +40,7 @@ const GeolocationAutoComplete = ({ onSelect }) => {
         name="clientGeolocation"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        placeholder="Enter a location"
+        placeholder="Enter Location"
         className="w-full p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         required
       />

@@ -76,13 +76,11 @@ export const addCaseData =
       );
       // console.log("ADD_CASE_DATA_REQUEST --response ", response);
       dispatch({ type: ADD_CASE_DATA_SUCCESS, payload: response?.data?.data });
-      toastUpdate(toastId, 200, " Case Added Successfully");
+      toastUpdate(toastId, 200, response?.data?.message);
     } catch (error) {
-      console.error(
-        "Error creating case data:",
-        error?.response?.data?.message
-      );
-      toastUpdate(toastId, 400, error?.response?.data?.error);
+      console.error("Error creating case data:", error?.response?.error);
+      // console.log("Error creating case data log:", error?.response?.error);
+      toastUpdate(toastId, 400, error?.response?.error);
       dispatch({ type: ADD_CASE_DATA_ERROR });
     }
   };
@@ -102,6 +100,7 @@ export const updateCaseDataId =
           },
         }
       );
+      console.log("updateCaseDataId response==>", response);
       dispatch({
         type: UPDATE_CASE_DATA_SUCCESS,
         payload: response?.data?.updatedCase,

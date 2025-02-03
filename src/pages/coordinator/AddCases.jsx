@@ -20,6 +20,7 @@ import {
 import { formattedDate } from "../../utils/formattedDate";
 import Swal from "sweetalert2";
 import GeolocationAutoComplete from "../../components/google-map/GeolocationAutoComplete";
+import visitDateValidation from "../../utils/visitDateValidation";
 
 const AddCases = () => {
   const navigate = useNavigate();
@@ -30,16 +31,15 @@ const AddCases = () => {
     longitude: "",
     latitude: "",
   });
-  // console.log("isClientGeolocation==>", isClientGeolocation);
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
+  // console.log("caseData==>", caseData);
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
   const { banks } = data;
 
   const onSelect = (val) => {
-    // console.log("==>", val);
     setClientGeolocation({
       longitude: val.longitude,
       latitude: val.latitude,
@@ -157,10 +157,9 @@ const AddCases = () => {
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter phone number",
       validation: Yup.string()
-        .transform((value) => value.replace(/^0+/, "")) // Remove leading zeros
-        .matches(/^\d{10}$/, "Phone number must be 10 digits") // Validate 10-digit number
-        .required("Contact No. is required")
-        .nullable(),
+        .transform((value) => value.replace(/^0+/, ""))
+        .matches(/^\d{10}$/, "Contact no. must be 10 digits & non-negative")
+        .required("Contact no. is required"),
       initialValue: caseData?.contactNo || "",
     },
     {
@@ -174,8 +173,11 @@ const AddCases = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter Visit Date",
-      validation: Yup.string().required("Visit Date. is required").nullable(),
-      initialValue: formattedDate(caseData?.visitDate) || "",
+      validation: visitDateValidation,
+      initialValue:
+        caseData && caseData?.visitDate
+          ? formattedDate(caseData?.visitDate)
+          : "",
     },
     {
       key: 8,
@@ -252,13 +254,16 @@ const AddCases = () => {
       label: "Pin code",
       htmlFor: "pincode",
       name: "pincode",
-      type: "text",
+      type: "number",
       id: "pincode",
       mainDivClassname: "col-span-4 md:col-span-4",
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter Pin code",
-      validation: Yup.string().required("Pin code is required").nullable(),
+      validation: Yup.string()
+        .transform((value) => value.replace(/^0+/, ""))
+        .matches(/^\d{6}$/, "pincode must be 6 digits & non-negative")
+        .required("pincode is required"),
       initialValue: caseData?.clientAddress?.pincode || "",
     },
     {
@@ -305,6 +310,7 @@ const AddCases = () => {
       }
       return schema;
     }, {}),
+    clientGeoFormattedAddress: Yup.string().required("Geo address is required"), // Add geoAddress validation manually
     // clientGeolocation: Yup.string().required("Geo Location is required"), // Add geoLocation validation manually
     // Add geoLocation validation manually
   });
@@ -314,15 +320,18 @@ const AddCases = () => {
       values[field.name] = field.initialValue || "";
       return values;
     }, {}),
-    clientGeolocation: isClientGeolocation, // Add geoLocation manually
+    clientGeoFormattedAddress: caseData?.clientGeoFormattedAddress || "",
+    // clientGeolocation: "", // Add geoLocation manually
   };
 
   const handleSubmit = async (values, { resetForm }) => {
+    // console.log("values==>", values);
     const formattedValues = {
       bankId: values.workForBank,
       bankRefNo: values.bankRefNo,
       clientName: values.clientName,
       BOV_ReportNo: values.BOV_ReportNo,
+      clientGeoFormattedAddress: values.clientGeoFormattedAddress,
       clientGeolocation: values.clientGeolocation,
       clientAddress: {
         addressLine1: values.addressLine1,
@@ -391,10 +400,11 @@ const AddCases = () => {
             values,
             setFieldValue,
             errors,
+            touched,
           }) => {
             return (
               <Form>
-                <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4 ">
                   {AddCaseSchema?.map((item) => (
                     <div key={item?.key} className={item?.mainDivClassname}>
                       <div>
@@ -433,7 +443,6 @@ const AddCases = () => {
                             id={item?.id}
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                             placeholder={item?.placeholder}
-                            // min={new Date().toISOString().split("T")[0]} //for date picker, can only pick today and future dates.
                           />
                         )}
                         <ErrorMessage
@@ -446,16 +455,28 @@ const AddCases = () => {
                   ))}
                   <div className="col-span-4">
                     <GeolocationAutoComplete
-                      onSelect={(val) =>
+                      clientGeoFormattedAddress={
+                        caseData && caseData?.clientGeoFormattedAddress
+                          ? caseData?.clientGeoFormattedAddress
+                          : ""
+                      }
+                      onSelect={(val) => {
+                        setFieldValue("clientGeoFormattedAddress", val.address); // Set formatted address
                         setFieldValue("clientGeolocation", {
                           longitude: val.longitude,
                           latitude: val.latitude,
-                        })
-                      }
+                        });
+                      }}
                     />
+                    {/* {errors.clientGeoFormattedAddress &&
+                      touched.clientGeoFormattedAddress && (
+                        <span className="text-red-500">
+                          {errors.clientGeoFormattedAddress}
+                        </span>
+                      )} */}
                     <ErrorMessage
-                      name="clientGeolocation"
-                      component="p"
+                      name="clientGeoFormattedAddress"
+                      component="div"
                       className="text-red-500 text-sm"
                     />
                   </div>
@@ -468,7 +489,10 @@ const AddCases = () => {
                         ? "bg-red-400 cursor-pointer"
                         : "bg-gray-400 cursor-not-allowed"
                     }`}
-                    onClick={() => resetForm()}
+                    onClick={() => {
+                      resetForm();
+                      // Reset entire form
+                    }}
                     disabled={!dirty || isSubmitting}
                   >
                     Reset

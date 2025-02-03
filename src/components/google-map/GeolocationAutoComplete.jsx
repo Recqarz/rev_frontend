@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import useGoogleMaps from "../../utils/customHooks/useGoogleMaps";
 
-const GeolocationAutoComplete = ({ onSelect, clientGeoFormattedAddress }) => {
+const GeolocationAutoComplete = ({
+  onSelect,
+  existingClientGeoFormattedAddress,
+}) => {
   const isGoogleMapsLoaded = useGoogleMaps(); // Load Google Maps dynamically
   const [inputValue, setInputValue] = useState(
-    (clientGeoFormattedAddress && clientGeoFormattedAddress) || ""
+    (existingClientGeoFormattedAddress && existingClientGeoFormattedAddress) ||
+      ""
   );
   const [isUserSelected, setIsUserSelected] = useState(false); // To track manual selection
 
   useEffect(() => {
-    if (!isUserSelected && clientGeoFormattedAddress) {
-      setInputValue(clientGeoFormattedAddress);
+    if (!isUserSelected && existingClientGeoFormattedAddress) {
+      setInputValue(existingClientGeoFormattedAddress);
     }
     if (!isGoogleMapsLoaded) return;
 
@@ -21,6 +25,7 @@ const GeolocationAutoComplete = ({ onSelect, clientGeoFormattedAddress }) => {
 
     autocomplete.addListener("place_changed", () => {
       const selectedPlace = autocomplete.getPlace();
+      console.log("selectedPlace==>", !selectedPlace);
       setInputValue(selectedPlace?.formatted_address || "");
       setIsUserSelected(true);
       if (selectedPlace?.geometry) {
@@ -32,7 +37,7 @@ const GeolocationAutoComplete = ({ onSelect, clientGeoFormattedAddress }) => {
         onSelect(locationData);
       }
     });
-  }, [clientGeoFormattedAddress, isGoogleMapsLoaded, onSelect]);
+  }, [existingClientGeoFormattedAddress, isGoogleMapsLoaded, onSelect]);
 
   return (
     <div className="flex flex-col gap-1">

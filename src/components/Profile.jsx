@@ -81,7 +81,7 @@ const Profile = () => {
       initialValue: profileData?.email || "",
     },
     {
-      key: 5,
+      key: 4,
       label: "Mobile Code",
       htmlFor: "mobileCode",
       as: "select",
@@ -101,7 +101,7 @@ const Profile = () => {
       initialValue: "+91",
     },
     {
-      key: 6,
+      key: 5,
       label: "Mobile No.",
       htmlFor: "mobile",
       name: "mobile",
@@ -121,7 +121,7 @@ const Profile = () => {
       initialValue: profileData?.mobile || "",
     },
     {
-      key: 8,
+      key: 6,
       label: "Role",
       htmlFor: "role",
       as: "select",
@@ -138,14 +138,14 @@ const Profile = () => {
         { key: 4, value: "coordinator", label: "Coordinator" },
         { key: 5, value: "auditor", label: "Auditor" },
         { key: 6, value: "superVisor", label: "Supervisor" },
-        { key: 6, value: "admin", label: "Admin" },
+        { key: 7, value: "admin", label: "Admin" },
       ],
       validation: Yup.string().required("Role is required"),
       disabled: true,
       initialValue: profileData?.role || "",
     },
     {
-      key: 9,
+      key: 7,
       label: "Work for bank",
       htmlFor: "workForBank",
       as: "select",

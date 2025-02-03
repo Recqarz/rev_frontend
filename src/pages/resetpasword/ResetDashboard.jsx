@@ -11,7 +11,8 @@ const ResetDashboard = () => {
   const dispatch = useDispatch();
   const [userData, setUserData] = useState("");
 
-  const handleResetPassword = () => {
+  const handleResetPassword = (e) => {
+    e.preventDefault();
     dispatch(checkMailForForgetPass(userData, navigate));
   };
 

@@ -78,11 +78,13 @@ export const verifyOtpAndLogin = (data, navigate) => async (dispatch) => {
 // send otp for forget password
 export const checkMailForForgetPass =
   (userData, navigate) => async (dispatch) => {
+    console.log("userData==>", userData);
     const toastId = toastLoading("Loading...");
     dispatch({ type: USER_FORGET_PASSWORD_REQUEST });
     return axios
       .post(`${baseURL}/api/v1/user/send-otp`, { userData })
       .then((res) => {
+        console.log("res==>", res);
         dispatch({ type: USER_FORGET_PASSWORD_SUCCESS });
         toastUpdate(
           toastId,
@@ -96,8 +98,9 @@ export const checkMailForForgetPass =
         });
       })
       .catch((err) => {
+        console.log("err==>", err);
         dispatch({ type: USER_FORGET_PASSWORD_ERROR });
-        toastUpdate(toastId, 404, err?.response?.data?.error);
+        // toastUpdate(toastId, 404, err?.response?.data?.error);
       });
   };
 

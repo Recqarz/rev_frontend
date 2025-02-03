@@ -1,10 +1,12 @@
-import { toastSuccess } from '../../utils/react-toastify/ReactToastiry'
+import { toastSuccess } from "../../utils/react-toastify/ReactToastiry";
 import {
+  USER_FORGET_PASSWORD_ERROR,
+  USER_FORGET_PASSWORD_REQUEST,
   USER_LOGIN_ERROR,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGOUT_SUCCESS,
-} from './authType'
+} from "./authType";
 
 const initialData = {
   isLoading: false,
@@ -20,8 +22,9 @@ const initialData = {
 
 const authReducer = (state = initialData, { type, payload }) => {
   switch (type) {
-    case USER_LOGIN_REQUEST: {
-      return { ...state, isLoading: true, isError: false, isSuccess: false }
+    case USER_LOGIN_REQUEST:
+    case USER_FORGET_PASSWORD_REQUEST: {
+      return { ...state, isLoading: true, isError: false, isSuccess: false };
     }
     case USER_LOGIN_SUCCESS: {
       // console.log(payload);
@@ -40,10 +43,7 @@ const authReducer = (state = initialData, { type, payload }) => {
         lastName: payload?.lastName,
         role: payload?.role,
         isLogin: true,
-      }
-    }
-    case USER_LOGIN_ERROR: {
-      return { ...state, isLoading: false, isSuccess: false, isError: true }
+      };
     }
     case USER_LOGOUT_SUCCESS: {
       localStorage.removeItem("accessToken", payload?.accessToken);
@@ -51,22 +51,25 @@ const authReducer = (state = initialData, { type, payload }) => {
       localStorage.removeItem("lastName", payload?.lastName);
       localStorage.removeItem("role", payload?.role);
       localStorage.removeItem("isActive", payload?.isActive);
-      toastSuccess("Logged out success!")
+      toastSuccess("Logged out success!");
       return {
         ...state,
-        accessToken: '',
-        firstName: '',
-        lastName: '',
-        role: '',
+        accessToken: "",
+        firstName: "",
+        lastName: "",
+        role: "",
         isLogin: false,
-        isActive:false
-        
-      }
+        isActive: false,
+      };
+    }
+    case USER_LOGIN_ERROR:
+    case USER_FORGET_PASSWORD_ERROR: {
+      return { ...state, isLoading: false, isSuccess: false, isError: true };
     }
 
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default authReducer
+export default authReducer;

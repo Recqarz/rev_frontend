@@ -23,7 +23,7 @@ import GeolocationAutoComplete from "../../components/google-map/GeolocationAuto
 import visitDateValidation from "../../utils/visitDateValidation";
 
 const AddCases = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
@@ -310,8 +310,8 @@ const AddCases = () => {
       }
       return schema;
     }, {}),
-    clientGeoFormattedAddress: Yup.string().required("Geo address is required"), // Add geoAddress validation manually
-    // clientGeolocation: Yup.string().required("Geo Location is required"), // Add geoLocation validation manually
+    clientGeoFormattedAddress: Yup.string().required("Geo address is required"),
+    // clientGeolocation: Yup.string().required("Geo Location is required"),
     // Add geoLocation validation manually
   });
 
@@ -325,7 +325,7 @@ const AddCases = () => {
   };
 
   const handleSubmit = async (values, { resetForm }) => {
-    // console.log("values==>", values);
+    console.log("values==>", values);
     const formattedValues = {
       bankId: values.workForBank,
       bankRefNo: values.bankRefNo,
@@ -348,33 +348,33 @@ const AddCases = () => {
       visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to ISO format
     };
     // console.log("formattedValues==>", formattedValues);
-    try {
-      if (caseId) {
-        // Show confirmation dialog for updating case
-        const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "Do you want to update this case?",
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, update it!",
-          customClass: {
-            popup: "small-swal", // Apply custom class to the popup
-          },
-        });
+    // try {
+    //   if (caseId) {
+    //     // Show confirmation dialog for updating case
+    //     const result = await Swal.fire({
+    //       title: "Are you sure?",
+    //       text: "Do you want to update this case?",
+    //       icon: "question",
+    //       showCancelButton: true,
+    //       confirmButtonColor: "#3085d6",
+    //       cancelButtonColor: "#d33",
+    //       confirmButtonText: "Yes, update it!",
+    //       customClass: {
+    //         popup: "small-swal", // Apply custom class to the popup
+    //       },
+    //     });
 
-        if (result.isConfirmed) {
-          dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
-        }
-      } else {
-        // Add a new case
-        dispatch(addCaseData(formattedValues, accessToken, navigate));
-        resetForm(); // Reset the form after successful submission
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    //     if (result.isConfirmed) {
+    //       dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
+    //     }
+    //   } else {
+    //     // Add a new case
+    //     dispatch(addCaseData(formattedValues, accessToken, navigate));
+    //     resetForm(); // Reset the form after successful submission
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
   };
 
   return (
@@ -402,6 +402,10 @@ const AddCases = () => {
             errors,
             touched,
           }) => {
+            console.log("formik==>", values);
+            console.log("initialValues==>", initialValues);
+            console.log("validationSchema==>", validationSchema);
+
             return (
               <Form>
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4 ">
@@ -455,7 +459,7 @@ const AddCases = () => {
                   ))}
                   <div className="col-span-4">
                     <GeolocationAutoComplete
-                      clientGeoFormattedAddress={
+                      existingClientGeoFormattedAddress={
                         caseData && caseData?.clientGeoFormattedAddress
                           ? caseData?.clientGeoFormattedAddress
                           : ""

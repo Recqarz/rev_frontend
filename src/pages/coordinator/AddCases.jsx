@@ -23,7 +23,7 @@ import GeolocationAutoComplete from "../../components/google-map/GeolocationAuto
 import visitDateValidation from "../../utils/visitDateValidation";
 
 const AddCases = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
@@ -33,7 +33,7 @@ const AddCases = () => {
   });
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
-  // console.log("caseData==>", caseData);
+  console.log("caseData==>", caseData);
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
@@ -321,11 +321,18 @@ const AddCases = () => {
       return values;
     }, {}),
     clientGeoFormattedAddress: caseData?.clientGeoFormattedAddress || "",
-    // clientGeolocation: "", // Add geoLocation manually
+    clientGeolocation: {
+      longitude: caseData?.clientGeolocation?.coordinates?.length
+        ? caseData?.clientGeolocation?.coordinates[0]
+        : "",
+      latitude: caseData?.clientGeolocation?.coordinates?.length
+        ? caseData?.clientGeolocation?.coordinates[1]
+        : "",
+    }, // Add geoLocation manually
   };
 
   const handleSubmit = async (values, { resetForm }) => {
-    console.log("values==>", values);
+    // console.log("values==>", values);
     const formattedValues = {
       bankId: values.workForBank,
       bankRefNo: values.bankRefNo,
@@ -347,34 +354,34 @@ const AddCases = () => {
       contactNo: values.contactNo,
       visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to ISO format
     };
-    // console.log("formattedValues==>", formattedValues);
-    // try {
-    //   if (caseId) {
-    //     // Show confirmation dialog for updating case
-    //     const result = await Swal.fire({
-    //       title: "Are you sure?",
-    //       text: "Do you want to update this case?",
-    //       icon: "question",
-    //       showCancelButton: true,
-    //       confirmButtonColor: "#3085d6",
-    //       cancelButtonColor: "#d33",
-    //       confirmButtonText: "Yes, update it!",
-    //       customClass: {
-    //         popup: "small-swal", // Apply custom class to the popup
-    //       },
-    //     });
+    console.log("formattedValues==>", formattedValues);
+    try {
+      if (caseId) {
+        // Show confirmation dialog for updating case
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to update this case?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, update it!",
+          customClass: {
+            popup: "small-swal", // Apply custom class to the popup
+          },
+        });
 
-    //     if (result.isConfirmed) {
-    //       dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
-    //     }
-    //   } else {
-    //     // Add a new case
-    //     dispatch(addCaseData(formattedValues, accessToken, navigate));
-    //     resetForm(); // Reset the form after successful submission
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
+        if (result.isConfirmed) {
+          dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
+        }
+      } else {
+        // Add a new case
+        dispatch(addCaseData(formattedValues, accessToken, navigate));
+        resetForm(); // Reset the form after successful submission
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -390,7 +397,7 @@ const AddCases = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-          enableReinitialize
+          enableReinitialize={true}
         >
           {({
             isSubmitting,
@@ -401,11 +408,12 @@ const AddCases = () => {
             setFieldValue,
             errors,
             touched,
+            handleReset,
           }) => {
-            console.log("formik==>", values);
-            console.log("initialValues==>", initialValues);
-            console.log("validationSchema==>", validationSchema);
-
+            {
+              /* console.log("initialValues==>", initialValues);
+            console.log("values==>", values); */
+            }
             return (
               <Form>
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4 ">

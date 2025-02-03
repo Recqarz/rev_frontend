@@ -12,6 +12,7 @@ const GeolocationAutoComplete = ({
   );
   const [isUserSelected, setIsUserSelected] = useState(false); // To track manual selection
 
+  console.log("inputValue==>", inputValue?.length);
   useEffect(() => {
     if (!isUserSelected && existingClientGeoFormattedAddress) {
       setInputValue(existingClientGeoFormattedAddress);
@@ -23,11 +24,15 @@ const GeolocationAutoComplete = ({
       { types: ["geocode"] }
     );
 
+    console.log("autocomplete==>", !autocomplete);
+
     autocomplete.addListener("place_changed", () => {
       const selectedPlace = autocomplete.getPlace();
       console.log("selectedPlace==>", !selectedPlace);
       setInputValue(selectedPlace?.formatted_address || "");
       setIsUserSelected(true);
+      console.log("selectedPlace==>", selectedPlace);
+
       if (selectedPlace?.geometry) {
         const locationData = {
           address: selectedPlace.formatted_address,

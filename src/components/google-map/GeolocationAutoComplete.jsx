@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import useGoogleMaps from "../../utils/customHooks/useGoogleMaps";
 
-const GeolocationAutoComplete = ({ onSelect }) => {
-  // console.log("onSelect==>", onSelect);
+const GeolocationAutoComplete = ({ onSelect, clientGeoFormattedAddress }) => {
   const isGoogleMapsLoaded = useGoogleMaps(); // Load Google Maps dynamically
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(
+    (clientGeoFormattedAddress && clientGeoFormattedAddress) || ""
+  );
+  const [isUserSelected, setIsUserSelected] = useState(false); // To track manual selection
 
   useEffect(() => {
+    if (!isUserSelected && clientGeoFormattedAddress) {
+      setInputValue(clientGeoFormattedAddress);
+    }
     if (!isGoogleMapsLoaded) return;
 
     const autocomplete = new window.google.maps.places.Autocomplete(
@@ -16,18 +21,18 @@ const GeolocationAutoComplete = ({ onSelect }) => {
 
     autocomplete.addListener("place_changed", () => {
       const selectedPlace = autocomplete.getPlace();
-      setInputValue(selectedPlace.formatted_address || "");
-      if (selectedPlace.geometry) {
+      setInputValue(selectedPlace?.formatted_address || "");
+      setIsUserSelected(true);
+      if (selectedPlace?.geometry) {
         const locationData = {
           address: selectedPlace.formatted_address,
           longitude: selectedPlace.geometry.location.lng(),
           latitude: selectedPlace.geometry.location.lat(),
         };
         onSelect(locationData);
-        // console.log("locationData==>", locationData);
       }
     });
-  }, [isGoogleMapsLoaded, onSelect]);
+  }, [clientGeoFormattedAddress, isGoogleMapsLoaded, onSelect]);
 
   return (
     <div className="flex flex-col gap-1">
@@ -35,14 +40,16 @@ const GeolocationAutoComplete = ({ onSelect }) => {
         Client Geolocation
       </label>
       <input
-        id="autocomplete"
+        id="autocomplete" //make this fix, its from googleAPI
         type="text"
-        name="clientGeolocation"
+        name="clientGeoFormattedAddress"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={(e) => {
+          setInputValue(e.target.value);
+          setIsUserSelected(true);
+        }}
         placeholder="Enter Location"
-        className="w-full p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        required
+        className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
       />
     </div>
   );

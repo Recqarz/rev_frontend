@@ -26,12 +26,10 @@ const Login = () => {
 
   const handleForm = (e) => {
     e.preventDefault();
-    console.log(formData);
     dispatch(checkCredentialAndsendOtp(formData, navigate));
   };
 
   const auth = useSelector((store) => store.authReducer);
-  console.log(auth);
 
   return (
     <div className="w-full relative flex justify-center items-center h-screen bg-[#3b514c]">

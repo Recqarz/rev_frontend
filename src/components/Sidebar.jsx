@@ -66,7 +66,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
 
   const handleNavigation = (path) => {
     navigate(path);
-    // toggleSidebar(false);
+    toggleSidebar(false);
   };
 
   const handleLogout = async () => {

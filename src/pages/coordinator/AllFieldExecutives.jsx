@@ -107,6 +107,7 @@ const AllFieldExecutives = () => {
                 <React.Fragment key={index}>
                   <tr
                     key={index}
+                    onClick={() => toggleDetails(index)} // Toggle the details panel
                     className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
                   >
                     <td className="py-3 px-6 border-b border-gray-200">
@@ -145,7 +146,7 @@ const AllFieldExecutives = () => {
                         </div>
                         <div
                           className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
-                          onClick={() => toggleDetails(index)} // Toggle the details panel
+                          // onClick={() => toggleDetails(index)} // Toggle the details panel
                         >
                           <MdKeyboardArrowRight
                             className={`transform transition-transform duration-300 ease-in-out ${

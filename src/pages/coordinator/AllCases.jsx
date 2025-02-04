@@ -128,7 +128,10 @@ const AllCases = () => {
               {cases?.map((row, index) => (
                 <React.Fragment key={index}>
                   {/* Main Row */}
-                  <tr className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm">
+                  <tr
+                    className="hover:bg-gray-200 cursor-pointer hover:shadow-md text-sm"
+                    onClick={() => toggleDetails(index)}
+                  >
                     <td className="py-3 px-6 border-b border-gray-200">
                       {row?.caseCode}
                     </td>
@@ -188,7 +191,7 @@ const AllCases = () => {
                         )}
                         <div
                           className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
-                          onClick={() => toggleDetails(index)} // Toggle the details panel
+                          // onClick={() => toggleDetails(index)} // Toggle the details panel
                         >
                           <MdKeyboardArrowRight
                             className={`transform transition-transform duration-300 ease-in-out ${

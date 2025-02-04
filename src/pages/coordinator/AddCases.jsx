@@ -33,7 +33,9 @@ const AddCases = () => {
   });
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
-  console.log("caseData==>", caseData);
+
+  // console.log("caseData==>", caseData);
+
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
@@ -311,8 +313,23 @@ const AddCases = () => {
       return schema;
     }, {}),
     clientGeoFormattedAddress: Yup.string().required("Geo address is required"),
-    // clientGeolocation: Yup.string().required("Geo Location is required"),
-    // Add geoLocation validation manually
+    clientGeolocation: Yup.object({
+      longitude: Yup.mixed()
+        .test("is-valid-number", "Invalid longitude", (value) => {
+          if (value === undefined || value === null || value === "")
+            return false;
+          return /^-?\d+(\.\d+)?$/.test(value.toString()); // Checks if it's a valid number
+        })
+        .required("Longitude is required"),
+
+      latitude: Yup.mixed()
+        .test("is-valid-number", "Invalid latitude", (value) => {
+          if (value === undefined || value === null || value === "")
+            return false;
+          return /^-?\d+(\.\d+)?$/.test(value.toString()); // Checks if it's a valid number
+        })
+        .required("Latitude is required"),
+    }),
   });
 
   const initialValues = {
@@ -354,7 +371,7 @@ const AddCases = () => {
       contactNo: values.contactNo,
       visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to ISO format
     };
-    console.log("formattedValues==>", formattedValues);
+    // console.log("formattedValues==>", formattedValues);
     try {
       if (caseId) {
         // Show confirmation dialog for updating case
@@ -392,7 +409,7 @@ const AddCases = () => {
         </h3>
       </div>
 
-      <div className=" bg-white border-2 rounded-lg shadow border-gray-300">
+      <div className="bg-white border-2 rounded-lg shadow border-gray-300">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -411,8 +428,9 @@ const AddCases = () => {
             handleReset,
           }) => {
             {
-              /* console.log("initialValues==>", initialValues);
-            console.log("values==>", values); */
+              {
+                /* console.log("values==>", values); */
+              }
             }
             return (
               <Form>
@@ -503,7 +521,6 @@ const AddCases = () => {
                     }`}
                     onClick={() => {
                       resetForm();
-                      // Reset entire form
                     }}
                     disabled={!dirty || isSubmitting}
                   >

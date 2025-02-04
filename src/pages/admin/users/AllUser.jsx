@@ -17,6 +17,7 @@ const AllUser = () => {
     (state) => state.allUserReducer
   );
   const { message, currentPage, totalPages, totalUser, users } = data;
+  // console.log("users==>", users);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
   const [userId, setUserId] = useState("");
   const [userData, setUserData] = useState({
@@ -146,46 +147,47 @@ const AllUser = () => {
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {users?.map((row, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
-                >
-                  <td className="py-3 px-6 border-b border-gray-200">
-                    {highlightMatch(row?.userCode, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200">
-                    {highlightMatch(row?.firstName, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200 truncate">
-                    {highlightMatch(row?.email, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200">
-                    {highlightMatch(row?.mobile, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200">
-                    {highlightMatch(row?.role, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200">
-                    <span
-                      className={`text-white py-1 px-2 rounded-full text-xs 
+              {users?.length &&
+                users?.map((row, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
+                  >
+                    <td className="py-3 px-6 border-b border-gray-200">
+                      {highlightMatch(row?.userCode, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200">
+                      {highlightMatch(row?.firstName, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200 truncate">
+                      {highlightMatch(row?.email, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200">
+                      {highlightMatch(row?.mobile, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200">
+                      {highlightMatch(row?.role, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200">
+                      <span
+                        className={`text-white py-1 px-2 rounded-full text-xs 
                       ${row.isActive === true ? "bg-green-500" : "bg-red-500"}
                       `}
-                    >
-                      {row.isActive ? "Active" : "Inactive"}
-                    </span>
-                  </td>
+                      >
+                        {row.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
 
-                  <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
-                    <div
-                      className="rounded-full hover:bg-gray-300 py-1 px-1"
-                      onClick={() => handleEditUser(row)}
-                    >
-                      <MdOutlineEdit className="text-xl text-[#3fb597]" />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
+                      <div
+                        className="rounded-full hover:bg-gray-300 py-1 px-1"
+                        onClick={() => handleEditUser(row)}
+                      >
+                        <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

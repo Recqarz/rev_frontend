@@ -100,7 +100,7 @@ export const updateCaseDataId =
           },
         }
       );
-      console.log("updateCaseDataId response==>", response);
+      // console.log("updateCaseDataId response==>", response);
       dispatch({
         type: UPDATE_CASE_DATA_SUCCESS,
         payload: response?.data?.updatedCase,

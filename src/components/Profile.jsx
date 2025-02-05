@@ -194,22 +194,22 @@ const Profile = () => {
       <div className="flex flex-col gap-4 ">
         <div className="">
           <div className="bg-slate-800 gap-6 flex items-center justify-center">
-            <div className="bg-slate-800 relative shadow-xl overflow-hidden hover:shadow-2xl group rounded-xl p-2 transition-all duration-500 transform">
+            <div className="bg-slate-800 relative shadow-xl overflow-hidden rounded-xl p-2 ">
               <div className="flex items-center gap-4 relative">
                 {/* Profile Picture */}
                 <div className="relative border-2 p-1 border-[#73d1ba] rounded-full">
                   <img
                     src={
                       profilePic ||
-                      "https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566_640.png"
+                      "https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
                     }
                     alt="profile_pic"
-                    className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full transition-all duration-500 delay-500 transform"
+                    className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full"
                   />
                   {/* Camera Icon with File Input */}
                   <label
                     htmlFor="profilePicInput"
-                    className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700 transition duration-300"
+                    className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700"
                   >
                     <FaCamera className="text-sm" />
                   </label>
@@ -235,12 +235,12 @@ const Profile = () => {
                 </div>
 
                 {/* Profile Info */}
-                <div className="w-fit transition-all transform duration-500">
+                <div className="w-fit">
                   <h1 className="text-white font-bold">
                     {profileData?.firstName} {profileData?.lastName}
                   </h1>
                   <p className="text-white uppercase">{profileData?.role}</p>
-                  <a className="text-xs text-white opacity-1000 transform transition-all delay-300 duration-500">
+                  <a className="text-xs text-white opacity-1000">
                     {profileData?.email}
                   </a>
                 </div>

@@ -24,7 +24,7 @@ const Layout = ({ children, isSidebarOpen, toggleSidebar, profileData }) => {
           toggleSidebar={toggleSidebar}
           profileData={profileData}
         />
-        <div className="flex-1 p-6 overflow-y-auto overflow-x-auto">
+        <div className="flex-1 py-6 pl-4 pr-2 overflow-y-auto overflow-x-auto custom-scrollbar">
           {children}
         </div>
       </div>

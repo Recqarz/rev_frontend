@@ -11,6 +11,7 @@ import {
 import Pagination from "../../../components/Pagination";
 import SearchFilterAddSection from "../../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../../utils/highlightMatch";
+import { IoCloseCircleOutline } from "react-icons/io5";
 const AllUser = () => {
   const dispatch = useDispatch();
   const { isLoading, isError, data } = useSelector(
@@ -36,6 +37,7 @@ const AllUser = () => {
     role: "",
   });
   const [limit, setLimit] = useState(10);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   const [currentPageState, setCurrentPageState] = useState(currentPage);
 
@@ -47,6 +49,7 @@ const AllUser = () => {
     );
   }, [limit, currentPageState, searchQuery, filters.role, filters.status]);
 
+  // For Filtration
   const filterOptions = [
     {
       name: "role",
@@ -74,12 +77,104 @@ const AllUser = () => {
     setFilters((prev) => ({ ...prev, [filterName]: value }));
   };
 
-  const handleLimit = (val) => {
-    setLimit(val);
-    setCurrentPageState(1);
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setFilters({ role: "", status: "" });
   };
 
-  const handleEditUser = (item) => {
+  // For Update Form
+  const userUpdateSchema = [
+    {
+      key: 1,
+      htmlFor: "firstName",
+      label: "First Name",
+      type: "text",
+      id: "firstName",
+      name: "firstName",
+      value: userData?.firstName,
+      inputClassName: "",
+      required: true,
+      disabled: false,
+    },
+    {
+      key: 2,
+      htmlFor: "lastName",
+      label: "Last Name",
+      type: "text",
+      id: "lastName",
+      name: "lastName",
+      value: userData?.lastName,
+      inputClassName: "",
+      required: true,
+      disabled: false,
+    },
+    {
+      key: 3,
+      htmlFor: "email",
+      label: "Email",
+      type: "text",
+      id: "email",
+      name: "email",
+      value: userData?.email,
+      inputClassName: "",
+      required: true,
+      disabled: false,
+    },
+    {
+      key: 4,
+      htmlFor: "userCode",
+      label: "User Code",
+      type: "text",
+      id: "userCode",
+      name: "userCode",
+      value: userData?.userCode,
+      inputClassName: "text-gray-400 !bg-gray-200 cursor-not-allowed",
+      required: true,
+      disabled: true,
+    },
+    {
+      key: 5,
+      htmlFor: "mobile",
+      label: "Mobile",
+      type: "number",
+      id: "mobile",
+      name: "mobile",
+      value: userData?.mobile,
+      inputClassName: "",
+      required: true,
+      disabled: false,
+    },
+    {
+      key: 6,
+      htmlFor: "role",
+      label: "Role",
+      type: "text",
+      id: "role",
+      name: "role",
+      value: userData?.role,
+      inputClassName: "text-gray-400 bg-gray-200 cursor-not-allowed",
+      required: true,
+      disabled: true,
+    },
+    {
+      key: 7,
+      htmlFor: "isActive",
+      label: "Status",
+      type: "select",
+      id: "isActive",
+      name: "isActive",
+      value: userData?.isActive,
+      inputClassName: "",
+      required: true,
+      disabled: false,
+      options: [
+        // { key: 0, value: "", label: "Select Status" }, //default
+        { key: 1, value: true, label: "Active" },
+        { key: 2, value: false, label: "Inactive" },
+      ],
+    },
+  ];
+  const handleUserRowData = (item) => {
     setChangeStatusModal(true);
     setUserId(item._id);
     setUserData({
@@ -92,13 +187,7 @@ const AllUser = () => {
       isActive: item.isActive,
     });
   };
-
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setFilters({ role: "", status: "" });
-  };
-
-  const handleChangeUserData = (e) => {
+  const handleInputOnchange = (e) => {
     const { name, value } = e.target;
     setUserData((prevUserData) => ({
       ...prevUserData,
@@ -106,17 +195,24 @@ const AllUser = () => {
     }));
   };
 
-  const handleUpdateFunc = (e) => {
+  const handleFormUpdateUser = (e) => {
     e.preventDefault();
-    // console.log("user", userData);
     dispatch(updateUserData(userData, accessToken, userId));
     setChangeStatusModal(false);
   };
 
+  // For PAgination
+  const handleLimit = (val) => {
+    setLimit(val);
+    setCurrentPageState(1);
+  };
   const handleCurrentPageState = (val) => {
     setCurrentPageState((prev) => prev + val);
   };
 
+  const toggleDetails = (index) => {
+    setExpandedRow((prev) => (prev === index ? null : index)); // Toggle row expansion
+  };
   return (
     <div className="">
       <div className="flex flex-col gap-5">
@@ -149,49 +245,128 @@ const AllUser = () => {
             <tbody className="bg-white text-sm">
               {users?.length &&
                 users?.map((row, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
-                  >
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.userCode, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.firstName, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate">
-                      {highlightMatch(row?.email, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.mobile, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.role, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      <span
-                        className={`text-white py-1 px-2 rounded-full text-xs 
+                  <React.Fragment key={index}>
+                    <tr
+                      className={`${
+                        expandedRow === index ? "bg-blue-50" : ""
+                      } hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm`}
+                      onClick={() => toggleDetails(index)}
+                    >
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.userCode, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.firstName, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200 truncate">
+                        {highlightMatch(row?.email, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.mobile, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.role, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        <span
+                          className={`text-white py-1 px-2 rounded-full text-xs 
                       ${row.isActive === true ? "bg-green-500" : "bg-red-500"}
                       `}
-                      >
-                        {row.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </td>
+                        >
+                          {row.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </td>
 
-                    <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
-                      <div
-                        className="rounded-full hover:bg-gray-300 py-1 px-1"
-                        onClick={() => handleEditUser(row)}
-                      >
-                        <MdOutlineEdit className="text-xl text-[#3fb597]" />
-                      </div>
-                    </td>
-                  </tr>
+                      <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
+                        <div
+                          className="rounded-full hover:bg-gray-300 py-1 px-1"
+                          onClick={() => handleUserRowData(row)}
+                        >
+                          <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                        </div>
+                      </td>
+                    </tr>
+
+                    {expandedRow === index && (
+                      <tr className="bg-blue-50">
+                        <td
+                          colSpan={8}
+                          className="p-4 border-b border-gray-200"
+                        >
+                          <h1 className="uppercase font-semibold underline">
+                            User Details
+                          </h1>
+                          <div className="w-[100%] text-sm grid grid-cols-2 gap-4 mt-4">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex gap-8 w-full">
+                                <div className="flex justify-between w-[20%]">
+                                  <h1>First Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[80%]">
+                                  {row?.firstName ?? "Not Provided"}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full">
+                                <div className="flex justify-between w-[20%]">
+                                  <h1>Last Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[80%]">
+                                  {row?.lastName ?? "Not Provided"}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full">
+                                <div className="flex justify-between w-[20%]">
+                                  <h1>Mobile</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[80%]">
+                                  {row?.mobile ?? "Not Provided"}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <div className="flex gap-8 w-full">
+                                <div className="flex justify-between w-[20%]">
+                                  <h1>Email</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[80%]">
+                                  {row?.email ?? "Not Provided"}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full">
+                                <div className="flex justify-between w-[20%]">
+                                  <h1>Role</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[80%]">
+                                  {row?.role ?? "Not Provided"}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full">
+                                <div className="flex justify-between w-[20%]">
+                                  <h1>Work for bank</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[80%]">
+                                  {row?.workForBank ?? "Not Provided"}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
             </tbody>
           </table>
         </div>
 
+        {/* Pagination Section */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -206,170 +381,91 @@ const AllUser = () => {
           <div
             id="authentication-modal"
             aria-hidden="true"
+            onClick={() => setChangeStatusModal(false)}
             className={`${
               changeStatusModal ? "flex" : "hidden"
-            } overflow-x-hidden overflow-y-auto custom-scrollbar fixed inset-0 z-50 justify-center items-center backdrop-blur-sm`}
+            } fixed inset-0 z-50 justify-center items-center backdrop-blur-sm w-[100%]`}
           >
-            <div className="relative w-full max-w-md px-0 h-full md:h-auto">
+            <div
+              className="relative  max-w-md px-0 h-full md:h-auto !w-[100%]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="rounded-lg shadow relative dark:bg-gray-700 bg-gray-100">
-                <div className="flex justify-end p-0">
+                <div className="flex justify-between items-center p-2">
+                  <div></div>
+                  <div>
+                    <h1 className="text-xl font-medium text-[#073d4fff]">
+                      Update User
+                    </h1>
+                  </div>
                   <button
                     type="button"
-                    className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                    className="text-black hover:text-red-600 hover:bg-gray-400 hover:rounded-full p-1"
                     onClick={() => setChangeStatusModal(false)}
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
+                    <IoCloseCircleOutline className="text-2xl font-semibold" />
                   </button>
                 </div>
                 <form
-                  className="space-y-6 px-6 lg:px-8 pb-4 sm:pb-6 xl:pb-8 overflow-y-auto max-h-[80vh]"
-                  onSubmit={handleUpdateFunc}
+                  className="p-4 overflow-y-auto custom-scrollbar max-h-[70vh]"
+                  onSubmit={handleFormUpdateUser}
                 >
-                  <div className="flex justify-center items-center">
-                    <h5 className="text-xl font-medium">Update User</h5>
-                  </div>
-                  <div className="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
-                    <div className="mb-4">
-                      <label
-                        htmlFor="name"
-                        className="block text-gray-700 text-sm font-medium mb-2"
-                      >
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        id="first name"
-                        name="firstName"
-                        value={userData.firstName}
-                        onChange={handleChangeUserData}
-                        className="border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="name"
-                        className="block text-gray-700 font-medium text-sm mb-2"
-                      >
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        id="last name"
-                        name="lastName"
-                        value={userData.lastName}
-                        onChange={handleChangeUserData}
-                        className="border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400"
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        htmlFor="name"
-                        className="block text-gray-700 font-medium text-sm mb-2"
-                      >
-                        Email
-                      </label>
-                      <input
-                        type="text"
-                        id="email"
-                        name="email"
-                        value={userData.email}
-                        onChange={handleChangeUserData}
-                        className="border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400"
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        htmlFor="name"
-                        className="block text-gray-700 font-medium text-sm mb-2"
-                      >
-                        User Code
-                      </label>
-                      <input
-                        type="text"
-                        id="user code"
-                        name="userCode"
-                        defaultValue={userData.userCode}
-                        className="bg-gray-200 border border-gray-400 p-1 w-full rounded-lg text-gray-400 cursor-not-allowed focus:outline-none focus:border-blue-400"
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        htmlFor="contact number"
-                        className="block text-gray-700 font-medium text-sm mb-2"
-                      >
-                        Contact Number
-                      </label>
-                      <input
-                        type="number"
-                        id="mobile"
-                        name="mobile"
-                        value={userData.mobile}
-                        onChange={handleChangeUserData}
-                        className="border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="role"
-                        className="block text-gray-700 font-medium text-sm mb-2"
-                      >
-                        Role
-                      </label>
-                      <input
-                        type="text"
-                        id="role"
-                        name="role"
-                        defaultValue={userData.role}
-                        className="bg-gray-200 border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400 cursor-not-allowed text-gray-400"
-                        required
-                        disabled
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="status"
-                        className="block text-gray-700 font-medium text-sm mb-2"
-                      >
-                        Status
-                      </label>
-                      <select
-                        id="status"
-                        name="isActive"
-                        value={userData.isActive}
-                        onChange={handleChangeUserData}
-                        className="border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400"
-                        required
-                      >
-                        <option value={true}>Active</option>
-                        <option value={false}>Inactive</option>
-                      </select>
-                    </div>
-                    <div>
-                      <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                      >
-                        Update
-                      </button>
+                  <div className="bg-white border rounded-lg p-6 flex flex-col gap-5">
+                    {userUpdateSchema?.map((item) => (
+                      <div className="flex flex-col gap-1" key={item?.key}>
+                        <label
+                          htmlFor={item?.htmlFor}
+                          className="block text-gray-700 text-sm font-medium"
+                        >
+                          {item?.label}
+                        </label>
+                        {item?.type === "select" ? (
+                          <select
+                            type={item?.type}
+                            id={item?.id}
+                            name={item?.name}
+                            value={item?.value}
+                            onChange={handleInputOnchange}
+                            className={`${item?.inputClassName}border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400 px-2`}
+                          >
+                            {item?.options?.map((item) => (
+                              <option key={item?.key} value={item?.value}>
+                                {item?.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={item?.type}
+                            id={item?.id}
+                            name={item?.name}
+                            value={item?.value}
+                            onChange={handleInputOnchange}
+                            className={`${item?.inputClassName} border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400 px-2`}
+                            required={item?.required}
+                            disabled={item?.disabled}
+                          />
+                        )}
+                      </div>
+                    ))}
+                    <div className="flex justify-center">
+                      <div className="flex gap-4">
+                        <div>
+                          <button
+                            onClick={() => setChangeStatusModal(false)}
+                            type="button"
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                          >
+                            Close
+                          </button>
+                        </div>
+                        <button
+                          type="submit"
+                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                        >
+                          Update
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </form>

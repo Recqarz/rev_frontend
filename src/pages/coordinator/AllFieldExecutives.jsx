@@ -16,7 +16,7 @@ const AllFieldExecutives = () => {
     (state) => state.allFieldExecutiveReducer
   );
   const { message, currentPage, totalPages, totalUser, fieldExecutives } = data;
-  console.log("fieldExecutives==>", fieldExecutives);
+  // console.log("fieldExecutives==>", fieldExecutives);
   const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
@@ -84,7 +84,7 @@ const AllFieldExecutives = () => {
           disabledReset={!searchQuery && !filters.status}
           enableReset={searchQuery || filters.status}
           goToPageLink={"/coordinator/all/fieldexecutives"}
-          addBtnEnable={true}
+          addBtnEnable={false}
         />
 
         {/* Table Section */}

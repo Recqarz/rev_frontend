@@ -8,9 +8,9 @@ import { getProfileByToken } from "../redux/profile/profileAction";
 
 const Navbar = ({ toggleSidebar, profileData }) => {
   return (
-    <nav className="h-[60px] px-4 shadow-lg bg-gray-100 p-2 flex justify-between  items-center rounded-md">
+    <nav className="h-[60px] px-2 shadow-lg bg-gray-100  flex justify-between  items-center rounded-md">
       <button
-        className=" text-xl  text-[##063c4c] hover:bg-gray-300 rounded-full p-2"
+        className=" text-xl  text-[##063c4c] hover:bg-gray-300 rounded-sm p-2"
         onClick={toggleSidebar}
       >
         <FaBars />
@@ -24,7 +24,7 @@ const Navbar = ({ toggleSidebar, profileData }) => {
         <div>
           <img
             className="rounded-full h-12 w-12 border-2 p-0.5 border-[#73d1ba]"
-            src="https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566_640.png"
+            src="https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
             alt=""
           />
         </div>

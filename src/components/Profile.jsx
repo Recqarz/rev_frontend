@@ -7,14 +7,19 @@ import { useNavigate } from "react-router-dom";
 import { addUserData } from "../redux/users/userAction";
 import {
   getProfileByToken,
+  updateProfileAvatar,
   updateProfileByToken,
 } from "../redux/profile/profileAction";
 import { FaCamera } from "react-icons/fa";
+import { MdOutlineCancel } from "react-icons/md";
+import { TiTickOutline } from "react-icons/ti";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [profilePic, setProfilePic] = useState(null);
+  const { data: profileData } = useSelector((state) => state.profileReducer);
+  const [profilePic, setProfilePic] = useState(null); //for getting image file
+  const [onchangeAvatar, setOnchangeAvatar] = useState(null); //for getting to preview the
 
   //get banks
   const { accessToken } = useSelector((store) => store?.authReducer);
@@ -24,8 +29,6 @@ const Profile = () => {
     data: bankData,
   } = useSelector((state) => state.allBankReducer);
   const { banks } = bankData;
-
-  const { data: profileData } = useSelector((state) => state.profileReducer);
 
   useEffect(() => {
     dispatch(getProfileByToken(accessToken));
@@ -130,7 +133,7 @@ const Profile = () => {
       id: "role",
       mainDivClassname: "col-span-4",
       inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+        "cursor-not-allowed shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter country name",
       options: [
         { key: 1, value: "", label: "Select Role" }, // Default empty value
@@ -154,7 +157,7 @@ const Profile = () => {
       id: "workForBank",
       mainDivClassname: "col-span-4",
       inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+        "cursor-not-allowed shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter country name",
 
       options: [
@@ -189,62 +192,93 @@ const Profile = () => {
     resetForm();
   };
 
+  const handleAvatarUpdate = (e) => {
+    e.preventDefault();
+    if (!profilePic) return;
+    const formData = new FormData();
+    formData.append("avatar", profilePic);
+    dispatch(updateProfileAvatar(formData, accessToken));
+    setProfilePic(null);
+    setOnchangeAvatar(null);
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-4 ">
         <div className="">
           <div className="bg-slate-800 gap-6 flex items-center justify-center">
             <div className="bg-slate-800 relative shadow-xl overflow-hidden rounded-xl p-2 ">
-              <div className="flex items-center gap-4 relative">
-                {/* Profile Picture */}
-                <div className="relative border-2 p-1 border-[#73d1ba] rounded-full">
-                  <img
-                    src={
-                      profilePic ||
-                      "https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
-                    }
-                    alt="profile_pic"
-                    className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full"
-                  />
-                  {/* Camera Icon with File Input */}
-                  <label
-                    htmlFor="profilePicInput"
-                    className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700"
-                  >
-                    <FaCamera className="text-sm" />
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="profilePicInput"
-                    capture="user" // Opens the camera for mobile devices
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                          // Update the profile picture preview
-                          console.log("Image URL: ", event.target.result);
-                          setProfilePic(event.target.result);
-                        };
-                        reader.readAsDataURL(file);
+              <form onSubmit={handleAvatarUpdate}>
+                <div className="flex flex-row items-center gap-4 relative">
+                  {/* Profile Picture */}
+                  <div className="relative border-2 p-1 border-[#73d1ba] rounded-full">
+                    <img
+                      src={
+                        onchangeAvatar ||
+                        profileData?.avatar ||
+                        "https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
                       }
-                    }}
-                  />
+                      alt="profile_pic"
+                      // target="_blank"
+                      className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full"
+                    />
+
+                    {/* Camera Icon with File Input */}
+                    <div>
+                      <label
+                        htmlFor="avatar"
+                        className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700"
+                      >
+                        <FaCamera className="text-sm" />
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="avatar"
+                        name="avatar"
+                        capture="user" // Opens the camera for mobile devices
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            setProfilePic(file);
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              setOnchangeAvatar(event.target.result); // Update the profile picture preview
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Profile Info */}
+                  <div className="w-fit">
+                    <h1 className="text-white font-bold">
+                      {profileData?.firstName} {profileData?.lastName}
+                    </h1>
+                    <p className="text-white uppercase">{profileData?.role}</p>
+                    <a className="text-xs text-white opacity-1000">
+                      {profileData?.email}
+                    </a>
+                  </div>
                 </div>
 
-                {/* Profile Info */}
-                <div className="w-fit">
-                  <h1 className="text-white font-bold">
-                    {profileData?.firstName} {profileData?.lastName}
-                  </h1>
-                  <p className="text-white uppercase">{profileData?.role}</p>
-                  <a className="text-xs text-white opacity-1000">
-                    {profileData?.email}
-                  </a>
-                </div>
-              </div>
+                {/* Profile pic update submission section */}
+                {profilePic && (
+                  <div className="flex justify-end">
+                    <div className="flex gap-2 text-sm">
+                      <button onClick={() => setProfilePic(null)} type="button">
+                        <MdOutlineCancel className="text-red-500 text-2xl" />
+                      </button>
+                      <button type="submit">
+                        <TiTickOutline className="text-blue-500 text-2xl" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </form>
             </div>
           </div>
         </div>

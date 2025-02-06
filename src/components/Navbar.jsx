@@ -24,7 +24,10 @@ const Navbar = ({ toggleSidebar, profileData }) => {
         <div>
           <img
             className="rounded-full h-12 w-12 border-2 p-0.5 border-[#73d1ba]"
-            src="https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
+            src={
+              profileData?.avatar ??
+              "https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
+            }
             alt=""
           />
         </div>

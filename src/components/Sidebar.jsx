@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FaTimes, FaUsers } from "react-icons/fa";
+import { FaBars, FaTimes, FaUsers } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
 import { IoBriefcase, IoBriefcaseSharp, IoLogOut } from "react-icons/io5";
 import { BsBank2 } from "react-icons/bs";
@@ -10,6 +10,7 @@ import { FaClipboardUser } from "react-icons/fa6";
 import REV_logo_2 from "../assets/image/REV_logo_2.png";
 import Swal from "sweetalert2";
 import { toastError } from "../utils/react-toastify/ReactToastiry";
+import { AiOutlineMenuFold } from "react-icons/ai";
 
 const roleBasedMenu = {
   admin: [
@@ -98,7 +99,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 px-4 pt-1 pb-2 bg-white text-white shadow-lg rounded-sm transform transition-transform duration-300 ease-in-out ${
+      className={`z-[9999]  fixed inset-y-0 left-0 px-4 pt-1 pb-2 bg-white text-white shadow-lg rounded-sm transform transition-transform duration-300 ease-in-out ${
         isOpen
           ? "-translate-x-full md:-translate-x-full lg:-translate-x-full"
           : "md:translate-x-0  lg:translate-x-0 "
@@ -107,21 +108,28 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
       <div className="flex flex-col gap-2 h-full">
         {/* Header */}
         <div className="flex items-center">
-          <div
+          {/* <div
             onClick={toggleSidebar}
             className="text-gray-500 text-xl lg:hidden hover:bg-gray-300 rounded-full p-2 hover:cursor-pointer"
           >
             <FaTimes />
-          </div>
+          </div> */}
           <div className=" flex justify-center items-center w-full ">
             {/* <h1 className="text-lg font-medium text-[#51677E]">REV</h1> */}
             <Link to={`/${role}/dashboard`}>
               <img
-                className=" h-[65px]"
+                className=" h-[60px]"
                 src={REV_logo_2}
                 alt="company_logo"
               ></img>
             </Link>
+          </div>
+          <div
+            onClick={toggleSidebar}
+            className="lg:hidden hover:bg-gray-300 rounded-sm p-2 hover:cursor-pointer"
+          >
+            {/* <AiOutlineMenuFold className="text-2xl text-[#0d3d53] font-extrabold" /> */}
+            <FaBars className="text-xl text-[#0d3d53] font-extrabold" />
           </div>
         </div>
         <div className="space-y-1">

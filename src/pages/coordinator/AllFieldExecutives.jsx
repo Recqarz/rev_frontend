@@ -103,111 +103,125 @@ const AllFieldExecutives = () => {
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {fieldExecutives?.map((row, index) => (
-                <React.Fragment key={index}>
-                  <tr
-                    key={index}
-                    onClick={() => toggleDetails(index)} // Toggle the details panel
-                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
-                  >
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.userCode, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.firstName, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate">
-                      {highlightMatch(row?.email, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.mobile, searchQuery)}
-                    </td>
+              {fieldExecutives && fieldExecutives?.length > 0 ? (
+                fieldExecutives?.map((row, index) => (
+                  <React.Fragment key={index}>
+                    <tr
+                      key={index}
+                      onClick={() => toggleDetails(index)} // Toggle the details panel
+                      className="hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm"
+                    >
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.userCode, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.firstName, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200 truncate">
+                        {highlightMatch(row?.email, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.mobile, searchQuery)}
+                      </td>
 
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      <span
-                        className={`text-white py-1 px-2 rounded-full text-xs 
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        <span
+                          className={`text-white py-1 px-2 rounded-full text-xs 
                       ${row.isActive === true ? "bg-green-500" : "bg-red-500"}
                       `}
-                      >
-                        {row.isActive === true ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td
-                      className={`py-3 px-6 border-b border-gray-200 hover:bg-blue-50 ${
-                        expandedRow === index ? "bg-blue-50" : ""
-                      }`}
-                    >
-                      <div
-                        className=" flex gap-2 items-center"
-                        // onClick={() => handleEditUser(row)}
-                      >
-                        <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
-                          <MdOutlineEdit />
-                        </div>
-                        <div
-                          className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
-                          // onClick={() => toggleDetails(index)} // Toggle the details panel
                         >
-                          <MdKeyboardArrowRight
-                            className={`transform transition-transform duration-300 ease-in-out ${
-                              expandedRow === index ? "rotate-90" : ""
-                            }`}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-
-                  {expandedRow === index && (
-                    <tr className="bg-blue-50 text-sm">
-                      <td colSpan={8} className="p-4 border-b border-gray-200">
-                        <h1 className="uppercase font-semibold mb-1">
-                          Field Executive:
-                        </h1>
-                        <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Address Line1 :</div>
-                              <div className="w-[70%]">a</div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Address Line2 :</div>
-                              <div className="w-[70%]">b</div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Land Mark :</div>
-                              <div className="w-[70%]">c</div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Plot No. :</div>
-                              <div className="w-[70%]">d</div>
-                            </div>
+                          {row.isActive === true ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td
+                        className={`py-3 px-6 border-b border-gray-200 hover:bg-blue-50 ${
+                          expandedRow === index ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <div
+                          className=" flex gap-2 items-center"
+                          // onClick={() => handleEditUser(row)}
+                        >
+                          <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
+                            <MdOutlineEdit />
                           </div>
-
-                          <div className="flex flex-col gap-1">
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Street Name :</div>
-                              <div className="w-[70%]">e</div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">State :</div>
-                              <div className="w-[70%]">5</div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">City :</div>
-                              <div className="w-[70%]">6</div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Pin code :</div>
-                              <div className="w-[70%]">7</div>
-                            </div>
+                          <div
+                            className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
+                            // onClick={() => toggleDetails(index)} // Toggle the details panel
+                          >
+                            <MdKeyboardArrowRight
+                              className={`transform transition-transform duration-300 ease-in-out ${
+                                expandedRow === index ? "rotate-90" : ""
+                              }`}
+                            />
                           </div>
                         </div>
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
+
+                    {expandedRow === index && (
+                      <tr className="bg-blue-50 text-sm">
+                        <td
+                          colSpan={8}
+                          className="p-4 border-b border-gray-200"
+                        >
+                          <h1 className="uppercase font-semibold mb-1">
+                            Field Executive:
+                          </h1>
+                          <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Address Line1 :</div>
+                                <div className="w-[70%]">a</div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Address Line2 :</div>
+                                <div className="w-[70%]">b</div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Land Mark :</div>
+                                <div className="w-[70%]">c</div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Plot No. :</div>
+                                <div className="w-[70%]">d</div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Street Name :</div>
+                                <div className="w-[70%]">e</div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">State :</div>
+                                <div className="w-[70%]">5</div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">City :</div>
+                                <div className="w-[70%]">6</div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Pin code :</div>
+                                <div className="w-[70%]">7</div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    No Field-Executives Found !
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

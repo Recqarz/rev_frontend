@@ -243,7 +243,7 @@ const AllUser = () => {
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {users?.length &&
+              {users && users?.length > 0 ? (
                 users?.map((row, index) => (
                   <React.Fragment key={index}>
                     <tr
@@ -361,7 +361,17 @@ const AllUser = () => {
                       </tr>
                     )}
                   </React.Fragment>
-                ))}
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    No Users Found !
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

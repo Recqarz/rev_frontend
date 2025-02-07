@@ -114,34 +114,45 @@ const AllBank = () => {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {(banks ?? [])?.map((row, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
-                >
-                  <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {index + 1}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {highlightMatch(row?.bankName, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
-                    {highlightMatch(row?.branchName, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {highlightMatch(row?.IFSC, searchQuery)}
-                  </td>
+              {banks && banks?.length > 0 ? (
+                banks?.map((row, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
+                  >
+                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                      {index + 1}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                      {highlightMatch(row?.bankName, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
+                      {highlightMatch(row?.branchName, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                      {highlightMatch(row?.IFSC, searchQuery)}
+                    </td>
 
-                  <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
-                    <div
-                      className="rounded-full hover:bg-gray-300 py-1 px-1"
-                      onClick={() => handleUpdateStatusFunc(row)}
-                    >
-                      <MdOutlineEdit className="text-xl text-[#3fb597]" />
-                    </div>
+                    <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
+                      <div
+                        className="rounded-full hover:bg-gray-300 py-1 px-1"
+                        onClick={() => handleUpdateStatusFunc(row)}
+                      >
+                        <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    No Banks Found !
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

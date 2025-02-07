@@ -99,7 +99,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
 
   return (
     <aside
-      className={`z-[9999]  fixed inset-y-0 left-0 px-4 pt-1 pb-2 bg-white text-white shadow-lg rounded-sm transform transition-transform duration-300 ease-in-out ${
+      className={`z-[100]  fixed inset-y-0 left-0 px-4 pt-1 pb-2 bg-white text-white shadow-lg rounded-sm transform transition-transform duration-300 ease-in-out ${
         isOpen
           ? "-translate-x-full md:-translate-x-full lg:-translate-x-full"
           : "md:translate-x-0  lg:translate-x-0 "

@@ -58,3 +58,29 @@ export const updateProfileByToken = (data, accessToken) => async (dispatch) => {
       dispatch({ type: UPDATE_PROFILE_DATA_ERROR });
     });
 };
+export const updateProfileAvatar =
+  (formData, accessToken) => async (dispatch) => {
+    const toastId = toastLoading("Loading...");
+    dispatch({ type: UPDATE_PROFILE_DATA_REQUEST });
+    return axios
+      .patch(`${baseURL}/api/v1/user/update-profile-picture`, formData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          // "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        console.log(" profileAvatarAction===>", res);
+        dispatch({
+          type: UPDATE_PROFILE_DATA_SUCCESS,
+          payload: { avatar: res?.data?.avatar },
+        });
+        toastUpdate(toastId, 200, res?.data?.message);
+      })
+      .catch((err) => {
+        console.log("err", err);
+        toastUpdate(toastId, 400, err?.response?.data?.error);
+        dispatch({ type: UPDATE_PROFILE_DATA_ERROR });
+      });
+  };

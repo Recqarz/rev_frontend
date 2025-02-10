@@ -416,7 +416,7 @@ const AddCases = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
           enableReinitialize={true}
-          context={{ isUpdate: !!caseData }} // Pass context
+          // context={{ isUpdate: !!caseData }} // Pass context
         >
           {({
             isSubmitting,
@@ -481,8 +481,9 @@ const AddCases = () => {
                               new Date(caseData?.visitDate) < new Date()
                                 ? new Date(caseData?.visitDate)
                                     .toISOString()
-                                    .split("T")[0] // Use previous date if exists
-                                : new Date().toISOString().split("T")[0] // Otherwise, today
+                                    .split("T")[0]
+                                : // Use previous date if exists
+                                  new Date().toISOString().split("T")[0] // Otherwise, today
                             }
                           />
                         ) : (

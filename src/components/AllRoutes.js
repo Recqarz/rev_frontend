@@ -16,6 +16,7 @@ import AllFieldExecutives from "../pages/coordinator/AllFieldExecutives";
 import Profile from "./Profile";
 import AllCases from "../pages/coordinator/AllCases";
 import { getProfileByToken } from "../redux/profile/profileAction";
+import AddLocation from "../pages/admin/location/AddLocation";
 
 const roleBasedRoutes = {
   admin: [
@@ -26,6 +27,7 @@ const roleBasedRoutes = {
     { path: "/admin/dashboard/all/banks/add", element: <AddBank /> },
     { path: "/admin/dashboard/cases", element: <AllCases /> },
     { path: "/admin/profile", element: <Profile /> },
+    { path: "/admin/dashboard/location", element: <AddLocation /> },
   ],
   coordinator: [
     { path: "/coordinator/dashboard", element: <CoordinatorDashboard /> },

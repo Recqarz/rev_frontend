@@ -11,6 +11,7 @@ import REV_logo_2 from "../assets/image/REV_logo_2.png";
 import Swal from "sweetalert2";
 import { toastError } from "../utils/react-toastify/ReactToastiry";
 import { AiOutlineMenuFold } from "react-icons/ai";
+import { ImLocation2 } from "react-icons/im";
 
 const roleBasedMenu = {
   admin: [
@@ -18,6 +19,11 @@ const roleBasedMenu = {
     { name: "Users", icon: <FaUsers />, path: "/admin/dashboard/all/users" },
     { name: "Banks", icon: <BsBank2 />, path: "/admin/dashboard/all/banks" },
     { name: "Cases", icon: <IoBriefcase />, path: "/admin/dashboard/cases" },
+    {
+      name: "Add Location",
+      icon: <ImLocation2 />,
+      path: "/admin/dashboard/location",
+    },
   ],
   coordinator: [
     {

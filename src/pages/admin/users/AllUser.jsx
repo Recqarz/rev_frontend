@@ -14,9 +14,11 @@ import { highlightMatch } from "../../../utils/highlightMatch";
 import { IoCloseCircleOutline } from "react-icons/io5";
 const AllUser = () => {
   const dispatch = useDispatch();
-  const { isLoading, isError, data } = useSelector(
-    (state) => state.allUserReducer
-  );
+  const {
+    isLoading: isLoadingUser,
+    isError,
+    data,
+  } = useSelector((state) => state.allUserReducer);
   const { message, currentPage, totalPages, totalUser, users } = data;
   // console.log("users==>", users);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
@@ -243,7 +245,20 @@ const AllUser = () => {
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {users && users?.length > 0 ? (
+              {isLoadingUser ? (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    <div className="flex justify-center items-center gap-2">
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                    </div>{" "}
+                  </td>
+                </tr>
+              ) : users && users?.length > 0 ? (
                 users?.map((row, index) => (
                   <React.Fragment key={index}>
                     <tr

@@ -8,14 +8,18 @@ import { debounce } from "../../utils/halper";
 import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../utils/highlightMatch";
+import { formattedDate } from "../../utils/formattedDate";
 
 const AllCases = () => {
   const dispatch = useDispatch();
   const { role } = useSelector((store) => store?.authReducer);
   const { accessToken } = useSelector((store) => store?.authReducer);
-  const { isLoading, isError, data } = useSelector(
-    (state) => state.caseReducer
-  );
+  const {
+    isLoading: isLoadingCases,
+    isError,
+    data,
+  } = useSelector((state) => state.caseReducer);
+  // console.log("isLoading cases:==>", isLoadingCases);
   const { message, currentPage, totalPages, totalCase, cases } = data;
   const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [searchQuery, setSearchQuery] = useState("");
@@ -125,7 +129,20 @@ const AllCases = () => {
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {cases && cases?.length > 0 ? (
+              {isLoadingCases ? (
+                <tr>
+                  <td
+                    colSpan="8"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    <div className="flex justify-center items-center gap-2">
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                    </div>{" "}
+                  </td>
+                </tr>
+              ) : cases && cases?.length > 0 ? (
                 cases?.map((row, index) => (
                   <React.Fragment key={index}>
                     {/* Main Row */}
@@ -134,7 +151,7 @@ const AllCases = () => {
                       onClick={() => toggleDetails(index)}
                     >
                       <td className="py-3 px-6 border-b border-gray-200">
-                        {row?.caseCode}
+                        {highlightMatch(row?.caseCode, searchQuery)}
                       </td>
 
                       <td className="py-3 px-6 border-b border-gray-200">
@@ -217,6 +234,23 @@ const AllCases = () => {
                           <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1">
                               <div className="flex w-full font-normal">
+                                <div className="w-[30%]">
+                                  Field Executive visit date :
+                                </div>
+                                <div className="w-[70%]">
+                                  {/* {formattedDate(row?.visitDate)} */}
+                                  {new Date(row?.visitDate).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      month: "2-digit",
+                                      day: "2-digit",
+                                      year: "numeric",
+                                    }
+                                  )}{" "}
+                                  {"(MM/DD/YYYY)"}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
                                 <div className="w-[30%]">Address Line1 :</div>
                                 <div className="w-[70%]">
                                   {row?.clientAddress?.addressLine1}
@@ -280,7 +314,7 @@ const AllCases = () => {
                     colSpan="8"
                     className="py-10 text-center text-gray-400 text-lg"
                   >
-                    No Cases Found !
+                    No Data Found !
                   </td>
                 </tr>
               )}

@@ -18,6 +18,7 @@ const initialData = {
   accessToken: localStorage.getItem("accessToken") || "",
   isLogin: localStorage.getItem("accessToken") ? true : false,
   isActive: localStorage.getItem("isActive") || false,
+  tokenExpiry: localStorage.getItem("token_expiry") || null,
 };
 
 const authReducer = (state = initialData, { type, payload }) => {
@@ -29,6 +30,7 @@ const authReducer = (state = initialData, { type, payload }) => {
     case USER_LOGIN_SUCCESS: {
       // console.log(payload);
       localStorage.setItem("accessToken", payload?.accessToken);
+      localStorage.setItem("token_expiry", payload?.tokenExpiry); // Convert to milliseconds
       localStorage.setItem("firstName", payload?.firstName);
       localStorage.setItem("lastName", payload?.lastName);
       localStorage.setItem("role", payload?.role);
@@ -43,6 +45,7 @@ const authReducer = (state = initialData, { type, payload }) => {
         lastName: payload?.lastName,
         role: payload?.role,
         isLogin: true,
+        tokenExpiry: payload?.tokenExpiry,
       };
     }
     case USER_LOGOUT_SUCCESS: {
@@ -51,7 +54,8 @@ const authReducer = (state = initialData, { type, payload }) => {
       localStorage.removeItem("lastName", payload?.lastName);
       localStorage.removeItem("role", payload?.role);
       localStorage.removeItem("isActive", payload?.isActive);
-      toastSuccess("Logged out success!");
+      localStorage.removeItem("token_expiry");
+      toastSuccess("you are Logged out!");
       return {
         ...state,
         accessToken: "",
@@ -60,6 +64,7 @@ const authReducer = (state = initialData, { type, payload }) => {
         role: "",
         isLogin: false,
         isActive: false,
+        tokenExpiry: null,
       };
     }
     case USER_LOGIN_ERROR:

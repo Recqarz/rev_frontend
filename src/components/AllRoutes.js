@@ -17,6 +17,7 @@ import Profile from "./Profile";
 import AllCases from "../pages/coordinator/AllCases";
 import { getProfileByToken } from "../redux/profile/profileAction";
 import AddLocation from "../pages/admin/location/AddLocation";
+import PageNotFound from "./PageNotFound";
 
 const roleBasedRoutes = {
   admin: [
@@ -53,7 +54,7 @@ const AllRoutes = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { role } = useSelector((store) => store.authReducer); // Fetch role from Redux
-  const { accessToken } = useSelector((store) => store.authReducer); // Fetch role from Redux
+  const { accessToken } = useSelector((store) => store.authReducer); // Fetch token from Redux
   const { data: profileData } = useSelector((state) => state.profileReducer);
 
   useEffect(() => {
@@ -67,24 +68,20 @@ const AllRoutes = () => {
   const routes = roleBasedRoutes[role] || [];
 
   return (
-    <Routes>
-      {routes.map(({ path, element }) => (
-        <Route
-          key={path}
-          path={path}
-          element={
-            <Layout
-              isSidebarOpen={isSidebarOpen}
-              toggleSidebar={toggleSidebar}
-              profileData={profileData}
-            >
-              {element}
-            </Layout>
-          }
-        />
-      ))}
-      {/* <Route path="*" element={<Navigate to={`/${role}/dashboard`} />} /> */}
-    </Routes>
+    <>
+      <Layout
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        profileData={profileData}
+      >
+        <Routes>
+          {routes.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
+          ))}
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </Layout>
+    </>
   );
 };
 

@@ -10,12 +10,12 @@ const Navbar = ({ toggleSidebar, profileData }) => {
   return (
     <nav className="h-[60px] px-2 shadow-lg bg-gray-100  flex justify-between  items-center rounded-md">
       <button
-        className=" text-xl  text-[##063c4c] hover:bg-gray-300 rounded-sm p-2"
+        className="md:hidden text-xl  text-[##063c4c] hover:bg-gray-300 rounded-sm p-2"
         onClick={toggleSidebar}
       >
         <FaBars />
       </button>
-      <div>
+      <div className="flex-1 text-center">
         <h1 className="uppercase font-medium text-[##063c4c]">
           {profileData?.role} Panel
         </h1>

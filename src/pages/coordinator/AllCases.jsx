@@ -125,35 +125,36 @@ const AllCases = () => {
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {cases?.map((row, index) => (
-                <React.Fragment key={index}>
-                  {/* Main Row */}
-                  <tr
-                    className="hover:bg-gray-200 cursor-pointer hover:shadow-md text-sm"
-                    onClick={() => toggleDetails(index)}
-                  >
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {row?.caseCode}
-                    </td>
+              {cases && cases?.length > 0 ? (
+                cases?.map((row, index) => (
+                  <React.Fragment key={index}>
+                    {/* Main Row */}
+                    <tr
+                      className="hover:bg-gray-200 cursor-pointer hover:shadow-md text-sm"
+                      onClick={() => toggleDetails(index)}
+                    >
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {row?.caseCode}
+                      </td>
 
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.clientName, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate">
-                      {highlightMatch(row?.BOV_ReportNo, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.bankRefNo, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.bankId?.bankName, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      {highlightMatch(row?.bankId?.branchName, searchQuery)}
-                    </td>
-                    <td className="py-3 px-6 border-b border-gray-200">
-                      <span
-                        className={`text-white py-1 px-2 rounded-full text-xs
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.clientName, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200 truncate">
+                        {highlightMatch(row?.BOV_ReportNo, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.bankRefNo, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.bankId?.bankName, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        {highlightMatch(row?.bankId?.branchName, searchQuery)}
+                      </td>
+                      <td className="py-3 px-6 border-b border-gray-200">
+                        <span
+                          className={`text-white py-1 px-2 rounded-full text-xs
                       ${
                         row.status === "pending"
                           ? "bg-orange-500"
@@ -164,112 +165,125 @@ const AllCases = () => {
                           : "bg-red-500"
                       }
                       `}
-                      >
-                        {row.status === "pending"
-                          ? "Pending"
-                          : row.status === "process"
-                          ? "Process"
-                          : row.status === "completed"
-                          ? "Completed"
-                          : "Rejected"}
-                      </span>
-                    </td>
-                    <td
-                      className={`py-3 px-6 border-b border-gray-200 hover:bg-blue-50 ${
-                        expandedRow === index ? "bg-blue-50" : ""
-                      }`}
-                    >
-                      <div className="flex gap-2 items-center">
-                        {role && role === "coordinator" && (
-                          <Link
-                            to={`/coordinator/all/cases/add?caseId=${row?._id}`}
-                          >
-                            <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
-                              <MdOutlineEdit />
-                            </div>
-                          </Link>
-                        )}
-                        <div
-                          className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
-                          // onClick={() => toggleDetails(index)} // Toggle the details panel
                         >
-                          <MdKeyboardArrowRight
-                            className={`transform transition-transform duration-300 ease-in-out ${
-                              expandedRow === index ? "rotate-90" : ""
-                            }`}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* Details Row */}
-                  {expandedRow === index && (
-                    <tr className="bg-blue-50">
-                      <td colSpan={8} className="p-4 border-b border-gray-200">
-                        <h1 className="uppercase font-semibold mb-1">
-                          Client Address:
-                        </h1>
-                        <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Address Line1 :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.addressLine1}
+                          {row.status === "pending"
+                            ? "Pending"
+                            : row.status === "process"
+                            ? "Process"
+                            : row.status === "completed"
+                            ? "Completed"
+                            : "Rejected"}
+                        </span>
+                      </td>
+                      <td
+                        className={`py-3 px-6 border-b border-gray-200 hover:bg-blue-50 ${
+                          expandedRow === index ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <div className="flex gap-2 items-center">
+                          {role && role === "coordinator" && (
+                            <Link
+                              to={`/coordinator/all/cases/add?caseId=${row?._id}`}
+                            >
+                              <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
+                                <MdOutlineEdit />
                               </div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Address Line2 :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.addressLine2}
-                              </div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Land Mark :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.landMark}
-                              </div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Plot No. :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.plotNumber}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col gap-1">
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Street Name :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.streetName}
-                              </div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">State :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.state}
-                              </div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">City :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.city}
-                              </div>
-                            </div>
-                            <div className="flex w-full font-normal">
-                              <div className="w-[30%]">Pin code :</div>
-                              <div className="w-[70%]">
-                                {row?.clientAddress?.pincode}
-                              </div>
-                            </div>
+                            </Link>
+                          )}
+                          <div
+                            className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
+                            // onClick={() => toggleDetails(index)} // Toggle the details panel
+                          >
+                            <MdKeyboardArrowRight
+                              className={`transform transition-transform duration-300 ease-in-out ${
+                                expandedRow === index ? "rotate-90" : ""
+                              }`}
+                            />
                           </div>
                         </div>
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
+
+                    {/* Details Row */}
+                    {expandedRow === index && (
+                      <tr className="bg-blue-50">
+                        <td
+                          colSpan={8}
+                          className="p-4 border-b border-gray-200"
+                        >
+                          <h1 className="uppercase font-semibold mb-1">
+                            Client Address:
+                          </h1>
+                          <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Address Line1 :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.addressLine1}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Address Line2 :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.addressLine2}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Land Mark :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.landMark}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Plot No. :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.plotNumber}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Street Name :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.streetName}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">State :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.state}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">City :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.city}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Pin code :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.pincode}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="8"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    No Cases Found !
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

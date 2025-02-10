@@ -1,8 +1,13 @@
 import React from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import { useSelector } from "react-redux";
 
 const Layout = ({ children, isSidebarOpen, toggleSidebar, profileData }) => {
+  // const { isLoading, accessToken } = useSelector((store) => store?.authReducer);
+  // console.log("isLoading==>", isLoading);
+  // console.log("accessToken==>", accessToken);
+
   return (
     <div className="flex !h-screen lg:!h-[100vh] w-[100%]">
       {/* Sidebar Section   md:transform-none lg:translate-x-0 lg:static */}

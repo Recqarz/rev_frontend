@@ -150,8 +150,8 @@ const AllBank = () => {
 
                     <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
                       <div
-                        className="rounded-full hover:bg-gray-300 py-1 px-1"
-                        onClick={() => handleUpdateStatusFunc(row)}
+                        className="rounded-full hover:bg-gray-300 py-1 px-1 cursor-not-allowed"
+                        // onClick={() => handleUpdateStatusFunc(row)}
                       >
                         <MdOutlineEdit className="text-xl text-[#3fb597]" />
                       </div>

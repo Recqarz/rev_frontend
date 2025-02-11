@@ -12,9 +12,11 @@ import { highlightMatch } from "../../utils/highlightMatch";
 
 const AllFieldExecutives = () => {
   const dispatch = useDispatch();
-  const { isLoading, isError, data } = useSelector(
-    (state) => state.allFieldExecutiveReducer
-  );
+  const {
+    isLoading: isLadingFieldExecutive,
+    isError,
+    data,
+  } = useSelector((state) => state.allFieldExecutiveReducer);
   const { message, currentPage, totalPages, totalUser, fieldExecutives } = data;
   // console.log("fieldExecutives==>", fieldExecutives);
   const [currentPageState, setCurrentPageState] = useState(currentPage);
@@ -103,7 +105,20 @@ const AllFieldExecutives = () => {
               </tr>
             </thead>
             <tbody className="bg-white text-sm">
-              {fieldExecutives && fieldExecutives?.length > 0 ? (
+              {isLadingFieldExecutive ? (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    <div className="flex justify-center items-center gap-2">
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                    </div>
+                  </td>
+                </tr>
+              ) : fieldExecutives && fieldExecutives?.length > 0 ? (
                 fieldExecutives?.map((row, index) => (
                   <React.Fragment key={index}>
                     <tr
@@ -218,7 +233,7 @@ const AllFieldExecutives = () => {
                     colSpan="6"
                     className="py-10 text-center text-gray-400 text-lg"
                   >
-                    No Field-Executives Found !
+                    No data found !
                   </td>
                 </tr>
               )}

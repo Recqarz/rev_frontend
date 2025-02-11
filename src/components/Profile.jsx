@@ -18,7 +18,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: profileData } = useSelector((state) => state.profileReducer);
-  const [profilePic, setProfilePic] = useState(null); //for getting image file
+  const [profilePic, setProfilePic] = useState(null); //for getting image file //file like: all object keys of file
   const [onchangeAvatar, setOnchangeAvatar] = useState(null); //for getting to preview the
 
   //get banks
@@ -269,7 +269,13 @@ const Profile = () => {
                 {profilePic && (
                   <div className="flex justify-end">
                     <div className="flex gap-2 text-sm">
-                      <button onClick={() => setProfilePic(null)} type="button">
+                      <button
+                        onClick={() => {
+                          setProfilePic(null);
+                          setOnchangeAvatar(null);
+                        }}
+                        type="button"
+                      >
                         <MdOutlineCancel className="text-red-500 text-2xl" />
                       </button>
                       <button type="submit">

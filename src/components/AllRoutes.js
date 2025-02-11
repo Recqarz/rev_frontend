@@ -68,24 +68,6 @@ const AllRoutes = () => {
   const routes = roleBasedRoutes[role] || [];
 
   return (
-    // <Routes>
-    //   {routes.map(({ path, element }) => (
-    //     <Route
-    //       key={path}
-    //       path={path}
-    //       element={
-    //         <Layout
-    //           isSidebarOpen={isSidebarOpen}
-    //           toggleSidebar={toggleSidebar}
-    //           profileData={profileData}
-    //         >
-    //           {element}
-    //         </Layout>
-    //       }
-    //     />
-    //   ))}
-    //   {/* <Route path="*" element={<Navigate to={`/${role}/dashboard`} />} /> */}
-    // </Routes>
     <Layout
       isSidebarOpen={isSidebarOpen}
       toggleSidebar={toggleSidebar}

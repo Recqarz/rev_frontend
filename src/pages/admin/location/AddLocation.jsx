@@ -20,6 +20,8 @@ const AddLocation = () => {
   const [stateId, setStateId] = useState(""); // state to hold selected stateId
   const [districtId, setDistrictId] = useState(""); // state to hold selected stateId
   const [district, setDistrict] = useState([]);
+  console.log("district==>aa===>", district);
+  console.log("stateId==>", stateId);
 
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { isLoading, isError, data } = useSelector(
@@ -27,6 +29,7 @@ const AddLocation = () => {
   );
   const { message, states, districts, zones, locationAll } = data;
   console.log("locationAll==>", locationAll);
+  console.log("districts==>bbb===>", districts);
 
   useEffect(() => {
     locationAll?.states?.map((ele, i) => {
@@ -40,10 +43,10 @@ const AddLocation = () => {
     dispatch(getAllStates(accessToken));
 
     if (stateId) {
-      dispatch(getAllDistricts(stateId, accessToken)); // Pass stateId to fetch districts
+      dispatch(getAllDistricts(stateId, accessToken)); // Pass stateId to get state wise districts
     }
     if (districtId) {
-      dispatch(getAllZones(districtId, accessToken)); // Pass districtId to fetch districts
+      dispatch(getAllZones(districtId, accessToken)); // Pass districtId to get districts
     }
   }, [stateId, districtId]);
 
@@ -82,14 +85,31 @@ const AddLocation = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter state name",
+      // options: [
+      //   { key: 0, value: "", label: "Select State" }, // Default empty value
+      //   ...(locationAll?.states ?? [])?.map((state, index) => ({
+      //     key: index + 1,
+      //     value: state?.name,
+      //     label: `${index + 1}. ${state?.name}`,
+      //   })),
+      // ],
       options: [
         { key: 0, value: "", label: "Select State" }, // Default empty value
-        ...(locationAll?.states ?? [])?.map((state, index) => ({
-          key: index + 1,
-          value: state?.name,
-          label: `${index + 1}. ${state?.name}`,
-        })),
+        ...(locationAll?.states ?? [])?.map((state, index) => {
+          const isExisting = new Set(
+            states?.map((el) => el?.name.toLowerCase()) ?? []
+          ).has(state.name.toLowerCase());
+          return {
+            key: index + 1,
+            value: state?.name,
+            label: `${index + 1}. ${state?.name}${
+              isExisting ? " (already exist)" : ""
+            }`,
+            disabled: isExisting,
+          };
+        }),
       ],
+
       validation: Yup.string().required("State name is required"),
       initialValue: "",
     },
@@ -146,13 +166,29 @@ const AddLocation = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter district name",
+      // options: [
+      //   { key: 0, value: "", label: "Select District" },
+      //   ...district?.map((ele, i) => ({
+      //     key: i + 1,
+      //     value: ele,
+      //     label: ele,
+      //   })),
+      // ],
       options: [
         { key: 0, value: "", label: "Select District" },
-        ...district?.map((ele, i) => ({
-          key: i + 1,
-          value: ele,
-          label: ele,
-        })),
+        ...(district ?? [])?.map((dist, index) => {
+          const isExisting = new Set(
+            districts?.map((el) => el?.name.toLowerCase()) ?? []
+          ).has(dist.toLowerCase());
+          return {
+            key: index + 1,
+            value: dist,
+            label: `${index + 1}. ${dist}${
+              isExisting ? " (already exist)" : ""
+            }`,
+            disabled: isExisting,
+          };
+        }),
       ],
       validation: Yup.string().required("District name is required"),
       initialValue: "",
@@ -308,7 +344,16 @@ const AddLocation = () => {
                             className={item?.inputFieldClassName}
                           >
                             {item?.options?.map((option) => (
-                              <option key={option?.key} value={option?.value}>
+                              <option
+                                key={option?.key}
+                                value={option?.value}
+                                disabled={option?.disabled}
+                                className={`${
+                                  option.disabled
+                                    ? "text-red-400"
+                                    : "text-black"
+                                }`}
+                              >
                                 {option?.label}
                               </option>
                             ))}
@@ -372,103 +417,120 @@ const AddLocation = () => {
             validationSchema={districtValidationSchema}
             onSubmit={handleSubmitDistrict}
           >
-            {({ isSubmitting, dirty, resetForm, setFieldValue }) => (
-              <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
-                <div className="w-[100%] lg:w-[80%] grid md:grid-cols-4 lg:grid-cols-8 gap-2">
-                  {AddDistrictFormSchema?.map((item) => (
-                    <div key={item?.key} className={item?.mainDivClassname}>
-                      <div>
-                        <label
-                          htmlFor={item?.htmlFor}
-                          className="text-sm font-medium text-gray-900 block mb-1"
-                        >
-                          {item?.label}
-                        </label>
-                        {item?.as === "select" && item?.label === "State" ? (
-                          <Field
-                            as="select"
-                            name={item?.name}
-                            id={item?.id}
-                            className={item?.inputFieldClassName}
-                            onChange={(e) => { // onChange is needed when you have make any function, set the data using useState and make sure 
-                              const selectedValue = e.target.value;
-                              setFieldValue(item?.name, selectedValue);
-
-                              // Find the selected state's name
-                              const stateObj = states.find(
-                                (state) => state._id === selectedValue
-                              );
-
-                              setStateName(stateObj ? stateObj.name : ""); // Store the name in state
-                            }}
+            {({ values, isSubmitting, dirty, resetForm, setFieldValue }) => {
+              {
+                if (values?.stateId) {
+                  setStateId(values?.stateId);
+                }
+              }
+              return (
+                <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
+                  <div className="w-[100%] lg:w-[80%] grid md:grid-cols-4 lg:grid-cols-8 gap-2">
+                    {AddDistrictFormSchema?.map((item) => (
+                      <div key={item?.key} className={item?.mainDivClassname}>
+                        <div>
+                          <label
+                            htmlFor={item?.htmlFor}
+                            className="text-sm font-medium text-gray-900 block mb-1"
                           >
-                            {item?.options?.map((option) => (
-                              <option key={option?.key} value={option?.value}>
-                                {option?.label}
-                              </option>
-                            ))}
-                          </Field>
-                        ) : item?.as === "select" &&
-                          item?.label === "District" ? (
-                          <Field
-                            as="select"
+                            {item?.label}
+                          </label>
+                          {item?.as === "select" && item?.label === "State" ? (
+                            <Field
+                              as="select"
+                              name={item?.name}
+                              id={item?.id}
+                              className={item?.inputFieldClassName}
+                              onChange={(e) => {
+                                // onChange is needed when you have make any function, set the data using useState and make sure setFieldValue(key,(e.target.value)) is important to set for getting values
+                                const selectedValue = e.target.value;
+                                setFieldValue(item?.name, selectedValue);
+
+                                // Find the selected state's name
+                                const stateObj = states.find(
+                                  (state) => state._id === selectedValue
+                                );
+
+                                setStateName(stateObj ? stateObj.name : ""); // Store the name in state
+                              }}
+                            >
+                              {item?.options?.map((option) => (
+                                <option key={option?.key} value={option?.value}>
+                                  {option?.label}
+                                </option>
+                              ))}
+                            </Field>
+                          ) : item?.as === "select" &&
+                            item?.label === "District" ? (
+                            <Field
+                              as="select"
+                              name={item?.name}
+                              id={item?.id}
+                              className={item?.inputFieldClassName}
+                            >
+                              {item?.options?.map((option) => (
+                                <option
+                                  key={option?.key}
+                                  value={option?.value}
+                                  disabled={option?.disabled}
+                                  className={`${
+                                    option.disabled
+                                      ? "text-red-400"
+                                      : "text-black"
+                                  }`}
+                                >
+                                  {option?.label}
+                                </option>
+                              ))}
+                            </Field>
+                          ) : (
+                            <Field
+                              type={item?.type}
+                              name={item?.name}
+                              id={item?.id}
+                              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                              placeholder={item?.placeholder}
+                            />
+                          )}
+                          <ErrorMessage
                             name={item?.name}
-                            id={item?.id}
-                            className={item?.inputFieldClassName}
-                          >
-                            {item?.options?.map((option) => (
-                              <option key={option?.key} value={option?.value}>
-                                {option?.label}
-                              </option>
-                            ))}
-                          </Field>
-                        ) : (
-                          <Field
-                            type={item?.type}
-                            name={item?.name}
-                            id={item?.id}
-                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                            placeholder={item?.placeholder}
+                            component="p"
+                            className="text-red-500 text-sm"
                           />
-                        )}
-                        <ErrorMessage
-                          name={item?.name}
-                          component="p"
-                          className="text-red-500 text-sm"
-                        />
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                  <div className="w-[100%] lg:w-[20%] flex justify-end gap-4 lg:mt-6 text-sm">
+                    <div>
+                      <button
+                        type="button"
+                        className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 cursor-pointer"
+                        onClick={() => {
+                          setStateName("");
+                          resetForm();
+                        }}
+                      >
+                        Reset
+                      </button>
                     </div>
-                  ))}
-                </div>
-                <div className="w-[100%] lg:w-[20%] flex justify-end gap-4 lg:mt-6 text-sm">
-                  <div>
-                    <button
-                      type="button"
-                      className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 cursor-pointer"
-                      onClick={() => {
-                        setStateName("");
-                        resetForm();
-                      }}
-                    >
-                      Reset
-                    </button>
+                    <div>
+                      <button
+                        type="submit"
+                        className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
+                          dirty
+                            ? "bg-[#1f6c57] cursor-pointer"
+                            : "bg-gray-400 cursor-not-allowed"
+                        }`}
+                        disabled={!dirty || isSubmitting}
+                      >
+                        Add Dist
+                      </button>{" "}
+                    </div>
                   </div>
-                  <div>
-                    <button
-                      type="submit"
-                      className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
-                        dirty
-                          ? "bg-[#1f6c57] cursor-pointer"
-                          : "bg-gray-400 cursor-not-allowed"
-                      }`}
-                      disabled={!dirty || isSubmitting}
-                    >
-                      Add Dist
-                    </button>{" "}
-                  </div>
-                </div>
-              </Form>
-            )}
+                </Form>
+              );
+            }}
           </Formik>
         </div>
 
@@ -493,7 +555,6 @@ const AddLocation = () => {
                   setDistrictId(values?.districtId);
                 }
               }
-
               return (
                 <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
                   <div className="w-[100%] lg:w-[80%] grid md:grid-cols-4 lg:grid-cols-8 gap-2">
@@ -512,12 +573,6 @@ const AddLocation = () => {
                               name={item?.name}
                               id={item?.id}
                               className={item?.inputFieldClassName}
-                              // onChange={(e) => setStateId(e.target.value)}
-                              // onChange={
-                              //   item?.name === "stateId"
-                              //     ? handleStateChange
-                              //     : undefined
-                              // }
                             >
                               {item?.options?.map((option) => (
                                 <option

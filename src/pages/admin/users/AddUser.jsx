@@ -233,7 +233,7 @@ const AddUser = () => {
           : { longitude: "", latitude: "", formattedAddress: "" },
     };
 
-    console.log("formattedValues==>", formattedValues);
+    // console.log("formattedValues==>", formattedValues);
     dispatch(addUserData(formattedValues, accessToken, navigate));
     resetForm();
   };
@@ -243,7 +243,7 @@ const AddUser = () => {
   };
 
   const changeDistrict = (distId) => {
-    console.log(distId);
+    // console.log(distId);
     distId && dispatch(getAllZones(distId, accessToken));
   };
 

@@ -6,6 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { getAllBankData } from "../../../redux/banks/bankAction";
 import { addUserData } from "../../../redux/users/userAction";
 import GeolocationAutoComplete from "../../../components/google-map/GeolocationAutoComplete";
+import LocationSearch from "../../../components/location/LocationSearch";
+import {
+  getAllDistricts,
+  getAllStates,
+} from "../../../redux/location/locationAction";
 // import GeolocationAutoComplete from "./google-map/GeolocationAutoComplete";
 
 const AddUser = () => {
@@ -18,10 +23,11 @@ const AddUser = () => {
     (state) => state.allBankReducer
   );
   const { banks } = data;
-  // console.log("banks data in user form", banks);
-
+  const locationData = useSelector((store) => store.locationReducer);
+  console.log("locationData**************>", locationData);
   useEffect(() => {
     dispatch(getAllBankData());
+    dispatch(getAllStates(accessToken));
   }, [dispatch]);
 
   const AddUserFormSchema = [
@@ -223,6 +229,14 @@ const AddUser = () => {
     resetForm();
   };
 
+  const changeState = (stateId) => {
+    dispatch(getAllDistricts(stateId, accessToken));
+  };
+
+  const changeDistrict = (distId) => {
+    console.log(distId);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-center">
@@ -298,6 +312,18 @@ const AddUser = () => {
                         component="div"
                         className="text-red-500 text-sm"
                       />
+                      <div>
+                        <LocationSearch
+                          data={locationData?.data?.states}
+                          name={"Select State"}
+                          changeLocation={changeState}
+                        />
+                        <LocationSearch
+                          data={locationData?.data?.districts}
+                          name={"Select District"}
+                          changeLocation={changeDistrict}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>

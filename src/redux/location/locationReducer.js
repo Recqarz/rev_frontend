@@ -8,6 +8,7 @@ const initialData = {
     states: [],
     districts: [],
     zones: [],
+    locationAll: [],
   },
 };
 
@@ -19,12 +20,19 @@ const locationReducer = (state = initialData, { type, payload }) => {
     case types.ADD_DISTRICT_DATA_REQUEST:
     case types.GET_ZONE_DATA_REQUEST:
     case types.ADD_ZONE_DATA_REQUEST:
+    case types.GET_LOCATIONALL_DATA_REQUEST:
       return {
         ...state,
         isLoading: true,
         isError: false,
       };
 
+    case types.GET_LOCATIONALL_DATA_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        data: { ...state.data, locationAll: payload.data },
+      };
     case types.GET_STATE_DATA_SUCCESS:
       return {
         ...state,
@@ -84,6 +92,7 @@ const locationReducer = (state = initialData, { type, payload }) => {
     case types.ADD_DISTRICT_DATA_ERROR:
     case types.GET_ZONE_DATA_ERROR:
     case types.ADD_ZONE_DATA_ERROR:
+    case types.GET_LOCATIONALL_DATA_ERROR:
       return {
         ...state,
         isLoading: false,

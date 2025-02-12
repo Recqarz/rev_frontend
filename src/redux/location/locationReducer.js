@@ -51,7 +51,6 @@ const locationReducer = (state = initialData, { type, payload }) => {
       };
 
     case types.GET_DISTRICT_DATA_SUCCESS: {
-      console.log("payload==>", payload);
       return {
         ...state,
         isLoading: false,
@@ -59,7 +58,7 @@ const locationReducer = (state = initialData, { type, payload }) => {
       };
     }
 
-    case types.ADD_DISTRICT_DATA_SUCCESS:
+    case types.ADD_DISTRICT_DATA_SUCCESS: {
       return {
         ...state,
         isLoading: false,
@@ -68,6 +67,7 @@ const locationReducer = (state = initialData, { type, payload }) => {
           districts: [...(state.data.districts || []), payload],
         },
       };
+    }
 
     case types.GET_ZONE_DATA_SUCCESS:
       return {
@@ -76,7 +76,7 @@ const locationReducer = (state = initialData, { type, payload }) => {
         data: { ...state.data, zones: payload.data },
       };
 
-    case types.ADD_ZONE_DATA_SUCCESS:
+    case types.ADD_ZONE_DATA_SUCCESS: {
       return {
         ...state,
         isLoading: false,
@@ -85,6 +85,7 @@ const locationReducer = (state = initialData, { type, payload }) => {
           zones: [...(state.data.zones || []), payload],
         },
       };
+    }
 
     case types.GET_STATE_DATA_ERROR:
     case types.ADD_STATE_DATA_ERROR:

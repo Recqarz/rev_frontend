@@ -15,7 +15,7 @@ export const getLocationAll = (accessToken) => async (dispatch) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
     .then((res) => {
-      console.log("all location res==>", res);
+      // console.log("all location res==>", res);
       dispatch({
         type: types.GET_LOCATIONALL_DATA_SUCCESS,
         payload: res?.data,
@@ -81,7 +81,7 @@ export const addDistrict = (districtData, accessToken) => async (dispatch) => {
       // console.log("add dist res==>", res);
       dispatch({
         type: types.ADD_DISTRICT_DATA_SUCCESS,
-        payload: res?.data?.data,
+        payload: res?.data?.district,
       });
       toastUpdate(toastId, 200, res?.data?.message);
     })
@@ -94,7 +94,6 @@ export const addDistrict = (districtData, accessToken) => async (dispatch) => {
 
 // Fetch Districts by State ID
 export const getAllDistricts = (stateId, accessToken) => async (dispatch) => {
-  console.log("stateId action==>", stateId);
   dispatch({ type: types.GET_DISTRICT_DATA_REQUEST });
   return axios
     .get(`${baseURL}/api/v1/location/district-list/${stateId}`, {

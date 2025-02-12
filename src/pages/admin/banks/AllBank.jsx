@@ -15,9 +15,11 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 
 const AllBank = () => {
   const dispatch = useDispatch();
-  const { isLoading, isError, data } = useSelector(
-    (state) => state.allBankReducer
-  );
+  const {
+    isLoading: isLoadingBank,
+    isError,
+    data,
+  } = useSelector((state) => state.allBankReducer);
   const { message, currentPage, totalPages, totalBank, banks } = data;
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({});
@@ -114,34 +116,58 @@ const AllBank = () => {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {(banks ?? [])?.map((row, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
-                >
-                  <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {index + 1}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {highlightMatch(row?.bankName, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
-                    {highlightMatch(row?.branchName, searchQuery)}
-                  </td>
-                  <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                    {highlightMatch(row?.IFSC, searchQuery)}
-                  </td>
-
-                  <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
-                    <div
-                      className="rounded-full hover:bg-gray-300 py-1 px-1"
-                      onClick={() => handleUpdateStatusFunc(row)}
-                    >
-                      <MdOutlineEdit className="text-xl text-[#3fb597]" />
-                    </div>
+              {isLoadingBank ? (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    <div className="flex justify-center items-center gap-2">
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                      <div className="w-5 h-5 rounded-full animate-pulse bg-[#3f6a7e]"></div>
+                    </div>{" "}
                   </td>
                 </tr>
-              ))}
+              ) : banks && banks?.length > 0 ? (
+                banks?.map((row, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
+                  >
+                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                      {index + 1}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                      {highlightMatch(row?.bankName, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
+                      {highlightMatch(row?.branchName, searchQuery)}
+                    </td>
+                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                      {highlightMatch(row?.IFSC, searchQuery)}
+                    </td>
+
+                    <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
+                      <div
+                        className="rounded-full hover:bg-gray-300 py-1 px-1 cursor-not-allowed"
+                        // onClick={() => handleUpdateStatusFunc(row)}
+                      >
+                        <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="py-10 text-center text-gray-400 text-lg"
+                  >
+                    No Banks Found !
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

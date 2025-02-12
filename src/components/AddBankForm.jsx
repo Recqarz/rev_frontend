@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
-import { addBankData } from '../redux/banks/bankAction'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { addBankData } from "../redux/banks/bankAction";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const AddBankForm = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   //get banks
-  const { accessToken } = useSelector((store) => store?.authReducer)
+  const { accessToken } = useSelector((store) => store?.authReducer);
 
   const handleSubmit = (values, { resetForm }) => {
-    console.log('Form data===>', values)
-    dispatch(addBankData(values, accessToken, navigate))
-    resetForm()
-  }
+    // console.log('Form data===>', values)
+    dispatch(addBankData(values, accessToken, navigate));
+    resetForm();
+  };
 
   return (
     <div>
@@ -42,7 +42,7 @@ const AddBankForm = () => {
                       >
                         {item?.label}
                       </label>
-                      {item?.as === 'select' ? (
+                      {item?.as === "select" ? (
                         <Field
                           as="select"
                           name={item?.name}
@@ -94,39 +94,39 @@ const AddBankForm = () => {
         </Formik>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddBankForm
+export default AddBankForm;
 
 const AddBankFormSchema = [
   {
     key: 1,
-    label: 'Bank Name',
-    htmlFor: 'bankName',
-    name: 'bankName',
-    type: 'text',
-    id: 'bankName',
-    mainDivClassname: 'col-span-4',
+    label: "Bank Name",
+    htmlFor: "bankName",
+    name: "bankName",
+    type: "text",
+    id: "bankName",
+    mainDivClassname: "col-span-4",
     inputFieldClassName:
-      'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5',
-    placeholder: 'Enter bank name',
-    validation: Yup.string().required('Bank Name is required'),
-    initialValue: '',
+      "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    placeholder: "Enter bank name",
+    validation: Yup.string().required("Bank Name is required"),
+    initialValue: "",
   },
   {
     key: 2,
-    label: 'Branch Name',
-    htmlFor: 'branchName',
-    name: 'branchName',
-    type: 'text',
-    id: 'branchName',
-    mainDivClassname: 'col-span-4',
+    label: "Branch Name",
+    htmlFor: "branchName",
+    name: "branchName",
+    type: "text",
+    id: "branchName",
+    mainDivClassname: "col-span-4",
     inputFieldClassName:
-      'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5',
-    placeholder: 'Enter branch name',
-    validation: Yup.string().required('Branch Name is required'),
-    initialValue: '',
+      "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    placeholder: "Enter branch name",
+    validation: Yup.string().required("Branch Name is required"),
+    initialValue: "",
   },
   // {
   //   key: 3,
@@ -165,17 +165,17 @@ const AddBankFormSchema = [
   // },
   {
     key: 6,
-    label: 'IFSC Code',
-    htmlFor: 'IFSC',
-    name: 'IFSC',
-    type: 'text',
-    id: 'IFSC',
-    mainDivClassname: 'col-span-4',
+    label: "IFSC Code",
+    htmlFor: "IFSC",
+    name: "IFSC",
+    type: "text",
+    id: "IFSC",
+    mainDivClassname: "col-span-4",
     inputFieldClassName:
-      'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5',
-    placeholder: 'Enter IFSC code',
-    validation: Yup.string().required('IFSC code is required'),
-    initialValue: '',
+      "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    placeholder: "Enter IFSC code",
+    validation: Yup.string().required("IFSC code is required"),
+    initialValue: "",
   },
   // {
   //   key: 8,
@@ -223,17 +223,17 @@ const AddBankFormSchema = [
   //   validation: Yup.string().required('Bank Name is required'),
   //   initialValue: '',
   // },
-]
+];
 const validationSchema = Yup.object(
   AddBankFormSchema.reduce((schema, field) => {
     if (field.validation) {
-      schema[field.name] = field.validation
+      schema[field.name] = field.validation;
     }
-    return schema
+    return schema;
   }, {})
-)
+);
 
 const initialValues = AddBankFormSchema.reduce((values, field) => {
-  values[field.name] = field.initialValue || '' // Use defaultValue or fallback to an empty string
-  return values
-}, {})
+  values[field.name] = field.initialValue || ""; // Use defaultValue or fallback to an empty string
+  return values;
+}, {});

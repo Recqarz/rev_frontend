@@ -34,7 +34,7 @@ const AddCases = () => {
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
 
-  // console.log("caseData==>", caseData);
+  console.log("caseData==>", caseData?.visitDate);
 
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
@@ -175,7 +175,8 @@ const AddCases = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter Visit Date",
-      validation: visitDateValidation,
+      // validation: visitDateValidation,
+      validation: visitDateValidation(caseData?.visitDate), // Pass `isUpdate`,
       initialValue:
         caseData && caseData?.visitDate
           ? formattedDate(caseData?.visitDate)
@@ -415,6 +416,7 @@ const AddCases = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
           enableReinitialize={true}
+          // context={{ isUpdate: !!caseData }} // Pass context
         >
           {({
             isSubmitting,
@@ -429,7 +431,9 @@ const AddCases = () => {
           }) => {
             {
               {
-                /* console.log("values==>", values); */
+                {
+                  /* console.log("errors==>", errors); */
+                }
               }
             }
             return (
@@ -464,7 +468,23 @@ const AddCases = () => {
                             id={item?.id}
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                             placeholder={item?.placeholder}
-                            min={new Date().toISOString().split("T")[0]} //for date picker, can only pick today and future dates.
+                            // min={new Date().toISOString().split("T")[0]} //for date picker, can only pick today and future dates.
+                            // min={
+                            //   caseData?.visitDate
+                            //     ? new Date(caseData?.visitDate)
+                            //         .toISOString()
+                            //         .split("T")[0]
+                            //     : new Date().toISOString().split("T")[0]
+                            // }
+                            min={
+                              caseData?.visitDate &&
+                              new Date(caseData?.visitDate) < new Date()
+                                ? new Date(caseData?.visitDate)
+                                    .toISOString()
+                                    .split("T")[0]
+                                : // Use previous date if exists
+                                  new Date().toISOString().split("T")[0] // Otherwise, today
+                            }
                           />
                         ) : (
                           <Field

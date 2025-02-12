@@ -9,52 +9,61 @@ import {
   addZone,
   getAllDistricts,
   getAllStates,
+  getAllZones,
+  getLocationAll,
 } from "../../../redux/location/locationAction";
 
 const AddLocation = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [stateName, setStateName] = useState(""); // state to hold selected state name
   const [stateId, setStateId] = useState(""); // state to hold selected stateId
-  console.log("stateId==>", stateId);
+  const [districtId, setDistrictId] = useState(""); // state to hold selected stateId
+  const [district, setDistrict] = useState([]);
 
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { isLoading, isError, data } = useSelector(
     (store) => store.locationReducer
   );
-  const { message, states, districts, zones } = data;
-  console.log("states==>", states);
-  console.log("districts==>", districts);
+  const { message, states, districts, zones, locationAll } = data;
+  console.log("locationAll==>", locationAll);
 
   useEffect(() => {
+    locationAll?.states?.map((ele, i) => {
+      if (ele.name?.toLowerCase() === stateName) {
+        setDistrict(ele.districts);
+      }
+    });
+  }, [stateName]);
+  useEffect(() => {
+    dispatch(getLocationAll(accessToken));
     dispatch(getAllStates(accessToken));
+
     if (stateId) {
-      console.log("stateId passed to get districts:", stateId);
       dispatch(getAllDistricts(stateId, accessToken)); // Pass stateId to fetch districts
     }
-    // dispatch(getAllDistricts(stateId, accessToken));
-  }, [stateId]);
+    if (districtId) {
+      dispatch(getAllZones(districtId, accessToken)); // Pass districtId to fetch districts
+    }
+  }, [stateId, districtId]);
 
   const handleSubmitState = (values, { resetForm }) => {
-    console.log("State Form data===>", values);
+    console.log("state values==>", values);
     dispatch(addState(values, accessToken));
     resetForm();
   };
   const handleSubmitDistrict = (values, { resetForm }) => {
-    console.log("Dist Form data===>", values);
     dispatch(addDistrict(values, accessToken));
     resetForm();
   };
   const handleSubmitCity = (values, { resetForm }) => {
-    console.log("City Form data===>", values);
     resetForm();
   };
   const handleSubmitZone = (values, { resetForm }) => {
-    console.log("Zone Form data===>", values);
     const formattedValues = {
       districtId: values.districtId,
       name: values.name,
     };
-    // console.log("formattedValues==>", formattedValues);
     dispatch(addZone(formattedValues, accessToken));
     resetForm();
   };
@@ -66,12 +75,21 @@ const AddLocation = () => {
       label: "State",
       htmlFor: "name",
       name: "name",
-      type: "text",
+      as: "select",
+      // type: "text",
       id: "name",
       mainDivClassname: "col-span-2",
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter state name",
+      options: [
+        { key: 0, value: "", label: "Select State" }, // Default empty value
+        ...(locationAll?.states ?? [])?.map((state, index) => ({
+          key: index + 1,
+          value: state?.name,
+          label: `${index + 1}. ${state?.name}`,
+        })),
+      ],
       validation: Yup.string().required("State name is required"),
       initialValue: "",
     },
@@ -98,7 +116,6 @@ const AddLocation = () => {
       htmlFor: "stateId",
       as: "select",
       name: "stateId",
-      // type: 'workForBank',
       id: "stateId",
       mainDivClassname: "col-span-2",
       inputFieldClassName:
@@ -108,9 +125,9 @@ const AddLocation = () => {
       options: [
         { key: 0, value: "", label: "Select State" }, // Default empty value
         ...(states ?? [])?.map((state, index) => ({
-          key: index + 1, // Adjust index to avoid conflict with the default option key
+          key: index + 1,
           value: state?._id,
-          label: `${index + 1}) ${state?.name}`,
+          label: `${state?.name}`,
         })),
       ],
       validation: Yup.string().required("State is required"),
@@ -122,12 +139,21 @@ const AddLocation = () => {
       label: "District",
       htmlFor: "name",
       name: "name",
-      type: "text",
+      as: "select",
+      // type: "text",
       id: "name",
       mainDivClassname: "col-span-2",
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter district name",
+      options: [
+        { key: 0, value: "", label: "Select District" },
+        ...district?.map((ele, i) => ({
+          key: i + 1,
+          value: ele,
+          label: ele,
+        })),
+      ],
       validation: Yup.string().required("District name is required"),
       initialValue: "",
     },
@@ -158,7 +184,6 @@ const AddLocation = () => {
       htmlFor: "stateId",
       as: "select",
       name: "stateId",
-      // type: 'workForBank',
       id: "stateId",
       mainDivClassname: "col-span-2",
       inputFieldClassName:
@@ -168,9 +193,9 @@ const AddLocation = () => {
       options: [
         { key: 0, value: "", label: "Select State" }, // Default empty value
         ...(states ?? [])?.map((state, index) => ({
-          key: index + 1, // Adjust index to avoid conflict with the default option key
+          key: index + 1,
           value: state?._id,
-          label: `${index + 1}) ${state?.name}`,
+          label: `${index + 1}. ${state?.name}`,
         })),
       ],
       validation: Yup.string().required("State is required"),
@@ -190,69 +215,40 @@ const AddLocation = () => {
       options: [
         { key: 0, value: "", label: "Select District" }, // Default empty value
         ...(districts ?? [])?.map((district, index) => ({
-          key: index + 1, // Unique key
-          value: district?._id, // District ID
-          label: `${index + 1}) ${district?.name}`, // Display district name
+          key: index + 1,
+          value: district?._id,
+          label: `${index + 1}. ${district?.name}`,
         })),
       ],
       validation: Yup.string().required("District is required"),
       initialValue: "",
     },
-    // {
-    //   key: 3,
-    //   label: "City",
-    //   htmlFor: "city",
-    //   as: "select",
-    //   name: "City",
-    //   // type: 'workForBank',
-    //   id: "City",
-    //   mainDivClassname: "col-span-2",
-    //   inputFieldClassName:
-    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-    //   placeholder: "Enter City name",
-
-    //   options: [
-    //     { key: 0, value: "", label: "Select City" }, // Default empty value
-    //     { key: 1, value: "City 1", label: "City 1" }, // Default empty value
-    //     { key: 2, value: "City 2", label: "City 2" }, // Default empty value
-    //   ],
-    //   validation: Yup.string().required("City is required"),
-    //   initialValue: "",
-    // },
-
-    // {
-    //   key: 4,
-    //   label: "Zone",
-    //   htmlFor: "zone",
-    //   name: "zone",
-    //   type: "text",
-    //   id: "zone",
-    //   mainDivClassname: "col-span-2",
-    //   inputFieldClassName:
-    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-    //   placeholder: "Enter Zone name",
-    //   validation: Yup.string().required("Zone name is required"),
-    //   initialValue: "",
-    // },
     {
       key: 3,
       label: "Zone",
       htmlFor: "name",
       as: "select",
       name: "name",
-      // type: 'workForBank',
       id: "name",
       mainDivClassname: "col-span-2",
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter City name",
-
       options: [
-        { key: 0, value: "", label: "Select Zone" },
-        { key: 1, value: "east", label: "East" },
-        { key: 2, value: "west", label: "West" },
-        { key: 3, value: "north", label: "North" },
-        { key: 4, value: "south", label: "South" },
+        { key: 0, value: "", label: "Select Zone", disabled: false }, // Default empty option
+        ...["east", "west", "north", "south"].map((zone, index) => {
+          const isExisting = new Set(
+            zones?.map((zone) => zone?.name.toLowerCase()) ?? []
+          ).has(zone);
+          return {
+            key: index + 1,
+            value: zone,
+            label: `${index + 1}. ${zone}${
+              isExisting ? " (already exist)" : ""
+            }`,
+            disabled: isExisting,
+          };
+        }),
       ],
       validation: Yup.string().required("Zone is required"),
       initialValue: "",
@@ -281,13 +277,18 @@ const AddLocation = () => {
 
       <div className=" bg-white border-2 rounded-lg shadow border-gray-300 p-4 flex flex-col gap-3">
         {/* ------------------Add State 1st----------------------*/}
+
         <div className="border border-gray-200 bg-gray-50 py-4 rounded-md shadow-md">
+          <div className="pl-2 pb-4 ">
+            <h1 className="font-medium underline text-[#6bccb3]"> Add State</h1>
+          </div>
+
           <Formik
             initialValues={stateInitialValues}
             validationSchema={stateValidationSchema}
             onSubmit={handleSubmitState}
           >
-            {({ isSubmitting, resetForm }) => (
+            {({ isSubmitting, dirty, resetForm }) => (
               <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
                 <div className="w-[100%] lg:w-[80%] grid md:grid-cols-4 lg:grid-cols-8 gap-2">
                   {AddStateFormSchema?.map((item) => (
@@ -343,8 +344,12 @@ const AddLocation = () => {
                   <div>
                     <button
                       type="submit"
-                      className="hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg bg-[#25b992] cursor-pointer"
-                      // disabled={isSubmitting}
+                      className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
+                        dirty
+                          ? "bg-[#1f6c57] cursor-pointer"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }`}
+                      disabled={!dirty || isSubmitting}
                     >
                       Add State
                     </button>{" "}
@@ -356,12 +361,18 @@ const AddLocation = () => {
         </div>
         {/* ------------------Add District 2nd ----------------------*/}
         <div className="border border-gray-200 bg-gray-50 py-4 rounded-md shadow-md">
+          <div className="pl-2 pb-4 ">
+            <h1 className="font-medium underline text-[#6bccb3]">
+              {" "}
+              Add District
+            </h1>
+          </div>
           <Formik
             initialValues={districtInitialValues}
             validationSchema={districtValidationSchema}
             onSubmit={handleSubmitDistrict}
           >
-            {({ isSubmitting, resetForm }) => (
+            {({ isSubmitting, dirty, resetForm, setFieldValue }) => (
               <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
                 <div className="w-[100%] lg:w-[80%] grid md:grid-cols-4 lg:grid-cols-8 gap-2">
                   {AddDistrictFormSchema?.map((item) => (
@@ -373,7 +384,32 @@ const AddLocation = () => {
                         >
                           {item?.label}
                         </label>
-                        {item?.as === "select" ? (
+                        {item?.as === "select" && item?.label === "State" ? (
+                          <Field
+                            as="select"
+                            name={item?.name}
+                            id={item?.id}
+                            className={item?.inputFieldClassName}
+                            onChange={(e) => { // onChange is needed when you have make any function, set the data using useState and make sure 
+                              const selectedValue = e.target.value;
+                              setFieldValue(item?.name, selectedValue);
+
+                              // Find the selected state's name
+                              const stateObj = states.find(
+                                (state) => state._id === selectedValue
+                              );
+
+                              setStateName(stateObj ? stateObj.name : ""); // Store the name in state
+                            }}
+                          >
+                            {item?.options?.map((option) => (
+                              <option key={option?.key} value={option?.value}>
+                                {option?.label}
+                              </option>
+                            ))}
+                          </Field>
+                        ) : item?.as === "select" &&
+                          item?.label === "District" ? (
                           <Field
                             as="select"
                             name={item?.name}
@@ -409,7 +445,10 @@ const AddLocation = () => {
                     <button
                       type="button"
                       className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 cursor-pointer"
-                      onClick={() => resetForm()}
+                      onClick={() => {
+                        setStateName("");
+                        resetForm();
+                      }}
                     >
                       Reset
                     </button>
@@ -417,8 +456,12 @@ const AddLocation = () => {
                   <div>
                     <button
                       type="submit"
-                      className="hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg bg-[#25b992] cursor-pointer"
-                      // disabled={isSubmitting}
+                      className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
+                        dirty
+                          ? "bg-[#1f6c57] cursor-pointer"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }`}
+                      disabled={!dirty || isSubmitting}
                     >
                       Add Dist
                     </button>{" "}
@@ -433,25 +476,21 @@ const AddLocation = () => {
 
         {/* ------------------Add Zone 4th ----------------------*/}
         <div className="border border-gray-200 bg-gray-50 py-4 rounded-md shadow-md">
+          <div className="pl-2 pb-4 ">
+            <h1 className="font-medium underline text-[#6bccb3]"> Add Zone</h1>
+          </div>
           <Formik
             initialValues={zoneInitialValues}
             validationSchema={zoneValidationSchema}
             onSubmit={handleSubmitZone}
           >
-            {({ isSubmitting, resetForm, values, setFieldValue }) => {
-              {
-                /* const handleStateChange = (e) => {
-                const selectedStateId = e.target.value;
-                setFieldValue("stateId", selectedStateId); // Update Formik value
-                setStateId(selectedStateId); // Also update the component state
-              }; */
-              }
-              {
-                /* console.log("values==>", values); */
-              }
+            {({ isSubmitting, dirty, resetForm, values, setFieldValue }) => {
               {
                 if (values?.stateId) {
                   setStateId(values?.stateId);
+                }
+                if (values?.districtId) {
+                  setDistrictId(values?.districtId);
                 }
               }
 
@@ -481,7 +520,16 @@ const AddLocation = () => {
                               // }
                             >
                               {item?.options?.map((option) => (
-                                <option key={option?.key} value={option?.value}>
+                                <option
+                                  key={option?.key}
+                                  value={option?.value}
+                                  disabled={option.disabled}
+                                  className={`${
+                                    option.disabled
+                                      ? "text-red-400"
+                                      : "text-black"
+                                  }`}
+                                >
                                   {option?.label}
                                 </option>
                               ))}
@@ -517,8 +565,12 @@ const AddLocation = () => {
                     <div>
                       <button
                         type="submit"
-                        className="hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg bg-[#25b992] cursor-pointer"
-                        // disabled={isSubmitting}
+                        className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
+                          dirty
+                            ? "bg-[#1f6c57] cursor-pointer"
+                            : "bg-gray-400 cursor-not-allowed"
+                        }`}
+                        disabled={!dirty || isSubmitting}
                       >
                         Add Zone
                       </button>{" "}
@@ -535,3 +587,16 @@ const AddLocation = () => {
 };
 
 export default AddLocation;
+
+const mainStateArray = [
+  {
+    name: "Arunachal Pradesh",
+    districts: [{ name: "a1" }, { name: "a2" }, { name: "a3" }],
+  },
+  {
+    name: "Odisha",
+    districts: [{ name: "B1" }, { name: "B2" }, { name: "B3" }],
+  },
+];
+
+const addNewState = [{ name: "Odisha" }];

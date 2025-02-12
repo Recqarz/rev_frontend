@@ -10,6 +10,7 @@ import LocationSearch from "../../../components/location/LocationSearch";
 import {
   getAllDistricts,
   getAllStates,
+  getAllZones,
 } from "../../../redux/location/locationAction";
 // import GeolocationAutoComplete from "./google-map/GeolocationAutoComplete";
 
@@ -219,22 +220,31 @@ const AddUser = () => {
       mobile: values?.mobile,
       role: values?.role,
       workForBank: values?.workForBank,
+      ...(values?.role === "fieldExecutive" && {
+        address: {
+          state: values?.state,
+          district: values?.district,
+          zone: values?.zones,
+        },
+      }),
       geoLocation:
-        values?.role === "fieldExecutive" && values.geoLocation
+        values?.role === "fieldExecutive" && values?.geoLocation
           ? values.geoLocation
           : { longitude: "", latitude: "", formattedAddress: "" },
     };
-    // console.log("formattedValues==>", formattedValues);
-    dispatch(addUserData(values, accessToken, navigate));
+
+    console.log("formattedValues==>", formattedValues);
+    dispatch(addUserData(formattedValues, accessToken, navigate));
     resetForm();
   };
 
   const changeState = (stateId) => {
-    dispatch(getAllDistricts(stateId, accessToken));
+    stateId && dispatch(getAllDistricts(stateId, accessToken));
   };
 
   const changeDistrict = (distId) => {
     console.log(distId);
+    distId && dispatch(getAllZones(distId, accessToken));
   };
 
   return (
@@ -250,9 +260,6 @@ const AddUser = () => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting, resetForm, values, setFieldValue, dirty }) => {
-            {
-              /* console.log("values==>", values); */
-            }
             return (
               <Form>
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
@@ -312,16 +319,29 @@ const AddUser = () => {
                         component="div"
                         className="text-red-500 text-sm"
                       />
-                      <div>
+                      <div className="flex flex-wrap">
                         <LocationSearch
                           data={locationData?.data?.states}
-                          name={"Select State"}
-                          changeLocation={changeState}
+                          name={"State"}
+                          changeLocation={(id) => {
+                            setFieldValue("state", id);
+                            changeState(id);
+                          }}
                         />
                         <LocationSearch
                           data={locationData?.data?.districts}
-                          name={"Select District"}
-                          changeLocation={changeDistrict}
+                          name={"District"}
+                          changeLocation={(id) => {
+                            setFieldValue("district", id);
+                            changeDistrict(id);
+                          }}
+                        />
+                        <LocationSearch
+                          data={locationData?.data?.zones}
+                          name={"Zones"}
+                          changeLocation={(id) => {
+                            setFieldValue("zones", id);
+                          }}
                         />
                       </div>
                     </div>

@@ -21,6 +21,13 @@ import { formattedDate } from "../../utils/formattedDate";
 import Swal from "sweetalert2";
 import GeolocationAutoComplete from "../../components/google-map/GeolocationAutoComplete";
 import visitDateValidation from "../../utils/visitDateValidation";
+import LocationSearch from "../../components/location/LocationSearch";
+import {
+  getAllDistricts,
+  getAllStates,
+  getAllZones,
+} from "../../redux/location/locationAction";
+import { getAllFieldExecutiveData } from "../../redux/fieldExecutive/fieldExecutiveAction";
 
 const AddCases = () => {
   const navigate = useNavigate();
@@ -31,15 +38,24 @@ const AddCases = () => {
     longitude: "",
     latitude: "",
   });
+  const [isManual, isSetManual] = useState("");
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
 
-  console.log("caseData==>", caseData?.visitDate);
+  // console.log("caseData==>", caseData);
 
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
   const { banks } = data;
+  const locationData = useSelector((store) => store.locationReducer);
+  // console.log("locationData==>>", locationData);
+
+  const { data: isDataFieldExecutive } = useSelector(
+    (state) => state.allFieldExecutiveReducer
+  );
+  const { fieldExecutives } = isDataFieldExecutive;
+  // console.log("fieldExecutives==>", fieldExecutives);
 
   const onSelect = (val) => {
     setClientGeolocation({
@@ -49,11 +65,22 @@ const AddCases = () => {
   };
 
   useEffect(() => {
+    dispatch(getAllStates(accessToken));
+    dispatch(getAllFieldExecutiveData());
     if (caseId) {
       dispatch(getCaseById(caseId));
     }
     dispatch(getAllBankData());
   }, [dispatch, caseId]);
+
+  const changeState = (stateId) => {
+    stateId && dispatch(getAllDistricts(stateId, accessToken));
+  };
+
+  const changeDistrict = (distId) => {
+    // console.log(distId);
+    distId && dispatch(getAllZones(distId, accessToken));
+  };
 
   const AddCaseSchema = [
     {
@@ -62,7 +89,6 @@ const AddCases = () => {
       htmlFor: "workForBank",
       as: "select",
       name: "workForBank",
-      // type: 'workForBank',
       id: "workForBank",
       mainDivClassname: "col-span-4",
       inputFieldClassName:
@@ -124,29 +150,28 @@ const AddCases = () => {
         .nullable(),
       initialValue: caseData?.BOV_ReportNo || "",
     },
-    {
-      key: 5,
-      label: "Zone",
-      htmlFor: "zone",
-      as: "select",
-      name: "zone",
-      // type: 'zone',
-      id: "zone",
-      mainDivClassname: "col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-      placeholder: "Select Zone",
+    // {
+    //   key: 5,
+    //   label: "Zone",
+    //   htmlFor: "zone",
+    //   as: "select",
+    //   name: "zone",
+    //   id: "zone",
+    //   mainDivClassname: "col-span-4",
+    //   inputFieldClassName:
+    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    //   placeholder: "Select Zone",
 
-      options: [
-        { key: 0, value: "", label: "Select Zone" }, // Default empty value
-        { key: 1, value: "east", label: "East" },
-        { key: 2, value: "west", label: "West" },
-        { key: 3, value: "north", label: "North" },
-        { key: 4, value: "south", label: "South" },
-      ],
-      validation: Yup.string().required("Zone is required"),
-      initialValue: caseData?.zone || "",
-    },
+    //   options: [
+    //     { key: 0, value: "", label: "Select Zone" }, // Default empty value
+    //     { key: 1, value: "east", label: "East" },
+    //     { key: 2, value: "west", label: "West" },
+    //     { key: 3, value: "north", label: "North" },
+    //     { key: 4, value: "south", label: "South" },
+    //   ],
+    //   validation: Yup.string().required("Zone is required"),
+    //   initialValue: caseData?.zone || "",
+    // },
     {
       key: 6,
       label: "Contact No.",
@@ -269,41 +294,41 @@ const AddCases = () => {
         .required("pincode is required"),
       initialValue: caseData?.clientAddress?.pincode || "",
     },
-    {
-      key: 14,
-      label: "City",
-      htmlFor: "city",
-      name: "city",
-      type: "text",
-      id: "city",
-      mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-      placeholder: "Enter City",
-      validation: Yup.string().required("City is required").nullable(),
-      initialValue: caseData?.clientAddress?.city || "",
-    },
-    {
-      key: 15,
-      label: "State",
-      htmlFor: "state",
-      as: "select",
-      name: "state",
-      // type: 'state',
-      id: "state",
-      mainDivClassname: "col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-      placeholder: "Select State",
+    // {
+    //   key: 14,
+    //   label: "City",
+    //   htmlFor: "city",
+    //   name: "city",
+    //   type: "text",
+    //   id: "city",
+    //   mainDivClassname: "col-span-4 md:col-span-4",
+    //   inputFieldClassName:
+    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    //   placeholder: "Enter City",
+    //   validation: Yup.string().required("City is required").nullable(),
+    //   initialValue: caseData?.clientAddress?.city || "",
+    // },
+    // {
+    //   key: 15,
+    //   label: "State",
+    //   htmlFor: "state",
+    //   as: "select",
+    //   name: "state",
+    //   // type: 'state',
+    //   id: "state",
+    //   mainDivClassname: "col-span-4",
+    //   inputFieldClassName:
+    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    //   placeholder: "Select State",
 
-      options: [
-        { key: 0, value: "", label: "Select State" }, // Default empty value
-        { key: 1, value: "Delhi", label: "Delhi" },
-        { key: 2, value: "Uttar Pradesh", label: "Uttar Pradesh" },
-      ],
-      validation: Yup.string().required("State is required"),
-      initialValue: caseData?.clientAddress?.state || "",
-    },
+    //   options: [
+    //     { key: 0, value: "", label: "Select State" }, // Default empty value
+    //     { key: 1, value: "Delhi", label: "Delhi" },
+    //     { key: 2, value: "Uttar Pradesh", label: "Uttar Pradesh" },
+    //   ],
+    //   validation: Yup.string().required("State is required"),
+    //   initialValue: caseData?.clientAddress?.state || "",
+    // },
   ];
 
   const validationSchema = Yup.object({
@@ -331,6 +356,12 @@ const AddCases = () => {
         })
         .required("Latitude is required"),
     }),
+
+    // assignType: Yup.string().required("Assign type is required"),
+    ...(isManual &&
+      isManual === "manual" && {
+        fieldExecutiveId: Yup.string().required("Field executive is required"),
+      }),
   });
 
   const initialValues = {
@@ -346,16 +377,20 @@ const AddCases = () => {
       latitude: caseData?.clientGeolocation?.coordinates?.length
         ? caseData?.clientGeolocation?.coordinates[1]
         : "",
-    }, // Add geoLocation manually
+    },
+    assignType: "auto", // Add geoLocation manually
+    fieldExecutiveId: caseData?.fieldExecutiveId ?? "",
   };
 
   const handleSubmit = async (values, { resetForm }) => {
-    // console.log("values==>", values);
+    // console.log("values cases add==>", values);
     const formattedValues = {
       bankId: values.workForBank,
       bankRefNo: values.bankRefNo,
       clientName: values.clientName,
       BOV_ReportNo: values.BOV_ReportNo,
+      contactNo: values.contactNo,
+      visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to ISO format
       clientGeoFormattedAddress: values.clientGeoFormattedAddress,
       clientGeolocation: values.clientGeolocation,
       clientAddress: {
@@ -365,12 +400,13 @@ const AddCases = () => {
         streetName: values.streetName,
         landMark: values.landMark,
         pincode: values.pincode,
-        city: values.city,
-        state: values.state,
       },
-      zone: values.zone,
-      contactNo: values.contactNo,
-      visitDate: new Date(values?.visitDate).toISOString(), // Converts the date to ISO format
+      stateId: values?.stateId,
+      districtId: values?.districtId,
+      zoneId: values.zoneId,
+      ...(values?.assignType === "manual" && {
+        fieldExecutiveId: values?.fieldExecutiveId,
+      }),
     };
     // console.log("formattedValues==>", formattedValues);
     try {
@@ -385,7 +421,7 @@ const AddCases = () => {
           cancelButtonColor: "#d33",
           confirmButtonText: "Yes, update it!",
           customClass: {
-            popup: "small-swal", // Apply custom class to the popup
+            popup: "small-swal",
           },
         });
 
@@ -393,9 +429,8 @@ const AddCases = () => {
           dispatch(updateCaseDataId(formattedValues, accessToken, caseId));
         }
       } else {
-        // Add a new case
         dispatch(addCaseData(formattedValues, accessToken, navigate));
-        resetForm(); // Reset the form after successful submission
+        resetForm();
       }
     } catch (error) {
       console.error("Error:", error);
@@ -416,24 +451,11 @@ const AddCases = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
           enableReinitialize={true}
-          // context={{ isUpdate: !!caseData }} // Pass context
         >
-          {({
-            isSubmitting,
-            resetForm,
-            dirty,
-            formik,
-            values,
-            setFieldValue,
-            errors,
-            touched,
-            handleReset,
-          }) => {
+          {({ isSubmitting, resetForm, dirty, values, setFieldValue }) => {
             {
               {
-                {
-                  /* console.log("errors==>", errors); */
-                }
+                /* console.log("values==>", values); */
               }
             }
             return (
@@ -468,14 +490,6 @@ const AddCases = () => {
                             id={item?.id}
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                             placeholder={item?.placeholder}
-                            // min={new Date().toISOString().split("T")[0]} //for date picker, can only pick today and future dates.
-                            // min={
-                            //   caseData?.visitDate
-                            //     ? new Date(caseData?.visitDate)
-                            //         .toISOString()
-                            //         .split("T")[0]
-                            //     : new Date().toISOString().split("T")[0]
-                            // }
                             min={
                               caseData?.visitDate &&
                               new Date(caseData?.visitDate) < new Date()
@@ -530,6 +544,126 @@ const AddCases = () => {
                       className="text-red-500 text-sm"
                     />
                   </div>
+
+                  <div className="col-span-4">
+                    <LocationSearch
+                      data={locationData?.data?.states}
+                      name={"State"}
+                      key={caseData?.state}
+                      changeLocation={(id) => {
+                        setFieldValue("stateId", id);
+                        changeState(id);
+                      }}
+                    />
+                  </div>
+
+                  <div className="col-span-4">
+                    <LocationSearch
+                      data={locationData?.data?.districts}
+                      name={"District"}
+                      changeLocation={(id) => {
+                        setFieldValue("districtId", id);
+                        changeDistrict(id);
+                      }}
+                    />
+                  </div>
+
+                  <div className="col-span-4">
+                    <LocationSearch
+                      data={locationData?.data?.zones}
+                      name={"Zone"}
+                      changeLocation={(id) => {
+                        setFieldValue("zoneId", id);
+                      }}
+                    />
+                  </div>
+                  {caseId && caseData?.fieldExecutiveId ? (
+                    <div className="col-span-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-900 block mb-2">
+                          Select Field Executive
+                        </label>
+                        <Field
+                          as="select"
+                          name="fieldExecutiveId"
+                          className="w-full p-2 border rounded-md"
+                        >
+                          <option value="">Select Field Executive</option>
+                          {fieldExecutives?.map((executive) => (
+                            <option key={executive.id} value={executive._id}>
+                              {`${executive.firstName} ${executive.lastName}`}
+                            </option>
+                          ))}
+                        </Field>
+                        <ErrorMessage
+                          name="fieldExecutiveId"
+                          component="p"
+                          className="text-red-500 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="col-span-4 flex flex-col gap-2">
+                      <div className="flex gap-4">
+                        <label className="block text-sm font-medium text-[#67cfb3ff]">
+                          Assign Field Executive :
+                        </label>
+
+                        {/* Radio Buttons */}
+                        <div className="flex space-x-4">
+                          <label className="flex items-center space-x-2">
+                            <Field
+                              type="radio"
+                              name="assignType"
+                              value="auto"
+                              onChange={() =>
+                                setFieldValue("assignType", "auto")
+                              }
+                            />
+                            <span>Auto</span>
+                          </label>
+
+                          <label className="flex items-center space-x-2">
+                            <Field
+                              type="radio"
+                              name="assignType"
+                              value="manual"
+                              onChange={() => {
+                                setFieldValue("assignType", "manual");
+                                isSetManual("manual");
+                              }}
+                            />
+                            <span>Manual</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {values.assignType === "manual" && (
+                        <div>
+                          <label className="text-sm font-medium text-gray-900 block mb-2">
+                            Select Field Executive
+                          </label>
+                          <Field
+                            as="select"
+                            name="fieldExecutiveId"
+                            className="w-full p-2 border rounded-md"
+                          >
+                            <option value="">Select Field Executive</option>
+                            {fieldExecutives?.map((executive) => (
+                              <option key={executive.id} value={executive._id}>
+                                {`${executive.firstName} ${executive.lastName}`}
+                              </option>
+                            ))}
+                          </Field>
+                          <ErrorMessage
+                            name="fieldExecutiveId"
+                            component="p"
+                            className="text-red-500 text-sm"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-4 justify-center md:justify-end m-4">
                   <button

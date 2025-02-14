@@ -25,7 +25,7 @@ const AddUser = () => {
   );
   const { banks } = data;
   const locationData = useSelector((store) => store.locationReducer);
-  console.log("locationData**************>", locationData);
+  // console.log("locationData*", locationData);
   useEffect(() => {
     dispatch(getAllBankData());
     dispatch(getAllStates(accessToken));
@@ -324,29 +324,36 @@ const AddUser = () => {
                 </div>
                 {values?.role === "fieldExecutive" && (
                   <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                    <LocationSearch
-                      data={locationData?.data?.states}
-                      name={"State"}
-                      changeLocation={(id) => {
-                        setFieldValue("state", id);
-                        changeState(id);
-                      }}
-                    />
-                    <LocationSearch
-                      data={locationData?.data?.districts}
-                      name={"District"}
-                      changeLocation={(id) => {
-                        setFieldValue("district", id);
-                        changeDistrict(id);
-                      }}
-                    />
-                    <LocationSearch
-                      data={locationData?.data?.zones}
-                      name={"Zones"}
-                      changeLocation={(id) => {
-                        setFieldValue("zones", id);
-                      }}
-                    />
+                    <div className="col-span-4">
+                      <LocationSearch
+                        data={locationData?.data?.states}
+                        name={"State"}
+                        changeLocation={(id) => {
+                          setFieldValue("state", id);
+                          changeState(id);
+                        }}
+                      />
+                    </div>
+
+                    <div className="col-span-4">
+                      <LocationSearch
+                        data={locationData?.data?.districts}
+                        name={"District"}
+                        changeLocation={(id) => {
+                          setFieldValue("district", id);
+                          changeDistrict(id);
+                        }}
+                      />
+                    </div>
+                    <div className="col-span-4">
+                      <LocationSearch
+                        data={locationData?.data?.zones}
+                        name={"Zones"}
+                        changeLocation={(id) => {
+                          setFieldValue("zones", id);
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
 

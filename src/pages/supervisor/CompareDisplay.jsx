@@ -1,10 +1,207 @@
 import React from "react";
 
 const CompareDisplay = () => {
+  const coData1 = [
+    { key: "Client Name:", value: "AAAA" },
+    { key: "Bank Name:", value: "AAAA" },
+    { key: "Bank Ref No:", value: "AAAAA" },
+    { key: "Bank Report No:", value: "AAAAA" },
+    { key: "Visit Date:", value: "02/22/25(MM/DD/YYYY)" },
+    { key: "Client Address 1:", value: "Address1" },
+    { key: "Client Address 2:", value: "Address2" },
+    { key: "Client Contact No:", value: "8908" },
+    { key: "Client Plot No:", value: "1DFLL" },
+    { key: "Client Street Name:", value: "Street 1" },
+    { key: "Client Land Mark:", value: "Land Mark 1" },
+    { key: "State:", value: "Delhi" },
+    { key: "District:", value: "ABCDEF" },
+    { key: "Zone:", value: "East" },
+    { key: "Pincode:", value: "13231" },
+    { key: "Client Geo Location:", value: "Delhi Sector 22" },
+  ];
+
+  const data1 = [
+    {
+      basicInfo: {
+        name: "Basic Info",
+        data: [
+          { key: "Applicant Info:", value: "AAAA" },
+          { key: "Applicant Mobile No:", value: "8908" },
+          { key: "Bank Name:", value: "HDFC" },
+        ],
+      },
+    },
+
+    {
+      personMeet: {
+        name: "Person Meet",
+        data: [
+          { key: "Person Meet At Site:", value: "AAAAA" },
+          { key: "Person Meet Mobile No:", value: "8908" },
+        ],
+      },
+    },
+    {
+      propertyDetails: {
+        name: "Property Details",
+        data: [
+          { key: "Electricity Meter No.:", value: "1232" },
+          { key: "Street:", value: "Street 1" },
+          { key: "Plot:", value: "Plot 1" },
+          { key: "Land Mark:", value: "land Mark 1" },
+          { key: "Pin code:", value: "761010" },
+          { key: "Zone:", value: "Zone 1" },
+          { key: "State:", value: "State 1" },
+          { key: "City:", value: "City 1" },
+          { key: "Sewarage Connection:", value: "Yes/No" },
+        ],
+      },
+    },
+    {
+      roadDetails: {
+        name: "Road Details",
+        data: [
+          { key: "Road width (Metres):", value: "20,000" },
+          { key: "Primary Road Type:", value: "Primary 1" },
+          { key: "Secondary Road Type:", value: "Secondary 1" },
+          { key: "Road Widening Proposal:", value: "Yes/No" },
+          { key: "Pin code:", value: "761010" },
+          { key: "Zone:", value: "Zone 1" },
+          { key: "State:", value: "State 1" },
+          { key: "City:", value: "City 1" },
+          { key: "Sewarage Connection:", value: "Yes/No" },
+        ],
+      },
+    },
+    {
+      propertyIdentification: {
+        name: "Property Identification",
+        data: [
+          { key: "Identification of property:", value: "AAAAA" },
+          { key: "Location of property:", value: "Location 1" },
+          { key: "Type of locality:", value: "Locality 1" },
+          { key: "Type of area:", value: "AAAAA" },
+          { key: "Neighbour area:", value: "AAAA" },
+          { key: "Type of property:", value: "AAAAA" },
+          { key: "Current use of property:", value: "AAAAA 1" },
+          { key: "Occupancy status:", value: "AAAA" },
+          { key: "Relation with loan applicant:", value: "Self/xyz" },
+        ],
+      },
+    },
+    {
+      rentPropertyDetails: {
+        name: "Rent Property Details",
+        data: [
+          { key: "Tenant Name:", value: "AAAAA" },
+          { key: "Tenant Mobile No.:", value: "8908" },
+          { key: "year of tenancy:", value: "12" },
+          { key: "Monthly rent:", value: "12,000" },
+        ],
+      },
+    },
+    {
+      otherConstructionInfo: {
+        name: "Other Construction Info",
+        data: [
+          { key: "stage of construction:", value: "AAAAA" },
+          { key: "Year of construction:", value: "10 years" },
+          { key: "Area of plot length:", value: "12123" },
+          { key: "Area of plot width:", value: "AAAAA" },
+          { key: "No. of floors:", value: "10" },
+          { key: "No of basements:", value: "22" },
+          { key: "Height of complete building:", value: "22000000" },
+          { key: "Use of ground Floor:", value: "AAAA" },
+          { key: "Height of stilt Floor:", value: "1222" },
+          { key: "Area of parking:", value: "23" },
+          { key: "No. of units at stilt:", value: "43" },
+          { key: "No. of units per floor:", value: "43" },
+          { key: "TotalUnits:", value: "55" },
+          { key: "Right roof:", value: "Yes/No" },
+          { key: "Demacration of plot:", value: "Yes/No" },
+        ],
+      },
+    },
+    {
+      floorsInfo: {
+        name: "Floors Info",
+        data: {
+          floor1: {
+            floorName: "floor1",
+            data: [
+              { key: "Floor Name:", value: "34" },
+              { key: "Accomodation:", value: "Yes/No" },
+              { key: "Builtup area:", value: "AAA" },
+              { key: "Projection Area:", value: "AAA" },
+            ],
+          },
+          floor2: {
+            floorName: "floor2",
+            data: [
+              { key: "Floor Name:", value: "341" },
+              { key: "Accomodation:", value: "Yes/No" },
+              { key: "Builtup area:", value: "AAAs" },
+              { key: "Projection Area:", value: "AAAD" },
+            ],
+          },
+        },
+      },
+    },
+    {
+      otherDetails: {
+        name: "Other Details",
+        data: [
+          { key: "Value of property:", value: "3,500,000,000" },
+          { key: "Remark.:", value: "Good/Bad" },
+        ],
+      },
+    },
+    {
+      capturePhotos: {
+        name: "Capture Photos",
+        data: [
+          { key: "Image1:", value: "aaaa1//bbbb1" },
+          { key: "Image2:", value: "aaaa2//bbbb2" },
+          { key: "Image3:", value: "aaaa3//bbbb3" },
+          { key: "Image4:", value: "aaaa4//bbbb4" },
+          { key: "Image5:", value: "aaaa5//bbbb5" },
+        ],
+      },
+    },
+  ];
   return (
-    <div className="w-full">
-      <div className="flex justify-center items-center">
-        <h1>REPORT</h1>
+    <div className="w-full flex flex-col gap-4">
+      <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
+        <div className="flex justify-center p-3">
+          <h3 className=" text-white font-semibold uppercase">
+            Property Details by Coordinator (Case)
+          </h3>
+        </div>
+
+        <div className="bg-white p-3 lg:p-6">
+          <div className="bg-[#68ceb4]  rounded-lg shadow p-2 flex flex-col gap-6">
+            <div className="bg-white text-center rounded-md">
+              <div className="p-1">
+                <h1 className="text-lg font-medium">Coordinator</h1>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-md">
+              <div className="p-1 grid grid-cols-1 lg:grid-cols-2 font-semibold text-sm">
+                {coData1?.map((item, index) => (
+                  <div key={index + 1} className=" w-full flex flex-col">
+                    <div className="border border-[#68ceb4] w-full flex flex-row gap-4">
+                      <div className="w-[40%] border-r border-[#68ceb4]">
+                        <p className="pl-2">{item?.key}</p>
+                      </div>
+                      <div className="w-[60%]">{item?.value}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

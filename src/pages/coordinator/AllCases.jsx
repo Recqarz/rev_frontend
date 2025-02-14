@@ -9,6 +9,11 @@ import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../utils/highlightMatch";
 import { formattedDate } from "../../utils/formattedDate";
+import {
+  getAllDistricts,
+  getAllStates,
+  getAllZones,
+} from "../../redux/location/locationAction";
 
 const AllCases = () => {
   const dispatch = useDispatch();
@@ -25,41 +30,79 @@ const AllCases = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     status: "",
+    state: "",
+    district: "",
     zone: "",
   });
   const [limit, setLimit] = useState(10);
   const [expandedRow, setExpandedRow] = useState(null);
+  const locationData = useSelector((store) => store.locationReducer);
+  // console.log("state==>", locationData?.data?.states);
+  // console.log("district==>", locationData?.data?.districts);
+  // console.log("filter state==>", filters.state);
+  // console.log("filter district==>", filters.district);
+  // console.log("filter zone==>", filters.zone);
 
   useEffect(() => {
+    dispatch(getAllStates(accessToken));
     dispatch(
       getAllCaseData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&zone=${filters.zone}`,
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&state=${filters.state}&district=${filters.district}&zone=${filters.zone}`,
         accessToken
       )
     );
-  }, [limit, currentPageState, searchQuery, filters.status, filters.zone]);
+  }, [
+    accessToken,
+    dispatch,
+    limit,
+    currentPageState,
+    searchQuery,
+    filters.status,
+    filters.zone,
+    filters.state,
+    filters.district,
+  ]);
 
   const handleResetFilters = () => {
     setSearchQuery("");
-    setFilters({ status: "", zone: "" });
+    setFilters({ status: "", state: "", district: "", zone: "" });
   };
 
+  const changeState = (stateId) => {
+    stateId && dispatch(getAllDistricts(stateId, accessToken));
+  };
+
+  const changeDistrict = (distId) => {
+    // console.log(distId);
+    distId && dispatch(getAllZones(distId, accessToken));
+  };
   const handleFilterChange = (filterName, value) => {
-    setFilters((prev) => ({ ...prev, [filterName]: value }));
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+      ...(filterName === "state" ? { district: "", zone: "" } : {}), // Reset district & zone while switching to state repeatedly
+      ...(filterName === "district" ? { zone: "" } : {}), // Reset zone while switching to district repeatedly
+    }));
+    if (filterName === "state") {
+      changeState(value);
+    }
+    if (filterName === "district") {
+      changeDistrict(value);
+    }
   };
 
   const filterOptions = [
-    {
-      name: "zone",
-      value: filters.zone,
-      placeholder: "Filter by Zone",
-      options: [
-        { label: "East", value: "east" },
-        { label: "West", value: "west" },
-        { label: "North", value: "north" },
-        { label: "South", value: "south" },
-      ],
-    },
+    // {
+    //   name: "zone",
+    //   value: filters.zone,
+    //   placeholder: "Filter by Zone",
+    //   options: [
+    //     { label: "East", value: "east" },
+    //     { label: "West", value: "west" },
+    //     { label: "North", value: "north" },
+    //     { label: "South", value: "south" },
+    //   ],
+    // },
     {
       name: "status",
       value: filters.status,
@@ -69,6 +112,39 @@ const AllCases = () => {
         { label: "Pending", value: "pending" },
         { label: "Completed", value: "completed" },
         { label: "Rejected", value: "rejected" },
+      ],
+    },
+    {
+      name: "state",
+      value: filters.state,
+      placeholder: "Filter by State",
+      options: [
+        ...(locationData?.data?.states ?? [])?.map((state) => ({
+          label: state?.name, // Use state name dynamically
+          value: state?._id, // Use unique ID dynamically
+        })),
+      ],
+    },
+    {
+      name: "district",
+      value: filters.district,
+      placeholder: "Filter by District",
+      options: [
+        ...(locationData?.data?.districts ?? [])?.map((dist) => ({
+          label: dist?.name, // Use dist name dynamically
+          value: dist?._id, // Use unique ID dynamically
+        })),
+      ],
+    },
+    {
+      name: "zone",
+      value: filters.zone,
+      placeholder: "Filter by Zone",
+      options: [
+        ...(locationData?.data?.zones ?? [])?.map((zone) => ({
+          label: zone?.name, // Use zone name dynamically
+          value: zone?._id, // Use unique ID dynamically
+        })),
       ],
     },
   ];
@@ -98,10 +174,22 @@ const AllCases = () => {
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}
-          disabledReset={!searchQuery && !filters.zone && !filters.status}
-          enableReset={searchQuery || filters.zone || filters.status}
-          goToPageLink={"/coordinator/all/cases/add"}
-          addBtnEnable={role === "coordinator" ? true : false}
+          disabledReset={
+            !searchQuery &&
+            !filters.status &&
+            !filters.state &&
+            !filters.district &&
+            !filters.zone
+          }
+          enableReset={
+            searchQuery ||
+            filters.status ||
+            filters.state ||
+            filters.district ||
+            filters.zone
+          }
+          goToPageLink={"/coordinator/all/cases/add"} // new form page link
+          addBtnEnable={role === "coordinator" ? true : false} // new form page link for btn enable/disable
         />
 
         {/* Table Section */}

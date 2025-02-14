@@ -50,7 +50,11 @@ const SearchFilterAddSection = ({
           >
             <option value="">{filter.placeholder}</option>
             {filter.options.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option
+                key={option.value}
+                value={option.value}
+                className="!hover:cursor-pointer"
+              >
                 {option.label}
               </option>
             ))}

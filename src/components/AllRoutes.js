@@ -18,6 +18,7 @@ import AllCases from "../pages/coordinator/AllCases";
 import { getProfileByToken } from "../redux/profile/profileAction";
 import AddLocation from "../pages/admin/location/AddLocation";
 import PageNotFound from "./PageNotFound";
+import CompareDisplay from "../pages/supervisor/CompareDisplay";
 
 const roleBasedRoutes = {
   admin: [
@@ -45,6 +46,8 @@ const roleBasedRoutes = {
   ],
   supervisor: [
     { path: "/supervisor/dashboard", element: <SupervisorDashboard /> },
+    { path: "/supervisor/reports", element: <CompareDisplay /> },
+    { path: "/supervisor/profile", element: <Profile /> },
   ],
   auditor: [{ path: "/auditor/dashboard", element: <AuditorDashboard /> }],
 };

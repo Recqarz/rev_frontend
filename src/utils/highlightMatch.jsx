@@ -1,6 +1,4 @@
 export const highlightMatch = (text = "", query = "") => {
-  console.log("text==>", text);
-  console.log("query==>", query);
   if (!query) return text;
   const regex = new RegExp(`(${query})`, "gi");
   return text

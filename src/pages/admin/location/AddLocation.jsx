@@ -20,14 +20,12 @@ const AddLocation = () => {
   const [stateId, setStateId] = useState(""); // state to hold selected stateId
   const [districtId, setDistrictId] = useState(""); // state to hold selected stateId
   const [district, setDistrict] = useState([]);
-  console.log("district==>", district);
 
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { isLoading, isError, data } = useSelector(
     (store) => store.locationReducer
   );
   const { message, states, districts, zones, locationAll } = data;
-  console.log("districts==>api==>", districts);
   useEffect(() => {
     locationAll?.states?.map((ele, i) => {
       if (ele.name?.toLowerCase() === stateName) {
@@ -53,7 +51,6 @@ const AddLocation = () => {
     resetForm();
   };
   const handleSubmitDistrict = (values, { resetForm }) => {
-    console.log("values==>dist==>", values);
     dispatch(addDistrict(values, accessToken));
     resetForm();
   };
@@ -61,7 +58,6 @@ const AddLocation = () => {
     resetForm();
   };
   const handleSubmitZone = (values, { resetForm }) => {
-    // console.log("values zone==>", values);
     const formattedValues = {
       // stateId: values.stateId, //not needed so that make formattedValues object
       districtId: values.districtId,
@@ -85,14 +81,6 @@ const AddLocation = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter state name",
-      // options: [
-      //   { key: 0, value: "", label: "Select State" }, // Default empty value
-      //   ...(locationAll?.states ?? [])?.map((state, index) => ({
-      //     key: index + 1,
-      //     value: state?.name,
-      //     label: `${index + 1}. ${state?.name}`,
-      //   })),
-      // ],
       options: [
         { key: 0, value: "", label: "Select State" }, // Default empty value
         ...(locationAll?.states ?? [])?.map((state, index) => {
@@ -166,14 +154,6 @@ const AddLocation = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter district name",
-      // options: [
-      //   { key: 0, value: "", label: "Select District" },
-      //   ...district?.map((ele, i) => ({
-      //     key: i + 1,
-      //     value: ele,
-      //     label: ele,
-      //   })),
-      // ],
       options: [
         { key: 0, value: "", label: "Select District" },
         ...(district ?? [])?.map((dist, index) => {
@@ -692,16 +672,3 @@ const AddLocation = () => {
 };
 
 export default AddLocation;
-
-const mainStateArray = [
-  {
-    name: "Arunachal Pradesh",
-    districts: [{ name: "a1" }, { name: "a2" }, { name: "a3" }],
-  },
-  {
-    name: "Odisha",
-    districts: [{ name: "B1" }, { name: "B2" }, { name: "B3" }],
-  },
-];
-
-const addNewState = [{ name: "Odisha" }];

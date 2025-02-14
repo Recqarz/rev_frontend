@@ -47,11 +47,21 @@ const AllCases = () => {
     dispatch(getAllStates(accessToken));
     dispatch(
       getAllCaseData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&zone=${filters.zone}`,
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&state=${filters.state}&district=${filters.district}&zone=${filters.zone}`,
         accessToken
       )
     );
-  }, [limit, currentPageState, searchQuery, filters.status, filters.zone]);
+  }, [
+    accessToken,
+    dispatch,
+    limit,
+    currentPageState,
+    searchQuery,
+    filters.status,
+    filters.zone,
+    filters.state,
+    filters.district,
+  ]);
 
   const handleResetFilters = () => {
     setSearchQuery("");

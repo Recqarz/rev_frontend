@@ -12,6 +12,7 @@ import {
   getAllStates,
   getAllZones,
 } from "../../../redux/location/locationAction";
+import LocationFields from "../../../components/location/LocationFields";
 // import GeolocationAutoComplete from "./google-map/GeolocationAutoComplete";
 
 const AddUser = () => {
@@ -113,30 +114,9 @@ const AddUser = () => {
         .nullable(),
       initialValue: "",
     },
+
     {
       key: 8,
-      label: "Role",
-      htmlFor: "role",
-      as: "select",
-      name: "role",
-      // type: 'role',
-      id: "role",
-      mainDivClassname: "col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-      placeholder: "Enter country name",
-      options: [
-        { key: 1, value: "", label: "Select Role" }, // Default empty value
-        { key: 5, value: "auditor", label: "Auditor" },
-        { key: 4, value: "coordinator", label: "Coordinator" },
-        { key: 3, value: "fieldExecutive", label: "Field Executive" },
-        { key: 6, value: "supervisor", label: "Supervisor" },
-      ],
-      validation: Yup.string().required("Role is required"),
-      initialValue: "",
-    },
-    {
-      key: 9,
       label: "Work for bank",
       htmlFor: "workForBank",
       as: "select",
@@ -157,6 +137,28 @@ const AddUser = () => {
         })),
       ],
       validation: Yup.string().required("Bank Name is required"),
+      initialValue: "",
+    },
+    {
+      key: 9,
+      label: "Role",
+      htmlFor: "role",
+      as: "select",
+      name: "role",
+      // type: 'role',
+      id: "role",
+      mainDivClassname: "col-span-4",
+      inputFieldClassName:
+        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      placeholder: "Enter country name",
+      options: [
+        { key: 1, value: "", label: "Select Role" }, // Default empty value
+        { key: 5, value: "auditor", label: "Auditor" },
+        { key: 4, value: "coordinator", label: "Coordinator" },
+        { key: 3, value: "fieldExecutive", label: "Field Executive" },
+        { key: 6, value: "supervisor", label: "Supervisor" },
+      ],
+      validation: Yup.string().required("Role is required"),
       initialValue: "",
     },
   ];
@@ -196,6 +198,9 @@ const AddUser = () => {
         }),
       otherwise: () => Yup.object().nullable().notRequired(),
     }),
+    state: Yup.string().required("State name is required"),
+    district: Yup.string().required("District name is required"),
+    zone: Yup.string().required("Zone name is required"),
   });
 
   const initialValues = {
@@ -208,6 +213,9 @@ const AddUser = () => {
       latitude: "",
       formattedAddress: "",
     },
+    state: "",
+    district: "",
+    zone: "",
   };
 
   const handleSubmit = (values, { resetForm }) => {
@@ -324,7 +332,7 @@ const AddUser = () => {
                 </div>
                 {values?.role === "fieldExecutive" && (
                   <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                    <div className="col-span-4">
+                    {/* <div className="col-span-4">
                       <LocationSearch
                         data={locationData?.data?.states}
                         name={"State"}
@@ -333,9 +341,20 @@ const AddUser = () => {
                           changeState(id);
                         }}
                       />
+                    </div> */}
+                    <div className="col-span-4">
+                      <LocationFields
+                        data={locationData?.data?.states}
+                        label={"State"}
+                        selectTagName={"state"}
+                        changeLocation={(id) => {
+                          setFieldValue("state", id);
+                          changeState(id);
+                        }}
+                      />
                     </div>
 
-                    <div className="col-span-4">
+                    {/* <div className="col-span-4">
                       <LocationSearch
                         data={locationData?.data?.districts}
                         name={"District"}
@@ -344,13 +363,35 @@ const AddUser = () => {
                           changeDistrict(id);
                         }}
                       />
-                    </div>
+                    </div> */}
                     <div className="col-span-4">
+                      <LocationFields
+                        data={locationData?.data?.districts}
+                        label={"District"}
+                        selectTagName={"district"}
+                        changeLocation={(id) => {
+                          setFieldValue("district", id);
+                          changeDistrict(id);
+                        }}
+                      />
+                    </div>
+                    {/* <div className="col-span-4">
                       <LocationSearch
                         data={locationData?.data?.zones}
                         name={"Zones"}
                         changeLocation={(id) => {
                           setFieldValue("zones", id);
+                        }}
+                      />
+                    </div> */}
+
+                    <div className="col-span-4">
+                      <LocationFields
+                        data={locationData?.data?.zones}
+                        label={"Zone"}
+                        selectTagName={"zone"}
+                        changeLocation={(id) => {
+                          setFieldValue("zone", id);
                         }}
                       />
                     </div>

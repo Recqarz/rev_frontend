@@ -12,6 +12,11 @@ import Pagination from "../../../components/Pagination";
 import SearchFilterAddSection from "../../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../../utils/highlightMatch";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import {
+  getAllDistricts,
+  getAllStates,
+  getAllZones,
+} from "../../../redux/location/locationAction";
 const AllUser = () => {
   const dispatch = useDispatch();
   const {
@@ -37,19 +42,33 @@ const AllUser = () => {
   const [filters, setFilters] = useState({
     status: "",
     role: "",
+    state: "",
+    district: "",
+    zone: "",
   });
   const [limit, setLimit] = useState(10);
   const [expandedRow, setExpandedRow] = useState(null);
+  const locationData = useSelector((store) => store.locationReducer);
 
   const [currentPageState, setCurrentPageState] = useState(currentPage);
 
   useEffect(() => {
+    dispatch(getAllStates(accessToken));
     dispatch(
       getAllUserData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&role=${filters.role}&isActive=${filters.status}`
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&role=${filters.role}&isActive=${filters.status}&state=${filters.state}&district=${filters.district}&zone=${filters.zone}`
       )
     );
-  }, [limit, currentPageState, searchQuery, filters.role, filters.status]);
+  }, [
+    limit,
+    currentPageState,
+    searchQuery,
+    filters.role,
+    filters.status,
+    filters.zone,
+    filters.state,
+    filters.district,
+  ]);
 
   // For Filtration
   const filterOptions = [
@@ -73,15 +92,67 @@ const AllUser = () => {
         { label: "Inactive", value: "false" },
       ],
     },
+    {
+      name: "state",
+      value: filters.state,
+      placeholder: "Filter by State",
+      options: [
+        ...(locationData?.data?.states ?? [])?.map((state) => ({
+          label: state?.name,
+          value: state?._id,
+        })),
+      ],
+    },
+    {
+      name: "district",
+      value: filters.district,
+      placeholder: "Filter by District",
+      options: [
+        ...(locationData?.data?.districts ?? [])?.map((dist) => ({
+          label: dist?.name,
+          value: dist?._id,
+        })),
+      ],
+    },
+    {
+      name: "zone",
+      value: filters.zone,
+      placeholder: "Filter by Zone",
+      options: [
+        ...(locationData?.data?.zones ?? [])?.map((zone) => ({
+          label: zone?.name,
+          value: zone?._id,
+        })),
+      ],
+    },
   ];
 
+  const changeState = (stateId) => {
+    stateId && dispatch(getAllDistricts(stateId, accessToken));
+  };
+
+  const changeDistrict = (distId) => {
+    // console.log(distId);
+    distId && dispatch(getAllZones(distId, accessToken));
+  };
   const handleFilterChange = (filterName, value) => {
-    setFilters((prev) => ({ ...prev, [filterName]: value }));
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+      ...(filterName === "state" ? { district: "", zone: "" } : {}), // Reset district & zone while switching to state repeatedly
+      ...(filterName === "district" ? { zone: "" } : {}), // Reset zone while switching to district repeatedly
+    }));
+    if (filterName === "state") {
+      changeState(value);
+    }
+    if (filterName === "district") {
+      changeDistrict(value);
+    }
   };
 
   const handleResetFilters = () => {
     setSearchQuery("");
-    setFilters({ role: "", status: "" });
+    setFilters({ role: "", status: "", state: "", district: "", zone: "" });
   };
 
   // For Update Form
@@ -224,8 +295,22 @@ const AllUser = () => {
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}
-          disabledReset={!searchQuery && !filters.role && !filters.status}
-          enableReset={searchQuery || filters.role || filters.status}
+          disabledReset={
+            !searchQuery &&
+            !filters.role &&
+            !filters.status &&
+            !filters.state &&
+            !filters.district &&
+            !filters.zone
+          }
+          enableReset={
+            searchQuery ||
+            filters.role ||
+            filters.status ||
+            filters.state ||
+            filters.district ||
+            filters.zone
+          }
           goToPageLink={"/admin/dashboard/all/users/add"}
           addBtnEnable={true}
         />

@@ -92,17 +92,6 @@ const AllCases = () => {
   };
 
   const filterOptions = [
-    // {
-    //   name: "zone",
-    //   value: filters.zone,
-    //   placeholder: "Filter by Zone",
-    //   options: [
-    //     { label: "East", value: "east" },
-    //     { label: "West", value: "west" },
-    //     { label: "North", value: "north" },
-    //     { label: "South", value: "south" },
-    //   ],
-    // },
     {
       name: "status",
       value: filters.status,
@@ -120,8 +109,8 @@ const AllCases = () => {
       placeholder: "Filter by State",
       options: [
         ...(locationData?.data?.states ?? [])?.map((state) => ({
-          label: state?.name, // Use state name dynamically
-          value: state?._id, // Use unique ID dynamically
+          label: state?.name,
+          value: state?._id,
         })),
       ],
     },
@@ -131,8 +120,8 @@ const AllCases = () => {
       placeholder: "Filter by District",
       options: [
         ...(locationData?.data?.districts ?? [])?.map((dist) => ({
-          label: dist?.name, // Use dist name dynamically
-          value: dist?._id, // Use unique ID dynamically
+          label: dist?.name,
+          value: dist?._id,
         })),
       ],
     },
@@ -142,8 +131,8 @@ const AllCases = () => {
       placeholder: "Filter by Zone",
       options: [
         ...(locationData?.data?.zones ?? [])?.map((zone) => ({
-          label: zone?.name, // Use zone name dynamically
-          value: zone?._id, // Use unique ID dynamically
+          label: zone?.name,
+          value: zone?._id,
         })),
       ],
     },
@@ -288,7 +277,7 @@ const AllCases = () => {
                         <div className="flex gap-2 items-center">
                           {role && role === "coordinator" && (
                             <Link
-                              to={`/coordinator/all/cases/add?caseId=${row?._id}`}
+                              to={`/coordinator/all/case/update?caseId=${row?._id}`}
                             >
                               <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
                                 <MdOutlineEdit />
@@ -374,14 +363,18 @@ const AllCases = () => {
                               <div className="flex w-full font-normal">
                                 <div className="w-[30%]">State :</div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.state}
+                                  {row?.state?.name}
                                 </div>
                               </div>
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">City :</div>
+                                <div className="w-[30%]">District :</div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.city}
+                                  {row?.district?.name}
                                 </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Zone :</div>
+                                <div className="w-[70%]">{row?.zone?.name}</div>
                               </div>
                               <div className="flex w-full font-normal">
                                 <div className="w-[30%]">Pin code :</div>

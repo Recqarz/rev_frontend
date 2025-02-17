@@ -9,6 +9,7 @@ import { allFieldExecutiveReducer } from "./fieldExecutive/filedExecutiveReducer
 import { profileReducer } from "./profile/profileReducer";
 import adminReducer from "./dashboard/admin/adminReducer";
 import locationReducer from "./location/locationReducer";
+import coordinatorReducer from "./dashboard/coordinator/coordinator.Reducer";
 
 const rootReducer = combineReducers({
   caseReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   allFieldExecutiveReducer,
   profileReducer,
   adminReducer,
+  coordinatorReducer,
   locationReducer,
 });
 

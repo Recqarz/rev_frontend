@@ -28,28 +28,23 @@ import {
   getAllZones,
 } from "../../redux/location/locationAction";
 import { getAllFieldExecutiveData } from "../../redux/fieldExecutive/fieldExecutiveAction";
+import LocationFields from "../../components/location/LocationFields";
 
 const AddCases = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
-  const [isClientGeolocation, setClientGeolocation] = useState({
-    longitude: "",
-    latitude: "",
-  });
   const [isManual, isSetManual] = useState("");
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
-
-  // console.log("caseData==>", caseData);
-
+  console.log("caseData==>", caseData);
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
   const { banks } = data;
   const locationData = useSelector((store) => store.locationReducer);
-  // console.log("locationData==>>", locationData);
+  console.log("locationData==>>", locationData);
 
   const { data: isDataFieldExecutive } = useSelector(
     (state) => state.allFieldExecutiveReducer
@@ -57,23 +52,23 @@ const AddCases = () => {
   const { fieldExecutives } = isDataFieldExecutive;
   // console.log("fieldExecutives==>", fieldExecutives);
 
-  const onSelect = (val) => {
-    setClientGeolocation({
-      longitude: val.longitude,
-      latitude: val.latitude,
-    });
-  };
-
   useEffect(() => {
     dispatch(getAllStates(accessToken));
-    dispatch(getAllFieldExecutiveData());
+    dispatch(getAllFieldExecutiveData(`limit=${Infinity}`));
     if (caseId) {
       dispatch(getCaseById(caseId));
     }
     dispatch(getAllBankData());
-  }, [dispatch, caseId]);
+    if (caseData?.state) {
+      dispatch(getAllDistricts(caseData?.state, accessToken));
+    }
+    if (caseData?.district) {
+      dispatch(getAllZones(caseData?.district, accessToken));
+    }
+  }, [dispatch, caseId, caseData?.state, caseData?.district]);
 
   const changeState = (stateId) => {
+    console.log("stateId==>", stateId);
     stateId && dispatch(getAllDistricts(stateId, accessToken));
   };
 
@@ -91,14 +86,13 @@ const AddCases = () => {
       name: "workForBank",
       id: "workForBank",
       mainDivClassname: "col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Bank Name",
 
       options: [
-        { key: 0, value: "", label: "Select Bank" }, // Default empty value
+        { key: 0, value: "", label: "Select Bank" },
         ...(banks ?? [])?.map((bank, index) => ({
-          key: index + 1, // Adjust index to avoid conflict with the default option key
+          key: index + 1,
           value: bank?._id,
           label: `${bank?.bankName} (${bank?.branchName})`,
         })),
@@ -114,8 +108,7 @@ const AddCases = () => {
       type: "text",
       id: "bankRefNo",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Bank Ref No.",
       validation: Yup.string().required("Bank Ref No. is required"),
       initialValue: caseData?.bankRefNo || "",
@@ -128,8 +121,7 @@ const AddCases = () => {
       type: "text",
       id: "clientName",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Client Name",
       validation: Yup.string().required("Client Name is required"),
       initialValue: caseData?.clientName || "",
@@ -142,36 +134,14 @@ const AddCases = () => {
       type: "text",
       id: "BOV_ReportNo",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter BOV Report No.",
       validation: Yup.string()
         .required("BOV Report No. is required")
         .nullable(),
       initialValue: caseData?.BOV_ReportNo || "",
     },
-    // {
-    //   key: 5,
-    //   label: "Zone",
-    //   htmlFor: "zone",
-    //   as: "select",
-    //   name: "zone",
-    //   id: "zone",
-    //   mainDivClassname: "col-span-4",
-    //   inputFieldClassName:
-    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-    //   placeholder: "Select Zone",
-
-    //   options: [
-    //     { key: 0, value: "", label: "Select Zone" }, // Default empty value
-    //     { key: 1, value: "east", label: "East" },
-    //     { key: 2, value: "west", label: "West" },
-    //     { key: 3, value: "north", label: "North" },
-    //     { key: 4, value: "south", label: "South" },
-    //   ],
-    //   validation: Yup.string().required("Zone is required"),
-    //   initialValue: caseData?.zone || "",
-    // },
+    ,
     {
       key: 6,
       label: "Contact No.",
@@ -180,8 +150,7 @@ const AddCases = () => {
       type: "number",
       id: "contactNo",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter phone number",
       validation: Yup.string()
         .transform((value) => value.replace(/^0+/, ""))
@@ -197,8 +166,7 @@ const AddCases = () => {
       type: "date",
       id: "visitDate",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Visit Date",
       // validation: visitDateValidation,
       validation: visitDateValidation(caseData?.visitDate), // Pass `isUpdate`,
@@ -215,8 +183,7 @@ const AddCases = () => {
       type: "text",
       id: "addressLine1",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Address Line1",
       validation: Yup.string().required("Address Line1 is required").nullable(),
       initialValue: caseData?.clientAddress?.addressLine1 || "",
@@ -229,8 +196,7 @@ const AddCases = () => {
       type: "text",
       id: "addressLine2",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Address Line2",
       validation: Yup.string().required("Address Line2 is required").nullable(),
       initialValue: caseData?.clientAddress?.addressLine2 || "",
@@ -243,8 +209,7 @@ const AddCases = () => {
       type: "text",
       id: "plotNumber",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Plot No.",
       validation: Yup.string().required("Plot No. is required").nullable(),
       initialValue: caseData?.clientAddress?.plotNumber || "",
@@ -257,8 +222,7 @@ const AddCases = () => {
       type: "text",
       id: "streetName",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Street Name",
       validation: Yup.string().required("Street Name is required").nullable(),
       initialValue: caseData?.clientAddress?.streetName || "",
@@ -271,8 +235,7 @@ const AddCases = () => {
       type: "text",
       id: "landMark",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Land Mark",
       validation: Yup.string().required("Land Mark is required").nullable(),
       initialValue: caseData?.clientAddress?.landMark || "",
@@ -285,8 +248,7 @@ const AddCases = () => {
       type: "number",
       id: "pincode",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      inputFieldClassName: "",
       placeholder: "Enter Pin code",
       validation: Yup.string()
         .transform((value) => value.replace(/^0+/, ""))
@@ -294,41 +256,6 @@ const AddCases = () => {
         .required("pincode is required"),
       initialValue: caseData?.clientAddress?.pincode || "",
     },
-    // {
-    //   key: 14,
-    //   label: "City",
-    //   htmlFor: "city",
-    //   name: "city",
-    //   type: "text",
-    //   id: "city",
-    //   mainDivClassname: "col-span-4 md:col-span-4",
-    //   inputFieldClassName:
-    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-    //   placeholder: "Enter City",
-    //   validation: Yup.string().required("City is required").nullable(),
-    //   initialValue: caseData?.clientAddress?.city || "",
-    // },
-    // {
-    //   key: 15,
-    //   label: "State",
-    //   htmlFor: "state",
-    //   as: "select",
-    //   name: "state",
-    //   // type: 'state',
-    //   id: "state",
-    //   mainDivClassname: "col-span-4",
-    //   inputFieldClassName:
-    //     "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-    //   placeholder: "Select State",
-
-    //   options: [
-    //     { key: 0, value: "", label: "Select State" }, // Default empty value
-    //     { key: 1, value: "Delhi", label: "Delhi" },
-    //     { key: 2, value: "Uttar Pradesh", label: "Uttar Pradesh" },
-    //   ],
-    //   validation: Yup.string().required("State is required"),
-    //   initialValue: caseData?.clientAddress?.state || "",
-    // },
   ];
 
   const validationSchema = Yup.object({
@@ -356,7 +283,9 @@ const AddCases = () => {
         })
         .required("Latitude is required"),
     }),
-
+    stateId: Yup.string().required("State name is required"),
+    districtId: Yup.string().required("District name is required"),
+    zoneId: Yup.string().required("Zone name is required"),
     // assignType: Yup.string().required("Assign type is required"),
     ...(isManual &&
       isManual === "manual" && {
@@ -380,6 +309,9 @@ const AddCases = () => {
     },
     assignType: "auto", // Add geoLocation manually
     fieldExecutiveId: caseData?.fieldExecutiveId ?? "",
+    stateId: caseData?.state ?? "",
+    districtId: caseData?.district ?? "",
+    zoneId: caseData?.zone ?? "",
   };
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -404,9 +336,10 @@ const AddCases = () => {
       stateId: values?.stateId,
       districtId: values?.districtId,
       zoneId: values.zoneId,
-      ...(values?.assignType === "manual" && {
-        fieldExecutiveId: values?.fieldExecutiveId,
-      }),
+      ...(values?.assignType === "manual" ||
+        (caseData?.fieldExecutiveId && {
+          fieldExecutiveId: values?.fieldExecutiveId,
+        })),
     };
     // console.log("formattedValues==>", formattedValues);
     try {
@@ -475,7 +408,7 @@ const AddCases = () => {
                             as="select"
                             name={item?.name}
                             id={item?.id}
-                            className={item?.inputFieldClassName}
+                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                           >
                             {item?.options?.map((option) => (
                               <option key={option?.key} value={option?.value}>
@@ -525,19 +458,13 @@ const AddCases = () => {
                           : ""
                       }
                       onSelect={(val) => {
-                        setFieldValue("clientGeoFormattedAddress", val.address); // Set formatted address
+                        setFieldValue("clientGeoFormattedAddress", val.address);
                         setFieldValue("clientGeolocation", {
                           longitude: val.longitude,
                           latitude: val.latitude,
                         });
                       }}
                     />
-                    {/* {errors.clientGeoFormattedAddress &&
-                      touched.clientGeoFormattedAddress && (
-                        <span className="text-red-500">
-                          {errors.clientGeoFormattedAddress}
-                        </span>
-                      )} */}
                     <ErrorMessage
                       name="clientGeoFormattedAddress"
                       component="div"
@@ -546,37 +473,38 @@ const AddCases = () => {
                   </div>
 
                   <div className="col-span-4">
-                    <LocationSearch
+                    <LocationFields
                       data={locationData?.data?.states}
-                      name={"State"}
-                      key={caseData?.state}
+                      label={"State"}
+                      selectTagName={"stateId"}
                       changeLocation={(id) => {
                         setFieldValue("stateId", id);
                         changeState(id);
                       }}
                     />
                   </div>
-
                   <div className="col-span-4">
-                    <LocationSearch
+                    <LocationFields
                       data={locationData?.data?.districts}
-                      name={"District"}
+                      label={"District"}
+                      selectTagName={"districtId"}
                       changeLocation={(id) => {
                         setFieldValue("districtId", id);
                         changeDistrict(id);
                       }}
                     />
                   </div>
-
                   <div className="col-span-4">
-                    <LocationSearch
+                    <LocationFields
                       data={locationData?.data?.zones}
-                      name={"Zone"}
+                      label={"Zone"}
+                      selectTagName={"zoneId"}
                       changeLocation={(id) => {
                         setFieldValue("zoneId", id);
                       }}
                     />
                   </div>
+
                   {caseId && caseData?.fieldExecutiveId ? (
                     <div className="col-span-4">
                       <div>
@@ -616,9 +544,10 @@ const AddCases = () => {
                               type="radio"
                               name="assignType"
                               value="auto"
-                              onChange={() =>
-                                setFieldValue("assignType", "auto")
-                              }
+                              onChange={() => {
+                                setFieldValue("assignType", "auto");
+                                isSetManual("auto");
+                              }}
                             />
                             <span>Auto</span>
                           </label>
@@ -667,7 +596,7 @@ const AddCases = () => {
                 </div>
                 <div className="flex gap-4 justify-center md:justify-end m-4">
                   <button
-                    type="button" // Use type="button" to prevent triggering form submission
+                    type="button"
                     className={`hover:bg-red-500 text-white px-4 py-2 rounded-lg  ${
                       dirty
                         ? "bg-red-400 cursor-pointer"

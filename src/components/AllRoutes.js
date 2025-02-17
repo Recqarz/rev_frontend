@@ -34,6 +34,7 @@ const roleBasedRoutes = {
   coordinator: [
     { path: "/coordinator/dashboard", element: <CoordinatorDashboard /> },
     { path: "/coordinator/all/cases/add", element: <AddCases /> },
+    { path: "/coordinator/all/case/update", element: <AddCases /> },
     {
       path: "/coordinator/all/fieldexecutives",
       element: <AllFieldExecutives />,

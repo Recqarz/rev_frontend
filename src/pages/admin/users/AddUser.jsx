@@ -101,17 +101,18 @@ const AddUser = () => {
       label: "Mobile No.",
       htmlFor: "mobile",
       name: "mobile",
-      type: "number",
+      type: "tel",
       id: "mobile",
       mainDivClassname: "col-span-4 md:col-span-3",
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter phone number",
       validation: Yup.string()
-        .transform((value) => value.replace(/^0+/, "")) // Remove leading zeros
-        .matches(/^\d{10}$/, "Phone number must be 10 digits") // Validate 10-digit number
-        .required("Mobile No. is required")
-        .nullable(),
+        .matches(
+          /^[1-9]\d{9}$/,
+          "Mobile number cannot start with 0 and must be 10 digits long"
+        )
+        .required("Mobile number is required"),
       initialValue: "",
     },
 
@@ -198,9 +199,25 @@ const AddUser = () => {
         }),
       otherwise: () => Yup.object().nullable().notRequired(),
     }),
-    state: Yup.string().required("State name is required"),
-    district: Yup.string().required("District name is required"),
-    zone: Yup.string().required("Zone name is required"),
+    // state: Yup.string().required("State name is required"),
+    // district: Yup.string().required("District name is required"),
+    // zone: Yup.string().required("Zone name is required"),
+    ...["state", "district", "zone"].reduce(
+      (acc, field) => ({
+        ...acc,
+        [field]: Yup.string().when("role", {
+          is: "fieldExecutive",
+          then: (schema) =>
+            schema.required(
+              `${
+                field.charAt(0).toUpperCase() + field.slice(1)
+              } name is required`
+            ),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      }),
+      {}
+    ),
   });
 
   const initialValues = {
@@ -232,16 +249,23 @@ const AddUser = () => {
         address: {
           state: values?.state,
           district: values?.district,
-          zone: values?.zones,
+          zone: values?.zone,
         },
       }),
-      geoLocation:
-        values?.role === "fieldExecutive" && values?.geoLocation
-          ? values.geoLocation
-          : { longitude: "", latitude: "", formattedAddress: "" },
+      ...(values?.role === "fieldExecutive" && values?.geoLocation
+        ? {
+            geoLocation: values.geoLocation,
+          }
+        : {
+            geoLocation: { longitude: "", latitude: "", formattedAddress: "" },
+          }),
+      // geoLocation:
+      //   values?.role === "fieldExecutive" && values?.geoLocation
+      //     ? values.geoLocation
+      //     : { longitude: "", latitude: "", formattedAddress: "" },
     };
 
-    // console.log("formattedValues==>", formattedValues);
+    console.log("formattedValues==>", formattedValues);
     dispatch(addUserData(formattedValues, accessToken, navigate));
     resetForm();
   };
@@ -268,163 +292,138 @@ const AddUser = () => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting, resetForm, values, setFieldValue, dirty }) => {
-            return (
-              <Form>
-                <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                  {AddUserFormSchema?.map((item) => (
-                    <div key={item?.key} className={item?.mainDivClassname}>
-                      <div>
-                        <label
-                          htmlFor={item?.htmlFor}
-                          className="text-sm font-medium text-gray-900 block mb-2"
-                        >
-                          {item?.label}
-                        </label>
-                        {item?.as === "select" ? (
-                          <Field
-                            as="select"
-                            name={item?.name}
-                            id={item?.id}
-                            className={item?.inputFieldClassName}
+            {
+              console.log("values==>", values);
+            }
+
+            {
+              return (
+                <Form>
+                  <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
+                    {AddUserFormSchema?.map((item) => (
+                      <div key={item?.key} className={item?.mainDivClassname}>
+                        <div>
+                          <label
+                            htmlFor={item?.htmlFor}
+                            className="text-sm font-medium text-gray-900 block mb-2"
                           >
-                            {item?.options?.map((option) => (
-                              <option key={option?.key} value={option?.value}>
-                                {option?.label}
-                              </option>
-                            ))}
-                          </Field>
-                        ) : (
-                          <Field
-                            type={item?.type}
+                            {item?.label}
+                          </label>
+                          {item?.as === "select" ? (
+                            <Field
+                              as="select"
+                              name={item?.name}
+                              id={item?.id}
+                              className={item?.inputFieldClassName}
+                            >
+                              {item?.options?.map((option) => (
+                                <option key={option?.key} value={option?.value}>
+                                  {option?.label}
+                                </option>
+                              ))}
+                            </Field>
+                          ) : (
+                            <Field
+                              type={item?.type}
+                              name={item?.name}
+                              id={item?.id}
+                              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                              placeholder={item?.placeholder}
+                            />
+                          )}
+                          <ErrorMessage
                             name={item?.name}
-                            id={item?.id}
-                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                            placeholder={item?.placeholder}
+                            component="p"
+                            className="text-red-500 text-sm"
                           />
-                        )}
+                        </div>
+                      </div>
+                    ))}
+                    {values?.role === "fieldExecutive" && (
+                      <div className="col-span-4">
+                        <GeolocationAutoComplete
+                          existingUserGeoFormattedAddress={""}
+                          onSelect={(val) => {
+                            setFieldValue("geoLocation", {
+                              longitude: val?.longitude,
+                              latitude: val?.latitude,
+                              formattedAddress: val?.address,
+                            });
+                          }}
+                        />
                         <ErrorMessage
-                          name={item?.name}
-                          component="p"
+                          name="geoLocation.formattedAddress"
+                          component="div"
                           className="text-red-500 text-sm"
                         />
                       </div>
-                    </div>
-                  ))}
+                    )}
+                  </div>
                   {values?.role === "fieldExecutive" && (
-                    <div className="col-span-4">
-                      <GeolocationAutoComplete
-                        existingUserGeoFormattedAddress={""}
-                        onSelect={(val) => {
-                          setFieldValue("geoLocation", {
-                            longitude: val?.longitude,
-                            latitude: val?.latitude,
-                            formattedAddress: val?.address,
-                          });
-                        }}
-                      />
-                      <ErrorMessage
-                        name="geoLocation.formattedAddress"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
+                    <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
+                      <div className="col-span-4">
+                        <LocationFields
+                          data={locationData?.data?.states}
+                          label={"State"}
+                          selectTagName={"state"}
+                          changeLocation={(id) => {
+                            setFieldValue("state", id);
+                            changeState(id);
+                          }}
+                        />
+                      </div>
+                      <div className="col-span-4">
+                        <LocationFields
+                          data={locationData?.data?.districts}
+                          label={"District"}
+                          selectTagName={"district"}
+                          changeLocation={(id) => {
+                            setFieldValue("district", id);
+                            changeDistrict(id);
+                          }}
+                        />
+                      </div>{" "}
+                      <div className="col-span-4">
+                        <LocationFields
+                          data={locationData?.data?.zones}
+                          label={"Zone"}
+                          selectTagName={"zone"}
+                          changeLocation={(id) => {
+                            setFieldValue("zone", id);
+                          }}
+                        />
+                      </div>
                     </div>
                   )}
-                </div>
-                {values?.role === "fieldExecutive" && (
-                  <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                    {/* <div className="col-span-4">
-                      <LocationSearch
-                        data={locationData?.data?.states}
-                        name={"State"}
-                        changeLocation={(id) => {
-                          setFieldValue("state", id);
-                          changeState(id);
-                        }}
-                      />
-                    </div> */}
-                    <div className="col-span-4">
-                      <LocationFields
-                        data={locationData?.data?.states}
-                        label={"State"}
-                        selectTagName={"state"}
-                        changeLocation={(id) => {
-                          setFieldValue("state", id);
-                          changeState(id);
-                        }}
-                      />
-                    </div>
 
-                    {/* <div className="col-span-4">
-                      <LocationSearch
-                        data={locationData?.data?.districts}
-                        name={"District"}
-                        changeLocation={(id) => {
-                          setFieldValue("district", id);
-                          changeDistrict(id);
-                        }}
-                      />
-                    </div> */}
-                    <div className="col-span-4">
-                      <LocationFields
-                        data={locationData?.data?.districts}
-                        label={"District"}
-                        selectTagName={"district"}
-                        changeLocation={(id) => {
-                          setFieldValue("district", id);
-                          changeDistrict(id);
-                        }}
-                      />
-                    </div>
-                    {/* <div className="col-span-4">
-                      <LocationSearch
-                        data={locationData?.data?.zones}
-                        name={"Zones"}
-                        changeLocation={(id) => {
-                          setFieldValue("zones", id);
-                        }}
-                      />
-                    </div> */}
-
-                    <div className="col-span-4">
-                      <LocationFields
-                        data={locationData?.data?.zones}
-                        label={"Zone"}
-                        selectTagName={"zone"}
-                        changeLocation={(id) => {
-                          setFieldValue("zone", id);
-                        }}
-                      />
-                    </div>
+                  <div className="flex gap-4 justify-center md:justify-end m-4">
+                    <button
+                      type="button"
+                      className={`hover:bg-red-500 text-white px-4 py-2 rounded-lg  ${
+                        dirty
+                          ? "bg-red-400 cursor-pointer"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }`}
+                      onClick={() => resetForm()}
+                      disabled={!dirty || isSubmitting}
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="submit"
+                      className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
+                        dirty
+                          ? "bg-[#1f6c57] cursor-pointer"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }`}
+                      disabled={!dirty || isSubmitting}
+                    >
+                      Submit
+                    </button>
                   </div>
-                )}
-
-                <div className="flex gap-4 justify-center md:justify-end m-4">
-                  <button
-                    type="button"
-                    className={`hover:bg-red-500 text-white px-4 py-2 rounded-lg  ${
-                      dirty
-                        ? "bg-red-400 cursor-pointer"
-                        : "bg-gray-400 cursor-not-allowed"
-                    }`}
-                    onClick={() => resetForm()}
-                    disabled={!dirty || isSubmitting}
-                  >
-                    Reset
-                  </button>
-                  <button
-                    type="submit"
-                    className={`hover:bg-[#104e3d] text-white px-4 py-2 rounded-lg  ${
-                      dirty
-                        ? "bg-[#1f6c57] cursor-pointer"
-                        : "bg-gray-400 cursor-not-allowed"
-                    }`}
-                    disabled={!dirty || isSubmitting}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </Form>
-            );
+                </Form>
+              );
+            }
           }}
         </Formik>
       </div>

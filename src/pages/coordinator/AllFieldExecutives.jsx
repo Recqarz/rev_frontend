@@ -9,9 +9,15 @@ import Pagination from "../../components/Pagination";
 import { getAllFieldExecutiveData } from "../../redux/fieldExecutive/fieldExecutiveAction";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../utils/highlightMatch";
+import {
+  getAllDistricts,
+  getAllStates,
+  getAllZones,
+} from "../../redux/location/locationAction";
 
 const AllFieldExecutives = () => {
   const dispatch = useDispatch();
+  const { accessToken } = useSelector((store) => store?.authReducer);
   const {
     isLoading: isLadingFieldExecutive,
     isError,
@@ -23,9 +29,13 @@ const AllFieldExecutives = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     status: "",
+    state: "",
+    district: "",
+    zone: "",
   });
   const [limit, setLimit] = useState(10);
   const [expandedRow, setExpandedRow] = useState(null);
+  const locationData = useSelector((store) => store.locationReducer);
 
   const handleSearch = (val) => {
     setSearchQuery(val);
@@ -33,12 +43,21 @@ const AllFieldExecutives = () => {
   };
 
   useEffect(() => {
+    dispatch(getAllStates(accessToken));
     dispatch(
       getAllFieldExecutiveData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}`
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&state=${filters.state}&district=${filters.district}&zone=${filters.zone}`
       )
     );
-  }, [limit, currentPageState, searchQuery, filters.status]);
+  }, [
+    limit,
+    currentPageState,
+    searchQuery,
+    filters.status,
+    filters.state,
+    filters.district,
+    filters.zone,
+  ]);
 
   const filterOptions = [
     {
@@ -52,14 +71,66 @@ const AllFieldExecutives = () => {
         { label: "Rejected", value: "rejected" },
       ],
     },
+    {
+      name: "state",
+      value: filters.state,
+      placeholder: "Filter by State",
+      options: [
+        ...(locationData?.data?.states ?? [])?.map((state) => ({
+          label: state?.name,
+          value: state?._id,
+        })),
+      ],
+    },
+    {
+      name: "district",
+      value: filters.district,
+      placeholder: "Filter by District",
+      options: [
+        ...(locationData?.data?.districts ?? [])?.map((dist) => ({
+          label: dist?.name,
+          value: dist?._id,
+        })),
+      ],
+    },
+    {
+      name: "zone",
+      value: filters.zone,
+      placeholder: "Filter by Zone",
+      options: [
+        ...(locationData?.data?.zones ?? [])?.map((zone) => ({
+          label: zone?.name,
+          value: zone?._id,
+        })),
+      ],
+    },
   ];
 
+  const changeState = (stateId) => {
+    stateId && dispatch(getAllDistricts(stateId, accessToken));
+  };
+
+  const changeDistrict = (distId) => {
+    // console.log(distId);
+    distId && dispatch(getAllZones(distId, accessToken));
+  };
   const handleFilterChange = (filterName, value) => {
-    setFilters((prev) => ({ ...prev, [filterName]: value }));
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+      ...(filterName === "state" ? { district: "", zone: "" } : {}), // Reset district & zone while switching to state repeatedly
+      ...(filterName === "district" ? { zone: "" } : {}), // Reset zone while switching to district repeatedly
+    }));
+    if (filterName === "state") {
+      changeState(value);
+    }
+    if (filterName === "district") {
+      changeDistrict(value);
+    }
   };
   const handleResetFilters = () => {
     setSearchQuery("");
-    setFilters({ status: "" });
+    setFilters({ status: "", state: "", district: "", zone: "" });
   };
 
   const handleLimit = (val) => {
@@ -83,8 +154,20 @@ const AllFieldExecutives = () => {
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}
-          disabledReset={!searchQuery && !filters.status}
-          enableReset={searchQuery || filters.status}
+          disabledReset={
+            !searchQuery &&
+            !filters.status &&
+            !filters.state &&
+            !filters.district &&
+            !filters.zone
+          }
+          enableReset={
+            searchQuery ||
+            filters.status ||
+            filters.state ||
+            filters.district ||
+            filters.zone
+          }
           goToPageLink={"/coordinator/all/fieldexecutives"}
           addBtnEnable={false}
         />
@@ -157,9 +240,9 @@ const AllFieldExecutives = () => {
                           className=" flex gap-2 items-center"
                           // onClick={() => handleEditUser(row)}
                         >
-                          <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
+                          {/* <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
                             <MdOutlineEdit />
-                          </div>
+                          </div> */}
                           <div
                             className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
                             // onClick={() => toggleDetails(index)} // Toggle the details panel

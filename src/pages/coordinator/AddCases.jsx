@@ -29,6 +29,8 @@ import {
 } from "../../redux/location/locationAction";
 import { getAllFieldExecutiveData } from "../../redux/fieldExecutive/fieldExecutiveAction";
 import LocationFields from "../../components/location/LocationFields";
+import { FaCopy } from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
 
 const AddCases = () => {
   const navigate = useNavigate();
@@ -36,15 +38,16 @@ const AddCases = () => {
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
   const [isManual, isSetManual] = useState("");
+  const [copied, setCopied] = useState(false);
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
-  console.log("caseData==>", caseData);
+  // console.log("caseData==>", caseData);
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
   const { banks } = data;
   const locationData = useSelector((store) => store.locationReducer);
-  console.log("locationData==>>", locationData);
+  // console.log("locationData==>>", locationData);
 
   const { data: isDataFieldExecutive } = useSelector(
     (state) => state.allFieldExecutiveReducer
@@ -68,7 +71,7 @@ const AddCases = () => {
   }, [dispatch, caseId, caseData?.state, caseData?.district]);
 
   const changeState = (stateId) => {
-    console.log("stateId==>", stateId);
+    // console.log("stateId==>", stateId);
     stateId && dispatch(getAllDistricts(stateId, accessToken));
   };
 
@@ -333,13 +336,25 @@ const AddCases = () => {
         landMark: values.landMark,
         pincode: values.pincode,
       },
-      stateId: values?.stateId,
-      districtId: values?.districtId,
-      zoneId: values.zoneId,
-      ...(values?.assignType === "manual" ||
-        (caseData?.fieldExecutiveId && {
-          fieldExecutiveId: values?.fieldExecutiveId,
-        })),
+      ...(caseId && caseData //while create & update for different key name
+        ? {
+            state: values?.stateId,
+            district: values?.districtId,
+            zone: values.zoneId,
+          }
+        : {
+            stateId: values?.stateId,
+            districtId: values?.districtId,
+            zoneId: values.zoneId,
+          }),
+      ...((values?.assignType === "manual" ||
+        (caseId && caseData && caseData?.fieldExecutiveId)) && {
+        fieldExecutiveId: values?.fieldExecutiveId,
+      }),
+      // ...(values?.assignType === "manual" ||
+      //   (caseData?.fieldExecutiveId && {
+      //     fieldExecutiveId: values?.fieldExecutiveId,
+      //   })),
     };
     // console.log("formattedValues==>", formattedValues);
     try {
@@ -370,12 +385,50 @@ const AddCases = () => {
     }
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(caseData?.caseCode);
+    setCopied(true);
+
+    // Hide the "Copied" message after 2 seconds
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  };
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-center">
-        <h3 className="text-xl font-semibold">
-          {caseId ? "Update Case" : "Add Case"}
-        </h3>
+        {caseId ? (
+          <div className="flex items-center justify-center space-x-2">
+            <h3 className="text-xl font-semibold">Update Case</h3>
+            {caseData?.caseCode && (
+              <div
+                className={`flex items-center space-x-2 rounded-md py-1 px-2 shadow-md shadow-[#073b4c]`}
+              >
+                <span className="text-gray-600">{caseData?.caseCode}</span>
+                <button
+                  onClick={handleCopy}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  <FaCopy
+                    className={`rounded-sm text-sm ${
+                      copied ? "text-green-500" : "text-[#073b4c]"
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
+
+            <span
+              className={`text-green-500 ml-2 text-sm ${
+                copied ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              Copied!
+            </span>
+          </div>
+        ) : (
+          <h3 className="text-xl font-semibold">Add Case</h3>
+        )}
       </div>
 
       <div className="bg-white border-2 rounded-lg shadow border-gray-300">
@@ -388,14 +441,15 @@ const AddCases = () => {
           {({ isSubmitting, resetForm, dirty, values, setFieldValue }) => {
             {
               {
-                /* console.log("values==>", values); */
+                /* console.log("values==>123==>", values); */
               }
             }
+
             return (
               <Form>
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4 ">
-                  {AddCaseSchema?.map((item) => (
-                    <div key={item?.key} className={item?.mainDivClassname}>
+                  {AddCaseSchema?.map((item, i) => (
+                    <div key={i + 1} className={item?.mainDivClassname}>
                       <div>
                         <label
                           htmlFor={item?.htmlFor}
@@ -450,7 +504,7 @@ const AddCases = () => {
                       </div>
                     </div>
                   ))}
-                  <div className="col-span-4">
+                  <div key="clientGeoFormattedAddress" className="col-span-4">
                     <GeolocationAutoComplete
                       existingClientGeoFormattedAddress={
                         caseData && caseData?.clientGeoFormattedAddress
@@ -472,7 +526,7 @@ const AddCases = () => {
                     />
                   </div>
 
-                  <div className="col-span-4">
+                  <div key={"stateId"} className="col-span-4">
                     <LocationFields
                       data={locationData?.data?.states}
                       label={"State"}
@@ -483,7 +537,7 @@ const AddCases = () => {
                       }}
                     />
                   </div>
-                  <div className="col-span-4">
+                  <div key="districtId" className="col-span-4">
                     <LocationFields
                       data={locationData?.data?.districts}
                       label={"District"}
@@ -494,7 +548,7 @@ const AddCases = () => {
                       }}
                     />
                   </div>
-                  <div className="col-span-4">
+                  <div key="zoneId" className="col-span-4">
                     <LocationFields
                       data={locationData?.data?.zones}
                       label={"Zone"}
@@ -506,14 +560,18 @@ const AddCases = () => {
                   </div>
 
                   {caseId && caseData?.fieldExecutiveId ? (
-                    <div className="col-span-4">
+                    <div key="fieldExecutiveId" className="col-span-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-900 block mb-2">
+                        <label
+                          htmlFor="fieldExecutiveId"
+                          className="text-sm font-medium text-gray-900 block mb-2"
+                        >
                           Select Field Executive
                         </label>
                         <Field
                           as="select"
                           name="fieldExecutiveId"
+                          id="fieldExecutiveId"
                           className="w-full p-2 border rounded-md"
                         >
                           <option value="">Select Field Executive</option>
@@ -531,7 +589,10 @@ const AddCases = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="col-span-4 flex flex-col gap-2">
+                    <div
+                      key="assignType"
+                      className="col-span-4 flex flex-col gap-2"
+                    >
                       <div className="flex gap-4">
                         <label className="block text-sm font-medium text-[#67cfb3ff]">
                           Assign Field Executive :

@@ -37,11 +37,6 @@ const AllCases = () => {
   const [limit, setLimit] = useState(10);
   const [expandedRow, setExpandedRow] = useState(null);
   const locationData = useSelector((store) => store.locationReducer);
-  // console.log("state==>", locationData?.data?.states);
-  // console.log("district==>", locationData?.data?.districts);
-  // console.log("filter state==>", filters.state);
-  // console.log("filter district==>", filters.district);
-  // console.log("filter zone==>", filters.zone);
 
   useEffect(() => {
     dispatch(getAllStates(accessToken));
@@ -119,10 +114,12 @@ const AllCases = () => {
       value: filters.district,
       placeholder: "Filter by District",
       options: [
-        ...(locationData?.data?.districts ?? [])?.map((dist) => ({
-          label: dist?.name,
-          value: dist?._id,
-        })),
+        ...(filters.state && locationData?.data?.districts
+          ? locationData?.data?.districts.map((dist) => ({
+              label: dist?.name,
+              value: dist?._id,
+            }))
+          : []),
       ],
     },
     {
@@ -130,10 +127,12 @@ const AllCases = () => {
       value: filters.zone,
       placeholder: "Filter by Zone",
       options: [
-        ...(locationData?.data?.zones ?? [])?.map((zone) => ({
-          label: zone?.name,
-          value: zone?._id,
-        })),
+        ...(filters.state && filters?.district && locationData?.data?.zones
+          ? locationData?.data?.zones.map((zone) => ({
+              label: zone?.name,
+              value: zone?._id,
+            }))
+          : []),
       ],
     },
   ];

@@ -8,7 +8,7 @@ const LocationFields = ({
   changeLocation,
 }) => {
   return (
-    <div className="">
+    <div>
       <label
         htmlFor={selectTagName}
         className="text-sm font-medium text-gray-900 block mb-2"

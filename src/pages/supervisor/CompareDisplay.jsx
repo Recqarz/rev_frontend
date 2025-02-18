@@ -108,29 +108,29 @@ const CompareDisplay = () => {
         { key: "Demacration of plot:", value: "Yes/No" },
       ],
     },
-    // {
-    //   name: "Floors Info",
-    //   data: {
-    //     floor1: {
-    //       floorName: "floor1",
-    //       data: [
-    //         { key: "Floor Name:", value: "34" },
-    //         { key: "Accomodation:", value: "Yes/No" },
-    //         { key: "Builtup area:", value: "AAA" },
-    //         { key: "Projection Area:", value: "AAA" },
-    //       ],
-    //     },
-    //     floor2: {
-    //       floorName: "floor2",
-    //       data: [
-    //         { key: "Floor Name:", value: "341" },
-    //         { key: "Accomodation:", value: "Yes/No" },
-    //         { key: "Builtup area:", value: "AAAs" },
-    //         { key: "Projection Area:", value: "AAAD" },
-    //       ],
-    //     },
-    //   },
-    // },
+    {
+      name: "FloorsInfo",
+      data: [
+        {
+          floorName: "floor1",
+          data: [
+            { key: "Floor Name1:", value: "34" },
+            { key: "Accomodation:", value: "Yes/No" },
+            { key: "Builtup area:", value: "AAA" },
+            { key: "Projection Area:", value: "AAA" },
+          ],
+        },
+        {
+          floorName: "floor2",
+          data: [
+            { key: "Floor Name2:", value: "341" },
+            { key: "Accomodation:", value: "Yes/No" },
+            { key: "Builtup area:", value: "AAAs" },
+            { key: "Projection Area:", value: "AAAD" },
+          ],
+        },
+      ],
+    },
     {
       name: "Other Details",
       data: [
@@ -138,16 +138,16 @@ const CompareDisplay = () => {
         { key: "Remark.:", value: "Good/Bad" },
       ],
     },
-    // {
-    //   name: "Capture Photos",
-    //   data: [
-    //     { key: "Image1:", value: "aaaa1//bbbb1" },
-    //     { key: "Image2:", value: "aaaa2//bbbb2" },
-    //     { key: "Image3:", value: "aaaa3//bbbb3" },
-    //     { key: "Image4:", value: "aaaa4//bbbb4" },
-    //     { key: "Image5:", value: "aaaa5//bbbb5" },
-    //   ],
-    // },
+    {
+      name: "CapturePhotos",
+      data: [
+        { key: "Image1:", value: "" },
+        { key: "Image2:", value: "" },
+        { key: "Image3:", value: "" },
+        { key: "Image4:", value: "" },
+        { key: "Image5:", value: "" },
+      ],
+    },
   ];
   return (
     <div className="w-full flex flex-col gap-6">
@@ -198,27 +198,102 @@ const CompareDisplay = () => {
                 <h1 className="font-medium text-sm">Field Executive</h1>
               </div>
             </div>
+
             <div className="flex flex-col gap-2">
               {data1?.map((item, i) => (
-                <div key={i + 1} className="p-1 bg-white rounded-md">
-                  <div className="pl-2">
-                    <h1 className="font-semibold uppercase text-[#51677e]">
-                      {item?.name}
-                    </h1>
-                  </div>
-                  <div className=" grid grid-cols-1 lg:grid-cols-2 font-semibold text-sm">
-                    {item?.data?.map((data, index) => (
-                      <div key={index + 1} className=" w-full flex flex-col">
-                        <div className="border border-[#68ceb4] w-full flex flex-row gap-4">
-                          <div className="w-[40%] border-r border-[#68ceb4]">
-                            <p className="pl-2">{data?.key}</p>
-                          </div>
-                          <div className="w-[60%]">{data?.value}</div>
-                        </div>
+                <React.Fragment key={i + 1}>
+                  {item?.name === "FloorsInfo" ? (
+                    <div className="p-1 bg-white rounded-md ">
+                      <div className="pl-2">
+                        <h1 className="font-semibold uppercase text-[#51677e]">
+                          {item?.name}
+                        </h1>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                      <div className="flex flex-col gap-4">
+                        {item?.data?.length &&
+                          item?.data?.map((ele, index) => (
+                            <div
+                              key={index + 1}
+                              className="flex flex-col gap-1"
+                            >
+                              <div className="pl-2">
+                                <h1 className="uppercase font-semibold text-[#51677e]">
+                                  {ele?.floorName}
+                                </h1>
+                              </div>
+                              <div className=" grid grid-cols-1 lg:grid-cols-2 font-semibold text-sm">
+                                {ele?.data?.map((data, index) => (
+                                  <div
+                                    key={index + 1}
+                                    className=" w-full flex flex-col"
+                                  >
+                                    <div className="border border-[#68ceb4] w-full flex flex-row gap-4">
+                                      <div className="w-[40%] border-r border-[#68ceb4]">
+                                        <p className="pl-2">{data?.key}</p>
+                                      </div>
+                                      <div className="w-[60%]">
+                                        {data?.value}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  ) : item?.name === "CapturePhotos" ? (
+                    <div className="p-1 bg-white rounded-md ">
+                      <div className="pl-2">
+                        <h1 className="font-semibold uppercase text-[#51677e]">
+                          {item?.name}
+                        </h1>
+                      </div>
+                      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
+                        {item?.data?.map((data, index) => (
+                          <div
+                            key={index + 1}
+                            className=" w-full flex flex-col justify-center items-center gap-2"
+                          >
+                            <div className="border rounded-md shadow-md shadow-slate-400 h-44 w-44 ">
+                              <img
+                                src="https://upload.wikimedia.org/wikipedia/commons/4/45/WilderBuildingSummerSolstice.jpg"
+                                alt=""
+                                className="h-full w-full"
+                              />
+                            </div>
+                            <div className="text-center">
+                              <h1>{data?.key}</h1>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-1 bg-white rounded-md ">
+                      <div className="pl-2">
+                        <h1 className="font-semibold uppercase text-[#51677e]">
+                          {item?.name}
+                        </h1>
+                      </div>
+                      <div className=" grid grid-cols-1 lg:grid-cols-2 font-semibold text-sm">
+                        {item?.data?.map((data, index) => (
+                          <div
+                            key={index + 1}
+                            className=" w-full flex flex-col"
+                          >
+                            <div className="border border-[#68ceb4] w-full flex flex-row gap-4">
+                              <div className="w-[40%] border-r border-[#68ceb4]">
+                                <p className="pl-2">{data?.key}</p>
+                              </div>
+                              <div className="w-[60%]">{data?.value}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </React.Fragment>
               ))}
             </div>
           </div>

@@ -11,7 +11,7 @@ import {
   updateProfileByToken,
 } from "../redux/profile/profileAction";
 import { FaCamera } from "react-icons/fa";
-import { MdOutlineCancel } from "react-icons/md";
+import { MdOutlineCancel, MdOutlineCancelPresentation } from "react-icons/md";
 import { TiTickOutline } from "react-icons/ti";
 
 const Profile = () => {
@@ -20,6 +20,7 @@ const Profile = () => {
   const { data: profileData } = useSelector((state) => state.profileReducer);
   const [profilePic, setProfilePic] = useState(null); //for getting image file //file like: all object keys of file
   const [onchangeAvatar, setOnchangeAvatar] = useState(null); //for getting to preview the
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
 
   //get banks
   const { accessToken } = useSelector((store) => store?.authReducer);
@@ -219,8 +220,9 @@ const Profile = () => {
                         "https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
                       }
                       alt="profile_pic"
+                      onClick={() => setIsModalOpen(true)} // Open modal on click
                       // target="_blank"
-                      className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full"
+                      className="w-24 group-hover:w-28 group-hover:h-28 h-24 object-center object-cover rounded-full cursor-pointer"
                     />
 
                     {/* Camera Icon with File Input */}
@@ -365,6 +367,37 @@ const Profile = () => {
             )}
           </Formik>
         </div>
+
+        {/* Image Popup Modal for preview*/}
+        {isModalOpen && (
+          <div
+            id="modalBackground"
+            className="fixed inset-0 md:left-44 bg-black bg-opacity-70 flex items-center justify-center z-50"
+            onClick={(e) => {
+              if (e.target.id === "modalBackground") {
+                setIsModalOpen(false);
+              }
+            }}
+          >
+            <div className="relative bg-white p-0.5 rounded-lg shadow-lg">
+              <button
+                className="absolute top-2 right-2 text-2xl bg-white text-gray-500 hover:text-red-600 rounded-sm"
+                onClick={() => setIsModalOpen(false)}
+              >
+                <MdOutlineCancelPresentation />
+              </button>
+              <img
+                src={
+                  onchangeAvatar ||
+                  profileData?.avatar ||
+                  "https://i.pinimg.com/736x/41/e0/39/41e0398984b0f1a0c79acfb0694bfcce.jpg"
+                }
+                alt="profile_pic"
+                className="w-fit h-80 object-cover rounded-lg"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

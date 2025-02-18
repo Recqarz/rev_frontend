@@ -109,7 +109,7 @@ const CompareDisplay = () => {
       ],
     },
     {
-      name: "FloorsInfo",
+      name: "Floors Info",
       data: [
         {
           floorName: "floor1",
@@ -202,7 +202,7 @@ const CompareDisplay = () => {
             <div className="flex flex-col gap-2">
               {data1?.map((item, i) => (
                 <React.Fragment key={i + 1}>
-                  {item?.name === "FloorsInfo" ? (
+                  {item?.name === "Floors Info" ? (
                     <div className="p-1 bg-white rounded-md ">
                       <div className="pl-2">
                         <h1 className="font-semibold uppercase text-[#51677e]">

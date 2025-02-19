@@ -115,7 +115,28 @@ const AddUser = () => {
         .required("Mobile number is required"),
       initialValue: "",
     },
-
+    {
+      key: 9,
+      label: "Role",
+      htmlFor: "role",
+      as: "select",
+      name: "role",
+      // type: 'role',
+      id: "role",
+      mainDivClassname: "col-span-4",
+      inputFieldClassName:
+        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+      placeholder: "Enter country name",
+      options: [
+        { key: 1, value: "", label: "Select Role" }, // Default empty value
+        { key: 5, value: "auditor", label: "Auditor" },
+        { key: 4, value: "coordinator", label: "Coordinator" },
+        { key: 3, value: "fieldExecutive", label: "Field Executive" },
+        { key: 6, value: "supervisor", label: "Supervisor" },
+      ],
+      validation: Yup.string().required("Role is required"),
+      initialValue: "",
+    },
     {
       key: 8,
       label: "Work for bank",
@@ -138,28 +159,6 @@ const AddUser = () => {
         })),
       ],
       validation: Yup.string().required("Bank Name is required"),
-      initialValue: "",
-    },
-    {
-      key: 9,
-      label: "Role",
-      htmlFor: "role",
-      as: "select",
-      name: "role",
-      // type: 'role',
-      id: "role",
-      mainDivClassname: "col-span-4",
-      inputFieldClassName:
-        "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-      placeholder: "Enter country name",
-      options: [
-        { key: 1, value: "", label: "Select Role" }, // Default empty value
-        { key: 5, value: "auditor", label: "Auditor" },
-        { key: 4, value: "coordinator", label: "Coordinator" },
-        { key: 3, value: "fieldExecutive", label: "Field Executive" },
-        { key: 6, value: "supervisor", label: "Supervisor" },
-      ],
-      validation: Yup.string().required("Role is required"),
       initialValue: "",
     },
   ];

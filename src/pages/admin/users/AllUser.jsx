@@ -457,7 +457,9 @@ const AllUser = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[80%]">
-                                  {row?.workForBank ?? "Not Provided"}
+                                  {row?.workForBank
+                                    ? `${row?.workForBank?.bankName} ( ${row?.workForBank?.branchName} )`
+                                    : "Not Provided"}
                                 </div>
                               </div>
                             </div>
@@ -482,34 +484,41 @@ const AllUser = () => {
                                     : "Not Provided"}
                                 </div>
                               </div>
-                              <div className="flex gap-8 w-full">
-                                <div className="flex justify-between w-[20%]">
-                                  <h1>State</h1>
-                                  <h1>:</h1>
-                                </div>
-                                <div className="flex justify-between w-[80%]">
-                                  {row?.address?.state?.name ?? "Not Provided"}
-                                </div>
-                              </div>
-                              <div className="flex gap-8 w-full">
-                                <div className="flex justify-between w-[20%]">
-                                  <h1>District</h1>
-                                  <h1>:</h1>
-                                </div>
-                                <div className="flex justify-between w-[80%]">
-                                  {row?.address?.district?.name ??
-                                    "Not Provided"}
-                                </div>
-                              </div>
-                              <div className="flex gap-8 w-full">
-                                <div className="flex justify-between w-[20%]">
-                                  <h1>Zone</h1>
-                                  <h1>:</h1>
-                                </div>
-                                <div className="flex justify-between w-[80%]">
-                                  {row?.address?.zone?.name ?? "Not Provided"}
-                                </div>
-                              </div>
+
+                              {row?.role === "fieldExecutive" && (
+                                <React.Fragment>
+                                  <div className="flex gap-8 w-full">
+                                    <div className="flex justify-between w-[20%]">
+                                      <h1>State</h1>
+                                      <h1>:</h1>
+                                    </div>
+                                    <div className="flex justify-between w-[80%]">
+                                      {row?.address?.state?.name ??
+                                        "Not Provided"}
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-8 w-full">
+                                    <div className="flex justify-between w-[20%]">
+                                      <h1>District</h1>
+                                      <h1>:</h1>
+                                    </div>
+                                    <div className="flex justify-between w-[80%]">
+                                      {row?.address?.district?.name ??
+                                        "Not Provided"}
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-8 w-full">
+                                    <div className="flex justify-between w-[20%]">
+                                      <h1>Zone</h1>
+                                      <h1>:</h1>
+                                    </div>
+                                    <div className="flex justify-between w-[80%]">
+                                      {row?.address?.zone?.name ??
+                                        "Not Provided"}
+                                    </div>
+                                  </div>
+                                </React.Fragment>
+                              )}
                             </div>
                           </div>
                         </td>

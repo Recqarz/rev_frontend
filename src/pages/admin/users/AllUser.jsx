@@ -293,6 +293,7 @@ const AllUser = () => {
   return (
     <div className="">
       <div className="flex flex-col gap-5">
+        {/* Filter Section */}
         <SearchFilterAddSection
           setSearchQuery={setSearchQuery}
           setCurrentPageState={setCurrentPageState}
@@ -451,17 +452,26 @@ const AllUser = () => {
                                   {row?.email ?? "Not Provided"}
                                 </div>
                               </div>
-                              <div className="flex gap-8 w-full">
-                                <div className="flex justify-between w-[20%]">
-                                  <h1>Work for bank</h1>
-                                  <h1>:</h1>
+                              {row?.role === "supervisor" && (
+                                <div className="flex gap-8 w-full">
+                                  <div className="flex justify-between w-[20%]">
+                                    <h1>Work for bank</h1>
+                                    <h1>:</h1>
+                                  </div>
+
+                                  <div className="flex  gap-2 w-[80%] h-[70%] overflow-y-auto overflow-x-auto custom-scrollbar">
+                                    {row?.workForBank?.map((item, i) => (
+                                      <div
+                                        key={i + 1}
+                                        className="bg-[#67cfb3ff] flex items-center justify-center p-1 rounded-md text-xs"
+                                      >
+                                        {`${item?.bankName}
+                                        (${item?.branchName})`}
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
-                                <div className="flex justify-between w-[80%]">
-                                  {row?.workForBank
-                                    ? `${row?.workForBank?.bankName} ( ${row?.workForBank?.branchName} )`
-                                    : "Not Provided"}
-                                </div>
-                              </div>
+                              )}
                             </div>
 
                             <div className="flex flex-col gap-1">

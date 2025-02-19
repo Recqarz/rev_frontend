@@ -13,6 +13,7 @@ import {
   getAllZones,
 } from "../../../redux/location/locationAction";
 import LocationFields from "../../../components/location/LocationFields";
+import { IoIosCloseCircle } from "react-icons/io";
 // import GeolocationAutoComplete from "./google-map/GeolocationAutoComplete";
 
 const AddUser = () => {
@@ -119,9 +120,9 @@ const AddUser = () => {
       key: 9,
       label: "Role",
       htmlFor: "role",
-      as: "select",
+      // as: "select",
       name: "role",
-      // type: 'role',
+      type: "select",
       id: "role",
       mainDivClassname: "col-span-4",
       inputFieldClassName:
@@ -141,9 +142,9 @@ const AddUser = () => {
       key: 8,
       label: "Work for bank",
       htmlFor: "workForBank",
-      as: "select",
+      // as: "select",
       name: "workForBank",
-      // type: 'workForBank',
+      type: "select",
       id: "workForBank",
       mainDivClassname: "col-span-4",
       inputFieldClassName:
@@ -151,15 +152,23 @@ const AddUser = () => {
       placeholder: "Enter country name",
 
       options: [
-        { key: 0, value: "", label: "Select Bank" }, // Default empty value
+        // { key: 0, value: "", label: "Select Bank" }, // Default empty value
         ...(banks ?? [])?.map((bank, index) => ({
           key: index + 1,
           value: bank?._id,
           label: `${bank?.bankName} (${bank?.branchName})`,
         })),
       ],
-      validation: Yup.string().required("Bank Name is required"),
-      initialValue: "",
+      // validation: Yup.string().required("Bank Name is required"),
+      validation: Yup.array().when("role", {
+        is: "supervisor",
+        then: (schema) =>
+          schema
+            .min(1, "At least one bank is required")
+            .required("Bank Name is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+      initialValue: [],
     },
   ];
   const validationSchema = Yup.object({
@@ -198,9 +207,6 @@ const AddUser = () => {
         }),
       otherwise: () => Yup.object().nullable().notRequired(),
     }),
-    // state: Yup.string().required("State name is required"),
-    // district: Yup.string().required("District name is required"),
-    // zone: Yup.string().required("Zone name is required"),
     ...["state", "district", "zone"].reduce(
       (acc, field) => ({
         ...acc,
@@ -210,7 +216,7 @@ const AddUser = () => {
             schema.required(
               `${
                 field.charAt(0).toUpperCase() + field.slice(1)
-              } name is required`
+              } zone name is required`
             ),
           otherwise: (schema) => schema.notRequired(),
         }),
@@ -243,7 +249,11 @@ const AddUser = () => {
       mobileCode: values?.mobileCode,
       mobile: values?.mobile,
       role: values?.role,
-      workForBank: values?.workForBank,
+      // if role is supervisor only
+      ...(values?.role === "supervisor" && {
+        workForBank: values?.workForBank,
+      }),
+      // if role is fieldExecutive only
       ...(values?.role === "fieldExecutive" && {
         address: {
           state: values?.state,
@@ -251,20 +261,24 @@ const AddUser = () => {
           zone: values?.zone,
         },
       }),
-      ...(values?.role === "fieldExecutive" && values?.geoLocation
-        ? {
-            geoLocation: values.geoLocation,
-          }
-        : {
-            geoLocation: { longitude: "", latitude: "", formattedAddress: "" },
-          }),
-      // geoLocation:
-      //   values?.role === "fieldExecutive" && values?.geoLocation
-      //     ? values.geoLocation
-      //     : { longitude: "", latitude: "", formattedAddress: "" },
+      ...(values?.role === "fieldExecutive" &&
+        values.geoLocation && {
+          geoLocation: values.geoLocation ?? {
+            longitude: "",
+            latitude: "",
+            formattedAddress: "",
+          },
+        }),
+      // ...(values?.role === "fieldExecutive" && values?.geoLocation
+      //   ? {
+      //       geoLocation: values.geoLocation,
+      //     }
+      //   : {
+      //       geoLocation: { longitude: "", latitude: "", formattedAddress: "" },
+      //     }),
     };
 
-    console.log("formattedValues==>", formattedValues);
+    // console.log("formattedValues==>", formattedValues);
     dispatch(addUserData(formattedValues, accessToken, navigate));
     resetForm();
   };
@@ -299,46 +313,161 @@ const AddUser = () => {
               return (
                 <Form>
                   <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                    {AddUserFormSchema?.map((item) => (
-                      <div key={item?.key} className={item?.mainDivClassname}>
-                        <div>
-                          <label
-                            htmlFor={item?.htmlFor}
-                            className="text-sm font-medium text-gray-900 block mb-2"
-                          >
-                            {item?.label}
-                          </label>
-                          {item?.as === "select" ? (
-                            <Field
-                              as="select"
-                              name={item?.name}
-                              id={item?.id}
-                              className={item?.inputFieldClassName}
+                    {AddUserFormSchema?.map((item) => {
+                      if (
+                        item?.name === "workForBank" &&
+                        values?.role !== "supervisor"
+                      ) {
+                        return null; // Hide workForBank field if role is not supervisor
+                      }
+                      return (
+                        <div key={item?.key} className={item?.mainDivClassname}>
+                          <div>
+                            <label
+                              htmlFor={item?.htmlFor}
+                              className="text-sm font-medium text-gray-900 block mb-2"
                             >
-                              {item?.options?.map((option) => (
-                                <option key={option?.key} value={option?.value}>
-                                  {option?.label}
-                                </option>
-                              ))}
-                            </Field>
-                          ) : (
-                            <Field
-                              type={item?.type}
+                              {item?.label}
+                            </label>
+                            {item?.type === "select" &&
+                            item?.name === "workForBank" ? (
+                              <div className="space-y-2">
+                                {/* Chips Display for Selected Banks */}
+                                {values.workForBank.length > 0 && (
+                                  <div className="flex flex-wrap gap-2 border border-gray-300 p-2 rounded-lg bg-gray-100 h-30 overflow-y-auto custom-scrollbar">
+                                    {values.workForBank.map((selectedBank) => {
+                                      const bankLabel =
+                                        item?.options.find(
+                                          (opt) => opt.value === selectedBank
+                                        )?.label || selectedBank;
+
+                                      return (
+                                        <div
+                                          key={selectedBank}
+                                          className="flex items-center justify-center gap-1 p-1.5 bg-blue-100 text-blue-900 rounded-xl text-sm"
+                                        >
+                                          <span>{bankLabel}</span>
+                                          <button
+                                            type="button"
+                                            className="text-gray-500 hover:text-red-700 text-lg text-center"
+                                            onClick={() => {
+                                              setFieldValue(
+                                                "workForBank",
+                                                values.workForBank.filter(
+                                                  (val) => val !== selectedBank
+                                                )
+                                              );
+                                            }}
+                                          >
+                                            <IoIosCloseCircle />
+                                          </button>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                                <div className=" flex flex-col gap-2 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg w-full p-2.5 h-30 overflow-y-auto custom-scrollbar">
+                                  <div className="">
+                                    <label className="flex items-center gap-2 font-normal">
+                                      <input
+                                        type="checkbox"
+                                        checked={
+                                          values.workForBank.length ===
+                                          item?.options?.length
+                                        }
+                                        onChange={() => {
+                                          if (
+                                            values.workForBank.length ===
+                                            item?.options?.length
+                                          ) {
+                                            setFieldValue("workForBank", []); // Unselect all
+                                          } else {
+                                            setFieldValue(
+                                              "workForBank",
+                                              item?.options?.map(
+                                                (option) => option.value
+                                              )
+                                            ); // Select all
+                                          }
+                                        }}
+                                      />
+                                      Select/ Unselect All Bank
+                                    </label>
+                                  </div>
+                                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 ">
+                                    {/* Select All / Unselect All */}
+
+                                    {/* Individual Checkboxes */}
+                                    {item?.options?.map((option) => (
+                                      <label
+                                        key={option.key}
+                                        className="flex items-center gap-2"
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          value={option.value}
+                                          checked={values.workForBank.includes(
+                                            option.value
+                                          )}
+                                          onChange={(event) => {
+                                            const selectedValues =
+                                              values.workForBank || [];
+                                            if (event.target.checked) {
+                                              setFieldValue("workForBank", [
+                                                ...selectedValues,
+                                                option.value,
+                                              ]);
+                                            } else {
+                                              setFieldValue(
+                                                "workForBank",
+                                                selectedValues.filter(
+                                                  (val) => val !== option.value
+                                                )
+                                              );
+                                            }
+                                          }}
+                                        />
+                                        {option.label}
+                                      </label>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : item?.type === "select" ? (
+                              <Field
+                                as="select"
+                                name={item?.name}
+                                id={item?.id}
+                                className={item?.inputFieldClassName}
+                              >
+                                {item?.options?.map((option) => (
+                                  <option
+                                    key={option?.key}
+                                    value={option?.value}
+                                  >
+                                    {option?.label}
+                                  </option>
+                                ))}
+                              </Field>
+                            ) : (
+                              <Field
+                                type={item?.type}
+                                name={item?.name}
+                                id={item?.id}
+                                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                placeholder={item?.placeholder}
+                              />
+                            )}
+                            <ErrorMessage
                               name={item?.name}
-                              id={item?.id}
-                              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                              placeholder={item?.placeholder}
+                              component="p"
+                              className="text-red-500 text-sm"
                             />
-                          )}
-                          <ErrorMessage
-                            name={item?.name}
-                            component="p"
-                            className="text-red-500 text-sm"
-                          />
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                    {values?.role === "fieldExecutive" && (
+                      );
+                    })}
+                    {/* {values?.role === "fieldExecutive" && (
                       <div className="col-span-4">
                         <GeolocationAutoComplete
                           existingUserGeoFormattedAddress={""}
@@ -356,10 +485,27 @@ const AddUser = () => {
                           className="text-red-500 text-sm"
                         />
                       </div>
-                    )}
+                    )} */}
                   </div>
                   {values?.role === "fieldExecutive" && (
                     <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
+                      <div className="col-span-4">
+                        <GeolocationAutoComplete
+                          existingUserGeoFormattedAddress={""}
+                          onSelect={(val) => {
+                            setFieldValue("geoLocation", {
+                              longitude: val?.longitude,
+                              latitude: val?.latitude,
+                              formattedAddress: val?.address,
+                            });
+                          }}
+                        />
+                        <ErrorMessage
+                          name="geoLocation.formattedAddress"
+                          component="div"
+                          className="text-red-500 text-sm"
+                        />
+                      </div>
                       <div className="col-span-4">
                         <LocationFields
                           data={locationData?.data?.states}

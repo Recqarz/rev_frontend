@@ -19,6 +19,8 @@ import { getProfileByToken } from "../redux/profile/profileAction";
 import AddLocation from "../pages/admin/location/AddLocation";
 import PageNotFound from "./PageNotFound";
 import CompareDisplay from "../pages/supervisor/CompareDisplay";
+import AllReports from "../pages/supervisor/AllReports";
+import UpdateFieldExecutive from "../pages/supervisor/UpdateFieldExecutive";
 
 const roleBasedRoutes = {
   admin: [
@@ -47,7 +49,12 @@ const roleBasedRoutes = {
   ],
   supervisor: [
     { path: "/supervisor/dashboard", element: <SupervisorDashboard /> },
-    { path: "/supervisor/reports", element: <CompareDisplay /> },
+    { path: "/supervisor/allReports", element: <AllReports /> },
+    { path: "/supervisor/reportDetails", element: <CompareDisplay /> },
+    {
+      path: "/supervisor/updateFieldExecutive",
+      element: <UpdateFieldExecutive />,
+    },
     { path: "/supervisor/profile", element: <Profile /> },
   ],
   auditor: [{ path: "/auditor/dashboard", element: <AuditorDashboard /> }],

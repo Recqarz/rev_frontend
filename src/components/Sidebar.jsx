@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import { toastError } from "../utils/react-toastify/ReactToastiry";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import { ImLocation2 } from "react-icons/im";
+import { BiSolidReport } from "react-icons/bi";
 
 const roleBasedMenu = {
   admin: [
@@ -53,7 +54,21 @@ const roleBasedMenu = {
   ],
   supervisor: [
     { name: "Dashboard", icon: <MdDashboard />, path: "/supervisor/dashboard" },
-    { name: "Reports", icon: <IoBriefcase />, path: "/supervisor/reports" },
+    {
+      name: "All Reports",
+      icon: <BiSolidReport />,
+      path: "/supervisor/allReports",
+    },
+    {
+      name: "Report Details",
+      icon: <IoBriefcase />,
+      path: "/supervisor/reportDetails",
+    },
+    {
+      name: "Form Field Executive",
+      icon: <IoBriefcase />,
+      path: "/supervisor/updateFieldExecutive",
+    },
   ],
   auditor: [
     { name: "Dashboard", icon: <MdDashboard />, path: "/auditor/dashboard" },

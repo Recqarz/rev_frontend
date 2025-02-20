@@ -1,6 +1,10 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 const CompareDisplay = () => {
+  const location = useLocation();
+  const reportData = location.state?.reportData;
+  console.log("reportData==>", reportData);
   const coData1 = [
     { key: "Client Name:", value: "AAAA" },
     { key: "Bank Name:", value: "AAAA" },

@@ -44,7 +44,7 @@ export const allBankReducer = (state = initialData, { type, payload }) => {
     case ADD_BANK_DATA_SUCCESS: {
       return {
         ...state,
-        data: [...state.data, payload],
+        // data: [...state.data, payload],
       };
     }
 

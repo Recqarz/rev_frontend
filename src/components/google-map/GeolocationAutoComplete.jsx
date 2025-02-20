@@ -50,6 +50,7 @@ const GeolocationAutoComplete = ({
         Client Geolocation
       </label>
       <input
+      autoComplete={false}
         id="autocomplete" //make this fix, its from googleAPI
         type="text"
         name="autocomplete"

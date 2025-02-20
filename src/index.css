@@ -35,6 +35,7 @@
 
 .swal2-html-container {
   font-size: 20px; /* Optional: Customize the text size */
+  z-index: 9999;
 }
 
 /* Hide the spinner for Chrome, Safari, Edge, Opera */

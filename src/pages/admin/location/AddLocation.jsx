@@ -20,17 +20,12 @@ const AddLocation = () => {
   const [stateId, setStateId] = useState(""); // state to hold selected stateId
   const [districtId, setDistrictId] = useState(""); // state to hold selected stateId
   const [district, setDistrict] = useState([]);
-  console.log("district==>aa===>", district);
-  console.log("stateId==>", stateId);
 
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { isLoading, isError, data } = useSelector(
     (store) => store.locationReducer
   );
   const { message, states, districts, zones, locationAll } = data;
-  console.log("locationAll==>", locationAll);
-  console.log("districts==>bbb===>", districts);
-
   useEffect(() => {
     locationAll?.states?.map((ele, i) => {
       if (ele.name?.toLowerCase() === stateName) {
@@ -51,7 +46,7 @@ const AddLocation = () => {
   }, [stateId, districtId]);
 
   const handleSubmitState = (values, { resetForm }) => {
-    console.log("state values==>", values);
+    // console.log("state values==>", values);
     dispatch(addState(values, accessToken));
     resetForm();
   };
@@ -64,6 +59,7 @@ const AddLocation = () => {
   };
   const handleSubmitZone = (values, { resetForm }) => {
     const formattedValues = {
+      // stateId: values.stateId, //not needed so that make formattedValues object
       districtId: values.districtId,
       name: values.name,
     };
@@ -85,14 +81,6 @@ const AddLocation = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter state name",
-      // options: [
-      //   { key: 0, value: "", label: "Select State" }, // Default empty value
-      //   ...(locationAll?.states ?? [])?.map((state, index) => ({
-      //     key: index + 1,
-      //     value: state?.name,
-      //     label: `${index + 1}. ${state?.name}`,
-      //   })),
-      // ],
       options: [
         { key: 0, value: "", label: "Select State" }, // Default empty value
         ...(locationAll?.states ?? [])?.map((state, index) => {
@@ -166,14 +154,6 @@ const AddLocation = () => {
       inputFieldClassName:
         "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
       placeholder: "Enter district name",
-      // options: [
-      //   { key: 0, value: "", label: "Select District" },
-      //   ...district?.map((ele, i) => ({
-      //     key: i + 1,
-      //     value: ele,
-      //     label: ele,
-      //   })),
-      // ],
       options: [
         { key: 0, value: "", label: "Select District" },
         ...(district ?? [])?.map((dist, index) => {
@@ -324,7 +304,7 @@ const AddLocation = () => {
             validationSchema={stateValidationSchema}
             onSubmit={handleSubmitState}
           >
-            {({ isSubmitting, dirty, resetForm }) => (
+            {({ setFieldValue, isSubmitting, dirty, resetForm }) => (
               <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
                 <div className="w-[100%] lg:w-[80%] grid md:grid-cols-4 lg:grid-cols-8 gap-2">
                   {AddStateFormSchema?.map((item) => (
@@ -342,6 +322,9 @@ const AddLocation = () => {
                             name={item?.name}
                             id={item?.id}
                             className={item?.inputFieldClassName}
+                            onChange={(e) => {
+                              setFieldValue(item?.name, e.target.value);
+                            }}
                           >
                             {item?.options?.map((option) => (
                               <option
@@ -418,11 +401,6 @@ const AddLocation = () => {
             onSubmit={handleSubmitDistrict}
           >
             {({ values, isSubmitting, dirty, resetForm, setFieldValue }) => {
-              {
-                if (values?.stateId) {
-                  setStateId(values?.stateId);
-                }
-              }
               return (
                 <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
                   <div className="w-[100%] lg:w-[80%] grid md:grid-cols-4 lg:grid-cols-8 gap-2">
@@ -445,13 +423,12 @@ const AddLocation = () => {
                                 // onChange is needed when you have make any function, set the data using useState and make sure setFieldValue(key,(e.target.value)) is important to set for getting values
                                 const selectedValue = e.target.value;
                                 setFieldValue(item?.name, selectedValue);
-
                                 // Find the selected state's name
                                 const stateObj = states.find(
                                   (state) => state._id === selectedValue
                                 );
-
                                 setStateName(stateObj ? stateObj.name : ""); // Store the name in state
+                                setStateId(selectedValue);
                               }}
                             >
                               {item?.options?.map((option) => (
@@ -548,12 +525,6 @@ const AddLocation = () => {
           >
             {({ isSubmitting, dirty, resetForm, values, setFieldValue }) => {
               {
-                if (values?.stateId) {
-                  setStateId(values?.stateId);
-                }
-                if (values?.districtId) {
-                  setDistrictId(values?.districtId);
-                }
               }
               return (
                 <Form className="w-full flex flex-col lg:flex-row gap-4 justify-center items-center px-2">
@@ -567,12 +538,71 @@ const AddLocation = () => {
                           >
                             {item?.label}
                           </label>
-                          {item?.as === "select" ? (
+                          {item?.as === "select" && item?.name === "stateId" ? (
                             <Field
                               as="select"
                               name={item?.name}
                               id={item?.id}
                               className={item?.inputFieldClassName}
+                              onChange={(e) => {
+                                const getStateId = e.target.value;
+                                setFieldValue(item?.name, getStateId);
+                                setStateId(getStateId);
+                              }}
+                            >
+                              {item?.options?.map((option) => (
+                                <option
+                                  key={option?.key}
+                                  value={option?.value}
+                                  disabled={option.disabled}
+                                  className={`${
+                                    option.disabled
+                                      ? "text-red-400"
+                                      : "text-black"
+                                  }`}
+                                >
+                                  {option?.label}
+                                </option>
+                              ))}
+                            </Field>
+                          ) : item?.as === "select" &&
+                            item?.name === "districtId" ? (
+                            <Field
+                              as="select"
+                              name={item?.name}
+                              id={item?.id}
+                              className={item?.inputFieldClassName}
+                              onChange={(e) => {
+                                const getDistrictId = e.target.value;
+                                setFieldValue(item?.name, getDistrictId);
+                                setDistrictId(getDistrictId);
+                              }}
+                            >
+                              {item?.options?.map((option) => (
+                                <option
+                                  key={option?.key}
+                                  value={option?.value}
+                                  disabled={option.disabled}
+                                  className={`${
+                                    option.disabled
+                                      ? "text-red-400"
+                                      : "text-black"
+                                  }`}
+                                >
+                                  {option?.label}
+                                </option>
+                              ))}
+                            </Field>
+                          ) : item?.as === "select" && item?.name === "name" ? (
+                            <Field
+                              as="select"
+                              name={item?.name}
+                              id={item?.id}
+                              className={item?.inputFieldClassName}
+                              onChange={(e) => {
+                                const zoneName = e.target.value;
+                                setFieldValue(item?.name, zoneName);
+                              }}
                             >
                               {item?.options?.map((option) => (
                                 <option
@@ -642,16 +672,3 @@ const AddLocation = () => {
 };
 
 export default AddLocation;
-
-const mainStateArray = [
-  {
-    name: "Arunachal Pradesh",
-    districts: [{ name: "a1" }, { name: "a2" }, { name: "a3" }],
-  },
-  {
-    name: "Odisha",
-    districts: [{ name: "B1" }, { name: "B2" }, { name: "B3" }],
-  },
-];
-
-const addNewState = [{ name: "Odisha" }];

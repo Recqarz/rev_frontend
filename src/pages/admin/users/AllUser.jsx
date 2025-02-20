@@ -12,6 +12,11 @@ import Pagination from "../../../components/Pagination";
 import SearchFilterAddSection from "../../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../../utils/highlightMatch";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import {
+  getAllDistricts,
+  getAllStates,
+  getAllZones,
+} from "../../../redux/location/locationAction";
 const AllUser = () => {
   const dispatch = useDispatch();
   const {
@@ -20,7 +25,7 @@ const AllUser = () => {
     data,
   } = useSelector((state) => state.allUserReducer);
   const { message, currentPage, totalPages, totalUser, users } = data;
-  // console.log("users==>", users);
+  console.log("users==>", users);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
   const [userId, setUserId] = useState("");
   const [userData, setUserData] = useState({
@@ -37,19 +42,33 @@ const AllUser = () => {
   const [filters, setFilters] = useState({
     status: "",
     role: "",
+    state: "",
+    district: "",
+    zone: "",
   });
   const [limit, setLimit] = useState(10);
   const [expandedRow, setExpandedRow] = useState(null);
+  const locationData = useSelector((store) => store.locationReducer);
 
   const [currentPageState, setCurrentPageState] = useState(currentPage);
 
   useEffect(() => {
+    dispatch(getAllStates(accessToken));
     dispatch(
       getAllUserData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&role=${filters.role}&isActive=${filters.status}`
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&role=${filters.role}&isActive=${filters.status}&state=${filters.state}&district=${filters.district}&zone=${filters.zone}`
       )
     );
-  }, [limit, currentPageState, searchQuery, filters.role, filters.status]);
+  }, [
+    limit,
+    currentPageState,
+    searchQuery,
+    filters.role,
+    filters.status,
+    filters.zone,
+    filters.state,
+    filters.district,
+  ]);
 
   // For Filtration
   const filterOptions = [
@@ -62,6 +81,7 @@ const AllUser = () => {
         { label: "Field Executive", value: "fieldExecutive" },
         { label: "Coordinator", value: "coordinator" },
         { label: "Supervisor", value: "supervisor" },
+        { label: "Auditor", value: "auditor" },
       ],
     },
     {
@@ -73,15 +93,70 @@ const AllUser = () => {
         { label: "Inactive", value: "false" },
       ],
     },
+    {
+      name: "state",
+      value: filters.state,
+      placeholder: "Filter by State",
+      options: [
+        ...(locationData?.data?.states ?? [])?.map((state) => ({
+          label: state?.name,
+          value: state?._id,
+        })),
+      ],
+    },
+    {
+      name: "district",
+      value: filters.district,
+      placeholder: "Filter by District",
+      options: [
+        ...(filters.state && locationData?.data?.districts
+          ? locationData?.data?.districts.map((dist) => ({
+              label: dist?.name,
+              value: dist?._id,
+            }))
+          : []),
+      ],
+    },
+    {
+      name: "zone",
+      value: filters.zone,
+      placeholder: "Filter by Zone",
+      options: [
+        ...(filters.state && filters?.district && locationData?.data?.zones
+          ? locationData?.data?.zones.map((zone) => ({
+              label: zone?.name,
+              value: zone?._id,
+            }))
+          : []),
+      ],
+    },
   ];
 
+  const changeState = (stateId) => {
+    stateId && dispatch(getAllDistricts(stateId, accessToken));
+  };
+
+  const changeDistrict = (distId) => {
+    distId && dispatch(getAllZones(distId, accessToken));
+  };
   const handleFilterChange = (filterName, value) => {
-    setFilters((prev) => ({ ...prev, [filterName]: value }));
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+      ...(filterName === "state" ? { district: "", zone: "" } : {}), // Reset district & zone while switching to state repeatedly
+      ...(filterName === "district" ? { zone: "" } : {}), // Reset zone while switching to district repeatedly
+    }));
+    if (filterName === "state") {
+      changeState(value);
+    }
+    if (filterName === "district") {
+      changeDistrict(value);
+    }
   };
 
   const handleResetFilters = () => {
     setSearchQuery("");
-    setFilters({ role: "", status: "" });
+    setFilters({ role: "", status: "", state: "", district: "", zone: "" });
   };
 
   // For Update Form
@@ -218,14 +293,29 @@ const AllUser = () => {
   return (
     <div className="">
       <div className="flex flex-col gap-5">
+        {/* Filter Section */}
         <SearchFilterAddSection
           setSearchQuery={setSearchQuery}
           setCurrentPageState={setCurrentPageState}
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}
-          disabledReset={!searchQuery && !filters.role && !filters.status}
-          enableReset={searchQuery || filters.role || filters.status}
+          disabledReset={
+            !searchQuery &&
+            !filters.role &&
+            !filters.status &&
+            !filters.state &&
+            !filters.district &&
+            !filters.zone
+          }
+          enableReset={
+            searchQuery ||
+            filters.role ||
+            filters.status ||
+            filters.state ||
+            filters.district ||
+            filters.zone
+          }
           goToPageLink={"/admin/dashboard/all/users/add"}
           addBtnEnable={true}
         />
@@ -280,7 +370,20 @@ const AllUser = () => {
                         {highlightMatch(row?.mobile, searchQuery)}
                       </td>
                       <td className="py-3 px-6 border-b border-gray-200">
-                        {highlightMatch(row?.role, searchQuery)}
+                        {highlightMatch(
+                          row?.role === "admin"
+                            ? "Admin"
+                            : row?.role === "supervisor"
+                            ? "Supervisor"
+                            : row?.role === "coordinator"
+                            ? "Coordinator"
+                            : row?.role === "fieldExecutive"
+                            ? "Field Executive"
+                            : row?.role === "auditor"
+                            ? "Auditor"
+                            : "",
+                          searchQuery
+                        )}
                       </td>
                       <td className="py-3 px-6 border-b border-gray-200">
                         <span
@@ -312,7 +415,7 @@ const AllUser = () => {
                             User Details
                           </h1>
                           <div className="w-[100%] text-sm grid grid-cols-2 gap-4 mt-4">
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-1 ">
                               <div className="flex gap-8 w-full">
                                 <div className="flex justify-between w-[20%]">
                                   <h1>First Name</h1>
@@ -340,9 +443,6 @@ const AllUser = () => {
                                   {row?.mobile ?? "Not Provided"}
                                 </div>
                               </div>
-                            </div>
-
-                            <div className="flex flex-col gap-1">
                               <div className="flex gap-8 w-full">
                                 <div className="flex justify-between w-[20%]">
                                   <h1>Email</h1>
@@ -352,24 +452,83 @@ const AllUser = () => {
                                   {row?.email ?? "Not Provided"}
                                 </div>
                               </div>
+                              {row?.role === "supervisor" && (
+                                <div className="flex gap-8 w-full">
+                                  <div className="flex justify-between w-[20%]">
+                                    <h1>Work for bank</h1>
+                                    <h1>:</h1>
+                                  </div>
+
+                                  <div className="flex  gap-2 w-[80%] h-[70%] overflow-y-auto overflow-x-auto custom-scrollbar">
+                                    {row?.workForBank?.map((item, i) => (
+                                      <div
+                                        key={i + 1}
+                                        className="bg-[#67cfb3ff] flex items-center justify-center p-1 rounded-md text-xs"
+                                      >
+                                        {`${item?.bankName}
+                                        (${item?.branchName})`}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex flex-col gap-1">
                               <div className="flex gap-8 w-full">
                                 <div className="flex justify-between w-[20%]">
                                   <h1>Role</h1>
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[80%]">
-                                  {row?.role ?? "Not Provided"}
+                                  {row?.role === "admin"
+                                    ? "Admin"
+                                    : row?.role === "supervisor"
+                                    ? "Supervisor"
+                                    : row?.role === "coordinator"
+                                    ? "Coordinator"
+                                    : row?.role === "fieldExecutive"
+                                    ? "Field Executive"
+                                    : row?.role === "auditor"
+                                    ? "Auditor"
+                                    : "Not Provided"}
                                 </div>
                               </div>
-                              <div className="flex gap-8 w-full">
-                                <div className="flex justify-between w-[20%]">
-                                  <h1>Work for bank</h1>
-                                  <h1>:</h1>
-                                </div>
-                                <div className="flex justify-between w-[80%]">
-                                  {row?.workForBank ?? "Not Provided"}
-                                </div>
-                              </div>
+
+                              {row?.role === "fieldExecutive" && (
+                                <React.Fragment>
+                                  <div className="flex gap-8 w-full">
+                                    <div className="flex justify-between w-[20%]">
+                                      <h1>State</h1>
+                                      <h1>:</h1>
+                                    </div>
+                                    <div className="flex justify-between w-[80%]">
+                                      {row?.address?.state?.name ??
+                                        "Not Provided"}
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-8 w-full">
+                                    <div className="flex justify-between w-[20%]">
+                                      <h1>District</h1>
+                                      <h1>:</h1>
+                                    </div>
+                                    <div className="flex justify-between w-[80%]">
+                                      {row?.address?.district?.name ??
+                                        "Not Provided"}
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-8 w-full">
+                                    <div className="flex justify-between w-[20%]">
+                                      <h1>Zone</h1>
+                                      <h1>:</h1>
+                                    </div>
+                                    <div className="flex justify-between w-[80%]">
+                                      {row?.address?.zone?.name ??
+                                        "Not Provided"}
+                                    </div>
+                                  </div>
+                                </React.Fragment>
+                              )}
                             </div>
                           </div>
                         </td>

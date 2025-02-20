@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import { toastError } from "../utils/react-toastify/ReactToastiry";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import { ImLocation2 } from "react-icons/im";
+import { BiSolidReport } from "react-icons/bi";
 
 const roleBasedMenu = {
   admin: [
@@ -53,7 +54,21 @@ const roleBasedMenu = {
   ],
   supervisor: [
     { name: "Dashboard", icon: <MdDashboard />, path: "/supervisor/dashboard" },
-    { name: "Reports", icon: <IoBriefcase />, path: "/supervisor/reports" },
+    {
+      name: "All Reports",
+      icon: <BiSolidReport />,
+      path: "/supervisor/allReports",
+    },
+    {
+      name: "Report Details",
+      icon: <IoBriefcase />,
+      path: "/supervisor/reportDetails",
+    },
+    {
+      name: "Form Field Executive",
+      icon: <IoBriefcase />,
+      path: "/supervisor/updateFieldExecutive",
+    },
   ],
   auditor: [
     { name: "Dashboard", icon: <MdDashboard />, path: "/auditor/dashboard" },
@@ -134,7 +149,7 @@ const Sidebar = ({ isOpen, toggleSidebar, profileData }) => {
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed inset-y-0 left-0 z-[9999] px-4 pt-1 pb-2 bg-white shadow-lg transition-transform duration-300 ease-in-out w-[70%] md:w-[22%] lg:w-[18%] ${
+        className={`fixed inset-y-0 left-0 z-[999] px-4 pt-1 pb-2 bg-white shadow-lg transition-transform duration-300 ease-in-out w-[70%] md:w-[22%] lg:w-[18%] ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 md:static`}
       >

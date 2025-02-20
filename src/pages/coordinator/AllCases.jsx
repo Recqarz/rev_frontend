@@ -9,6 +9,11 @@ import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../utils/highlightMatch";
 import { formattedDate } from "../../utils/formattedDate";
+import {
+  getAllDistricts,
+  getAllStates,
+  getAllZones,
+} from "../../redux/location/locationAction";
 
 const AllCases = () => {
   const dispatch = useDispatch();
@@ -25,41 +30,63 @@ const AllCases = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     status: "",
+    state: "",
+    district: "",
     zone: "",
   });
   const [limit, setLimit] = useState(10);
   const [expandedRow, setExpandedRow] = useState(null);
+  const locationData = useSelector((store) => store.locationReducer);
 
   useEffect(() => {
+    dispatch(getAllStates(accessToken));
     dispatch(
       getAllCaseData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&zone=${filters.zone}`,
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&state=${filters.state}&district=${filters.district}&zone=${filters.zone}`,
         accessToken
       )
     );
-  }, [limit, currentPageState, searchQuery, filters.status, filters.zone]);
+  }, [
+    accessToken,
+    dispatch,
+    limit,
+    currentPageState,
+    searchQuery,
+    filters.status,
+    filters.zone,
+    filters.state,
+    filters.district,
+  ]);
 
   const handleResetFilters = () => {
     setSearchQuery("");
-    setFilters({ status: "", zone: "" });
+    setFilters({ status: "", state: "", district: "", zone: "" });
   };
 
+  const changeState = (stateId) => {
+    stateId && dispatch(getAllDistricts(stateId, accessToken));
+  };
+
+  const changeDistrict = (distId) => {
+    // console.log(distId);
+    distId && dispatch(getAllZones(distId, accessToken));
+  };
   const handleFilterChange = (filterName, value) => {
-    setFilters((prev) => ({ ...prev, [filterName]: value }));
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+      ...(filterName === "state" ? { district: "", zone: "" } : {}), // Reset district & zone while switching to state repeatedly
+      ...(filterName === "district" ? { zone: "" } : {}), // Reset zone while switching to district repeatedly
+    }));
+    if (filterName === "state") {
+      changeState(value);
+    }
+    if (filterName === "district") {
+      changeDistrict(value);
+    }
   };
 
   const filterOptions = [
-    {
-      name: "zone",
-      value: filters.zone,
-      placeholder: "Filter by Zone",
-      options: [
-        { label: "East", value: "east" },
-        { label: "West", value: "west" },
-        { label: "North", value: "north" },
-        { label: "South", value: "south" },
-      ],
-    },
     {
       name: "status",
       value: filters.status,
@@ -69,6 +96,43 @@ const AllCases = () => {
         { label: "Pending", value: "pending" },
         { label: "Completed", value: "completed" },
         { label: "Rejected", value: "rejected" },
+      ],
+    },
+    {
+      name: "state",
+      value: filters.state,
+      placeholder: "Filter by State",
+      options: [
+        ...(locationData?.data?.states ?? [])?.map((state) => ({
+          label: state?.name,
+          value: state?._id,
+        })),
+      ],
+    },
+    {
+      name: "district",
+      value: filters.district,
+      placeholder: "Filter by District",
+      options: [
+        ...(filters.state && locationData?.data?.districts
+          ? locationData?.data?.districts.map((dist) => ({
+              label: dist?.name,
+              value: dist?._id,
+            }))
+          : []),
+      ],
+    },
+    {
+      name: "zone",
+      value: filters.zone,
+      placeholder: "Filter by Zone",
+      options: [
+        ...(filters.state && filters?.district && locationData?.data?.zones
+          ? locationData?.data?.zones.map((zone) => ({
+              label: zone?.name,
+              value: zone?._id,
+            }))
+          : []),
       ],
     },
   ];
@@ -98,10 +162,22 @@ const AllCases = () => {
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}
-          disabledReset={!searchQuery && !filters.zone && !filters.status}
-          enableReset={searchQuery || filters.zone || filters.status}
-          goToPageLink={"/coordinator/all/cases/add"}
-          addBtnEnable={role === "coordinator" ? true : false}
+          disabledReset={
+            !searchQuery &&
+            !filters.status &&
+            !filters.state &&
+            !filters.district &&
+            !filters.zone
+          }
+          enableReset={
+            searchQuery ||
+            filters.status ||
+            filters.state ||
+            filters.district ||
+            filters.zone
+          }
+          goToPageLink={"/coordinator/all/cases/add"} // new form page link
+          addBtnEnable={role === "coordinator" ? true : false} // new form page link for btn enable/disable
         />
 
         {/* Table Section */}
@@ -200,7 +276,7 @@ const AllCases = () => {
                         <div className="flex gap-2 items-center">
                           {role && role === "coordinator" && (
                             <Link
-                              to={`/coordinator/all/cases/add?caseId=${row?._id}`}
+                              to={`/coordinator/all/case/update?caseId=${row?._id}`}
                             >
                               <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
                                 <MdOutlineEdit />
@@ -286,14 +362,18 @@ const AllCases = () => {
                               <div className="flex w-full font-normal">
                                 <div className="w-[30%]">State :</div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.state}
+                                  {row?.state?.name}
                                 </div>
                               </div>
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">City :</div>
+                                <div className="w-[30%]">District :</div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.city}
+                                  {row?.district?.name}
                                 </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Zone :</div>
+                                <div className="w-[70%]">{row?.zone?.name}</div>
                               </div>
                               <div className="flex w-full font-normal">
                                 <div className="w-[30%]">Pin code :</div>

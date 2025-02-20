@@ -387,7 +387,7 @@ const AddUser = () => {
                                               item?.options?.map(
                                                 (option) => option.value
                                               )
-                                            ); // Select all
+                                            );
                                           }
                                         }}
                                       />
@@ -401,7 +401,7 @@ const AddUser = () => {
                                     {item?.options?.map((option) => (
                                       <label
                                         key={option.key}
-                                        className="flex items-center gap-2"
+                                        className="flex items-center gap-2 hover:bg-blue-100 hover:rounded-sm"
                                       >
                                         <input
                                           type="checkbox"

@@ -53,9 +53,9 @@ export const addBankData =
           },
         }
       );
-      // console.log("create user response--->", response.data);
-      dispatch({ type: ADD_BANK_DATA_SUCCESS, payload: response?.data });
-      toastUpdate(toastId, 200, "Bank Added Successfully");
+      // console.log("create user response--->", response);
+      dispatch({ type: ADD_BANK_DATA_SUCCESS });
+      toastUpdate(toastId, 200, response?.data?.message);
     } catch (error) {
       console.error("Error creating bank data:", error?.response?.data?.error);
       toastUpdate(toastId, 400, error?.response?.data?.error);
@@ -77,7 +77,7 @@ export const bankDataUpdate = (data, accessToken, id) => async (dispatch) => {
         },
       }
     );
-    console.log("res", res?.data?.data?.bankdetails);
+    // console.log("res", res?.data?.data?.bankdetails);
     dispatch({
       type: UPDATE_BANK_DATA_SUCCESS,
       payload: res?.data?.data?.bankdetails,

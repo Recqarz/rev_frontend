@@ -395,8 +395,6 @@ const AddUser = () => {
                                     </label>
                                   </div>
                                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 ">
-                                    {/* Select All / Unselect All */}
-
                                     {/* Individual Checkboxes */}
                                     {item?.options?.map((option) => (
                                       <label
@@ -467,25 +465,6 @@ const AddUser = () => {
                         </div>
                       );
                     })}
-                    {/* {values?.role === "fieldExecutive" && (
-                      <div className="col-span-4">
-                        <GeolocationAutoComplete
-                          existingUserGeoFormattedAddress={""}
-                          onSelect={(val) => {
-                            setFieldValue("geoLocation", {
-                              longitude: val?.longitude,
-                              latitude: val?.latitude,
-                              formattedAddress: val?.address,
-                            });
-                          }}
-                        />
-                        <ErrorMessage
-                          name="geoLocation.formattedAddress"
-                          component="div"
-                          className="text-red-500 text-sm"
-                        />
-                      </div>
-                    )} */}
                   </div>
                   {values?.role === "fieldExecutive" && (
                     <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">

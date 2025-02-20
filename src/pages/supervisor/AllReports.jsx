@@ -14,7 +14,7 @@ const AllReports = () => {
     isError: isErrorSupervisor,
     data: isSupervisorData,
   } = useSelector((store) => store.supervisorReducer);
-  console.log("supervisorData==>", isSupervisorData);
+  // console.log("supervisorData==>", isSupervisorData);
   useEffect(() => {
     dispatch(getSupervisorData(accessToken));
   }, []);

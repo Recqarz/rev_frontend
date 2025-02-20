@@ -18,6 +18,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: profileData } = useSelector((state) => state.profileReducer);
+  console.log("profileData==>", profileData);
   const [profilePic, setProfilePic] = useState(null); //for getting image file //file like: all object keys of file
   const [onchangeAvatar, setOnchangeAvatar] = useState(null); //for getting to preview the
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -301,47 +302,55 @@ const Profile = () => {
             {({ isSubmitting, resetForm, dirty }) => (
               <Form>
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                  {AddUserFormSchema?.map((item) => (
-                    <div key={item?.key} className={item?.mainDivClassname}>
-                      <div>
-                        <label
-                          htmlFor={item?.htmlFor}
-                          className="text-sm font-medium text-gray-900 block mb-2"
-                        >
-                          {item?.label}
-                        </label>
-                        {item?.as === "select" ? (
-                          <Field
-                            disabled={item?.disabled}
-                            as="select"
-                            name={item?.name}
-                            id={item?.id}
-                            className={item?.inputFieldClassName}
+                  {AddUserFormSchema?.map((item) => {
+                    if (
+                      item?.name === "workForBank" &&
+                      profileData?.role !== "supervisor"
+                    ) {
+                      return null; // Hide workForBank field if role is not supervisor
+                    }
+                    return (
+                      <div key={item?.key} className={item?.mainDivClassname}>
+                        <div>
+                          <label
+                            htmlFor={item?.htmlFor}
+                            className="text-sm font-medium text-gray-900 block mb-2"
                           >
-                            {item?.options?.map((option) => (
-                              <option key={option?.key} value={option?.value}>
-                                {option?.label}
-                              </option>
-                            ))}
-                          </Field>
-                        ) : (
-                          <Field
-                            disabled={item?.disabled}
-                            type={item?.type}
+                            {item?.label}
+                          </label>
+                          {item?.as === "select" ? (
+                            <Field
+                              disabled={item?.disabled}
+                              as="select"
+                              name={item?.name}
+                              id={item?.id}
+                              className={item?.inputFieldClassName}
+                            >
+                              {item?.options?.map((option) => (
+                                <option key={option?.key} value={option?.value}>
+                                  {option?.label}
+                                </option>
+                              ))}
+                            </Field>
+                          ) : (
+                            <Field
+                              disabled={item?.disabled}
+                              type={item?.type}
+                              name={item?.name}
+                              id={item?.id}
+                              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                              placeholder={item?.placeholder}
+                            />
+                          )}
+                          <ErrorMessage
                             name={item?.name}
-                            id={item?.id}
-                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                            placeholder={item?.placeholder}
+                            component="p"
+                            className="text-red-500 text-sm"
                           />
-                        )}
-                        <ErrorMessage
-                          name={item?.name}
-                          component="p"
-                          className="text-red-500 text-sm"
-                        />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="flex gap-4 justify-center md:justify-end m-4">
                   {/* <button

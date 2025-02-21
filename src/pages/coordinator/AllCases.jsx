@@ -323,7 +323,7 @@ const AllCases = () => {
                                       year: "numeric",
                                     }
                                   )}{" "}
-                                  {"(MM/DD/YYYY)"}
+                                  {"(mm/dd/yyyy)"}
                                 </div>
                               </div>
                               <div className="flex w-full font-normal">

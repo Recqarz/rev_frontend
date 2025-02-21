@@ -5,6 +5,7 @@ const initialData = {
   isError: false,
   data: {
     message: "",
+    pagination: { currentPage: 1, totalCases: "", totalPages: "" },
     cases: [],
   },
 };
@@ -26,6 +27,7 @@ const supervisorReducer = (state = initialData, { type, payload }) => {
           ...state.data,
           message: payload?.message,
           cases: payload?.cases,
+          pagination: payload?.pagination,
         },
       };
 

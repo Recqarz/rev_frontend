@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { TbListDetails } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { getSupervisorData } from "../../redux/supervisor/supervisorAction";
@@ -16,9 +16,24 @@ const AllReports = () => {
     data: isSupervisorData,
   } = useSelector((store) => store.supervisorReducer);
   console.log("supervisorData==>", isSupervisorData);
+  const [limit, setLimit] = useState(10);
+  const [currentPageState, setCurrentPageState] = useState(
+    isSupervisorData?.pagination?.currentPage
+  );
+
   useEffect(() => {
-    dispatch(getSupervisorData(accessToken));
-  }, []);
+    dispatch(
+      getSupervisorData(accessToken, `limit=${limit}&page=${currentPageState}`)
+    );
+  }, [limit, currentPageState]);
+
+  const handleLimit = (val) => {
+    setLimit(val);
+    setCurrentPageState(1);
+  };
+  const handleCurrentPageState = (val) => {
+    setCurrentPageState((prev) => prev + val);
+  };
   return (
     <div className="flex justify-center">
       <div className="flex flex-col gap-5 w-[100%]">
@@ -150,14 +165,14 @@ const AllReports = () => {
         </div>
 
         {/* Pagination Section */}
-        {/* <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalData={totalCase}
+        <Pagination
+          currentPage={isSupervisorData?.pagination?.currentPage}
+          totalPages={isSupervisorData?.pagination?.totalPages}
+          totalData={isSupervisorData?.pagination?.totalCases}
           limit={limit}
           handleLimit={handleLimit}
           handleCurrentPageState={handleCurrentPageState}
-        /> */}
+        />
       </div>
     </div>
   );

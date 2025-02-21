@@ -5,6 +5,7 @@ import { getSupervisorData } from "../../redux/supervisor/supervisorAction";
 import { highlightMatch } from "../../utils/highlightMatch";
 import { MdOutlineEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
+import Pagination from "../../components/Pagination";
 
 const AllReports = () => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const AllReports = () => {
     isError: isErrorSupervisor,
     data: isSupervisorData,
   } = useSelector((store) => store.supervisorReducer);
-  // console.log("supervisorData==>", isSupervisorData);
+  console.log("supervisorData==>", isSupervisorData);
   useEffect(() => {
     dispatch(getSupervisorData(accessToken));
   }, []);
@@ -34,7 +35,10 @@ const AllReports = () => {
                   Client Contact
                 </th>
                 <th className="w-1/5 py-2 px-6 text-left text-xs">
-                  Field Executive Id
+                  Field Executive
+                </th>
+                <th className="w-1/5 py-2 px-6 text-left text-xs">
+                  Verified By
                 </th>
                 <th className="w-1/5 py-2 px-6 text-left text-xs">Details</th>
               </tr>
@@ -43,7 +47,7 @@ const AllReports = () => {
               {isLoadingSupervisor ? (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="6"
                     className="py-10 text-center text-gray-400 text-lg"
                   >
                     <div className="flex justify-center items-center gap-2">
@@ -53,41 +57,79 @@ const AllReports = () => {
                     </div>{" "}
                   </td>
                 </tr>
-              ) : isSupervisorData?.details?.length > 0 ? (
-                isSupervisorData?.details?.map((row, i) => (
+              ) : isSupervisorData?.cases?.length > 0 ? (
+                isSupervisorData?.cases?.map((row, i) => (
                   <tr
-                    key={i + 1}
-                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
+                    key={row?._id}
+                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md border-b border-gray-200 truncate text-sm"
                   >
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                      {highlightMatch(row?.case?.caseCode)}
+                    <td className="py-3 px-6 ">
+                      {highlightMatch(row?.caseCode)}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
-                      {highlightMatch(row?.case?.clientName)}
+                    <td className="py-3 px-6 ">
+                      {highlightMatch(row?.clientName)}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                      {highlightMatch(row?.case?.contactNo)}
+                    <td className="py-3 px-6 ">
+                      {highlightMatch(row?.contactNo)}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
-                      {highlightMatch(row?.case?.fieldExecutiveId)}
+                    <td className="py-3 px-6 ">
+                      {highlightMatch(
+                        `${row?.fieldExecutiveId?.firstName} ${row?.fieldExecutiveId?.lastName}`
+                      )}
+                    </td>
+                    <td className="py-3 px-6">
+                      <div className="flex gap-2">
+                        <div className="flex flex-col text-center">
+                          <h1
+                            className={`${
+                              row?.verifiedBy?.fieldExecutive === true
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            FE
+                          </h1>
+                          <div className={`px-0.5`}>
+                            {row?.verifiedBy?.fieldExecutive === true
+                              ? "✅"
+                              : "❌"}
+                          </div>
+                        </div>
+                        <div className="flex flex-col text-center">
+                          <h1
+                            className={`${
+                              row?.verifiedBy?.supervisor === true
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            SP
+                          </h1>
+                          <div className="px-0.5">
+                            {row?.verifiedBy?.supervisor === true ? "✅" : "❌"}
+                          </div>
+                        </div>
+                        <div className="flex flex-col text-center">
+                          <h1
+                            className={`${
+                              row?.verifiedBy?.auditor === true
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            AU
+                          </h1>
+                          <div className="px-0.5">
+                            {row?.verifiedBy?.auditor === true ? "✅" : "❌"}
+                          </div>
+                        </div>
+                      </div>
                     </td>
 
-                    <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-6">
-                      <div
-                        className="rounded-full hover:bg-gray-300 py-1 px-1 "
-                        // onClick={() => handleUpdateStatusFunc(row)}
-                      >
-                        <MdOutlineEdit className="text-xl text-[#3fb597]" />
-                      </div>
-                      <Link
-                        to="/supervisor/reportDetails"
-                        state={{ reportData: row }}
-                      >
-                        <div
-                          className="rounded-full hover:bg-gray-300 py-1 px-1"
-                          // onClick={() => handleUpdateStatusFunc(row)}
-                        >
-                          <TbListDetails className="text-xl text-[#3fb597]" />
+                    <td className="py-3 px-6 ">
+                      <Link to={`/supervisor/reportDetails?caseId=${row?._id}`}>
+                        <div className="rounded-sm bg-[#66d0b4] px-2 py-0.5 hover:bg-[#208369] hover:text-white">
+                          <h1>Compare</h1>
                         </div>
                       </Link>
                     </td>
@@ -96,7 +138,7 @@ const AllReports = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="6"
                     className="py-10 text-center text-gray-400 text-lg"
                   >
                     No Data Found !
@@ -106,6 +148,16 @@ const AllReports = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Section */}
+        {/* <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalData={totalCase}
+          limit={limit}
+          handleLimit={handleLimit}
+          handleCurrentPageState={handleCurrentPageState}
+        /> */}
       </div>
     </div>
   );

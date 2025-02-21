@@ -7,11 +7,11 @@ import * as types from "./supervisorType";
 export const getSupervisorData = (accessToken) => async (dispatch) => {
   dispatch({ type: types.GET_SUPERVISOR_DATA_REQUEST });
   return axios
-    .get(`${baseURL}/api/v1/supervisor/data`, {
+    .get(`${baseURL}/api/v1/supervisor/cases`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
     .then((res) => {
-      // console.log("all supervisor res==>", res?.data);
+      // console.log("all supervisor res==>", res);
       dispatch({
         type: types.GET_SUPERVISOR_DATA_SUCCESS,
         payload: res?.data,

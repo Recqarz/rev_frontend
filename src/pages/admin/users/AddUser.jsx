@@ -169,6 +169,7 @@ const AddUser = () => {
         otherwise: (schema) => schema.notRequired(),
       }),
       initialValue: [],
+      // initialValue: arrayData.map((item) => item._id) || [], // while updating
     },
   ];
   const validationSchema = Yup.object({

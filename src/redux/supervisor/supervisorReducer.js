@@ -5,7 +5,7 @@ const initialData = {
   isError: false,
   data: {
     message: "",
-    details: [],
+    cases: [],
   },
 };
 
@@ -25,7 +25,7 @@ const supervisorReducer = (state = initialData, { type, payload }) => {
         data: {
           ...state.data,
           message: payload?.message,
-          details: payload?.data,
+          cases: payload?.cases,
         },
       };
 

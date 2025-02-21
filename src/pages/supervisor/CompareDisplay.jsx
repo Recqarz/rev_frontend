@@ -1,8 +1,11 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { formatTitle } from "../../utils/formatTitle";
 
 const CompareDisplay = () => {
+  const [searchParams] = useSearchParams();
+  const caseId = searchParams.get("caseId");
+  console.log("caseId", caseId);
   const location = useLocation();
   const reportData = location.state?.reportData;
   console.log("reportData==>", reportData);
@@ -432,6 +435,12 @@ const CompareDisplay = () => {
           </div>
         </div>
       </div>
+
+      <Link to={`/supervisor/updateFieldExecutive?fieldExecutiveId=${caseId}`}>
+        <div className="flex justify-end">
+          <button className="px-2 py-1 bg-[#51677e] rounded-md">Update</button>
+        </div>
+      </Link>
 
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">

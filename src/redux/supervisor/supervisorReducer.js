@@ -5,6 +5,7 @@ const initialData = {
   isError: false,
   data: {
     message: "",
+    pagination: { currentPage: 1, totalCases: "", totalPages: "" },
     cases: [],
     allData:{}
   },
@@ -28,6 +29,7 @@ const supervisorReducer = (state = initialData, { type, payload }) => {
           ...state.data,
           message: payload?.message,
           cases: payload?.cases,
+          pagination: payload?.pagination,
         },
       };
     case types.GET_CASE_DATA_BY_SUPERVISOR_SUCCESS:

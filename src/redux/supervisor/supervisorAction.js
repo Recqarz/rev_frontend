@@ -24,3 +24,23 @@ export const getSupervisorData =
         toastError(err?.response?.data?.error);
       });
   };
+
+export const getCaseDataBySupervisor = (accessToken, id) => (dispatch) => {
+  dispatch({ type: types.GET_CASE_DATA_BY_SUPERVISOR_REQUEST });
+  return axios
+    .get(`${baseURL}/api/v1/supervisor/case/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    .then((res) => {
+      console.log("caseData==>", res?.data);
+      dispatch({
+        type: types.GET_CASE_DATA_BY_SUPERVISOR_SUCCESS,
+        payload: res?.data,
+      });
+    })
+    .catch((err) => {
+      console.error("Error fetching states:", err?.response?.data?.error);
+      dispatch({ type: types.GET_CASE_DATA_BY_SUPERVISOR_ERROR });
+      toastError(err?.response?.data?.error);
+    });
+};

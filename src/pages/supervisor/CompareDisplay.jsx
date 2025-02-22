@@ -1,31 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { formatTitle } from "../../utils/formatTitle";
+import { useDispatch, useSelector } from "react-redux";
+import { getCaseDataBySupervisor } from "../../redux/supervisor/supervisorAction";
+import { MdOutlineCancelPresentation } from "react-icons/md";
 
 const CompareDisplay = () => {
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
-  console.log("caseId", caseId);
-  const location = useLocation();
-  const reportData = location.state?.reportData;
-  console.log("reportData==>", reportData);
+  // console.log("caseId==>", caseId);
+  const reportData = [];
+  const dispatch = useDispatch();
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [selectedImage, setSelectedImage] = useState("");
+  const { accessToken } = useSelector((store) => store?.authReducer);
+  const fieldExecutiveDataById = useSelector(
+    (store) => store?.supervisorReducer
+  );
+  // console.log(
+  //   "fieldExecutiveDataById==>***",
+  //   fieldExecutiveDataById?.data?.individualCompareData
+  // );
+  const caseDetails =
+    fieldExecutiveDataById?.data?.individualCompareData?.caseData || {};
+  console.log("caseDetails==>", caseDetails);
+  const propertyDetails =
+    fieldExecutiveDataById?.data?.individualCompareData?.PropertyDetails || {};
+  // console.log("propertyDetails==>", propertyDetails);
+
+  useEffect(() => {
+    if (accessToken && caseId) {
+      dispatch(getCaseDataBySupervisor(accessToken, caseId));
+    }
+  }, [dispatch, caseId, accessToken]);
+
   const caseData = [
     {
       key: "Client Name:",
-      value: reportData?.case?.clientName ?? "Not Provided",
+      value: caseDetails?.clientName || "Not Provided",
     },
-    { key: "Bank Name:", value: reportData?.case?.bankId ?? "Not Provided" },
+    {
+      key: "Bank Name:",
+      value: caseDetails?.bankId?.bankName || "Not Provided",
+    },
     {
       key: "Bank Ref No:",
-      value: reportData?.case?.bankRefNo ?? "Not Provided",
+      value: caseDetails?.bankRefNo || "Not Provided",
     },
     {
       key: "Bank Report No:",
-      value: reportData?.case?.BOV_ReportNo ?? "Not Provided",
+      value: caseDetails?.BOV_ReportNo || "Not Provided",
     },
     {
       key: "Visit Date:",
-      value: new Date(reportData?.case?.visitDate).toLocaleDateString("en-US", {
+      value: new Date(caseDetails?.visitDate).toLocaleDateString("en-US", {
         month: "2-digit",
         day: "2-digit",
         year: "numeric",
@@ -33,38 +61,38 @@ const CompareDisplay = () => {
     },
     {
       key: "Client Address 1:",
-      value: reportData?.case?.clientAddress?.addressLine1 ?? "Not Provided",
+      value: caseDetails?.clientAddress?.addressLine1 || "Not Provided",
     },
     {
       key: "Client Address 2:",
-      value: reportData?.case?.clientAddress?.addressLine2 ?? "Not Provided",
+      value: caseDetails?.clientAddress?.addressLine2 || "Not Provided",
     },
     {
       key: "Client Contact No:",
-      value: reportData?.case?.contactNo ?? "Not Provided",
+      value: caseDetails?.contactNo || "Not Provided",
     },
     {
       key: "Client Plot No:",
-      value: reportData?.case?.clientAddress?.plotNumber ?? "Not Provided",
+      value: caseDetails?.clientAddress?.plotNumber || "Not Provided",
     },
     {
       key: "Client Street Name:",
-      value: reportData?.case?.clientAddress?.streetName ?? "Not Provided",
+      value: caseDetails?.clientAddress?.streetName || "Not Provided",
     },
     {
       key: "Client Land Mark:",
-      value: reportData?.case?.clientAddress?.landMark ?? "Not Provided",
+      value: caseDetails?.clientAddress?.landMark || "Not Provided",
     },
-    { key: "State:", value: reportData?.case?.state ?? "Not Provided" },
-    { key: "District:", value: reportData?.case?.district ?? "Not Provided" },
-    { key: "Zone:", value: reportData?.case?.zone },
+    { key: "State:", value: caseDetails?.state?.name || "Not Provided" },
+    { key: "District:", value: caseDetails?.district?.name || "Not Provided" },
+    { key: "Zone:", value: caseDetails?.zone?.name || "Not Provided" },
     {
       key: "Pincode:",
-      value: reportData?.case?.clientAddress?.pincode ?? "Not Provided",
+      value: caseDetails?.clientAddress?.pincode || "Not Provided",
     },
     {
       key: "Client Geo Location:",
-      value: reportData?.case?.clientGeoFormattedAddress || "Not Provided",
+      value: caseDetails?.clientGeoFormattedAddress || "Not Provided",
     },
   ];
 
@@ -74,15 +102,15 @@ const CompareDisplay = () => {
       data: [
         {
           key: "Applicant Name:",
-          value: reportData?.propertyDetails?.applicantName || "Not Provided",
+          value: propertyDetails?.applicantName || "Not Provided",
         },
         {
           key: "Applicant Mobile No:",
-          value: reportData?.propertyDetails?.mobileNo || "Not Provided",
+          value: propertyDetails?.mobileNo || "Not Provided",
         },
         {
           key: "Bank Name:",
-          value: reportData?.propertyDetails?.bankName || "Not Provided",
+          value: propertyDetails?.bankName || "Not Provided",
         },
       ],
     },
@@ -92,13 +120,11 @@ const CompareDisplay = () => {
       data: [
         {
           key: "Person Meet At Site:",
-          value: reportData?.propertyDetails?.personMetAtSite || "Not Provided",
+          value: propertyDetails?.personMetAtSite || "Not Provided",
         },
         {
           key: "Person Meet Mobile No:",
-          value:
-            reportData?.propertyDetails?.personMetAtSiteMobileNo ||
-            "Not Provided",
+          value: propertyDetails?.personMetAtSiteMobileNo || "Not Provided",
         },
       ],
     },
@@ -107,55 +133,40 @@ const CompareDisplay = () => {
       data: [
         {
           key: "Electricity Meter No.:",
-          value:
-            reportData?.propertyDetails?.electricityMeterNo || "Not Provided",
+          value: propertyDetails?.electricityMeterNo || "Not Provided",
         },
         {
           key: "Street:",
-          value:
-            reportData?.propertyDetails?.propertyAddress?.street ||
-            "Not Provided",
+          value: propertyDetails?.propertyAddress?.street || "Not Provided",
         },
         {
           key: "Plot:",
-          value:
-            reportData?.propertyDetails?.propertyAddress?.plotNo ||
-            "Not Provided",
+          value: propertyDetails?.propertyAddress?.plotNo || "Not Provided",
         },
         {
           key: "Land Mark:",
-          value:
-            reportData?.propertyDetails?.propertyAddress?.landmark ||
-            "Not Provided",
+          value: propertyDetails?.propertyAddress?.landmark || "Not Provided",
         },
         {
           key: "Pin code:",
-          value:
-            reportData?.propertyDetails?.propertyAddress?.pinCode ||
-            "Not Provided",
+          value: propertyDetails?.propertyAddress?.pinCode || "Not Provided",
         },
         {
           key: "Zone:",
-          value:
-            reportData?.propertyDetails?.propertyAddress?.zone ||
-            "Not Provided",
+          value: propertyDetails?.propertyAddress?.zone || "Not Provided",
         },
         {
           key: "State:",
-          value:
-            reportData?.propertyDetails?.propertyAddress?.state ||
-            "Not Provided",
+          value: propertyDetails?.propertyAddress?.state || "Not Provided",
         },
         {
           key: "City:",
-          value:
-            reportData?.propertyDetails?.propertyAddress?.city ||
-            "Not Provided",
+          value: propertyDetails?.propertyAddress?.city || "Not Provided",
         },
         {
           key: "Sewarage Connection:",
           value:
-            reportData?.propertyDetails?.sewerageConnection === true
+            propertyDetails?.sewerageConnection === true
               ? "Yes"
               : "No" || "Not Provided",
         },
@@ -167,26 +178,26 @@ const CompareDisplay = () => {
         {
           key: "Road width (Metres):",
           value:
-            reportData?.propertyDetails?.roadPropertySubject?.roadWidth ||
-            "Not Provided",
+            propertyDetails?.roadPropertySubject?.roadWidth || "Not Provided",
         },
         {
           key: "Primary Road Type:",
           value:
-            reportData?.propertyDetails?.roadPropertySubject?.primaryRoadType ||
-            "Not Provided",
+            formatTitle(
+              propertyDetails?.roadPropertySubject?.primaryRoadType
+            ) || "Not Provided",
         },
         {
           key: "Secondary Road Type:",
           value:
-            reportData?.propertyDetails?.roadPropertySubject
-              ?.secondaryRoadType || "Not Provided",
+            formatTitle(
+              propertyDetails?.roadPropertySubject?.secondaryRoadType
+            ) || "Not Provided",
         },
         {
           key: "Road Widening Proposal:",
           value:
-            reportData?.propertyDetails?.roadPropertySubject
-              ?.roadWideningProposal === true
+            propertyDetails?.roadPropertySubject?.roadWideningProposal === true
               ? "Yes"
               : "No" || "Not Provided",
         },
@@ -198,47 +209,41 @@ const CompareDisplay = () => {
         {
           key: "Identification of property:",
           value:
-            formatTitle(
-              reportData?.propertyDetails?.identificationOfProperty
-            ) || "Not Provided",
+            formatTitle(propertyDetails?.identificationOfProperty) ||
+            "Not Provided",
         },
         {
           key: "Location of property:",
-          value:
-            reportData?.propertyDetails?.locationOfProperty || "Not Provided",
+          value: propertyDetails?.locationOfProperty || "Not Provided",
         },
         {
           key: "Type of locality:",
-          value: reportData?.propertyDetails?.typesOfLocality || "Not Provided",
+          value: propertyDetails?.typesOfLocality || "Not Provided",
         },
         {
           key: "Type of area:",
-          value: reportData?.propertyDetails?.typesOfArea || "Not Provided",
+          value: propertyDetails?.typesOfArea || "Not Provided",
         },
         {
           key: "Neighbour area:",
-          value: reportData?.propertyDetails?.neighbourhood || "Not Provided",
+          value: formatTitle(propertyDetails?.neighbourhood) || "Not Provided",
         },
         {
           key: "Type of property:",
           value:
-            formatTitle(reportData?.propertyDetails?.typesOfProperty) ||
-            "Not Provided",
+            formatTitle(propertyDetails?.typesOfProperty) || "Not Provided",
         },
         {
           key: "Current use of property:",
-          value:
-            reportData?.propertyDetails?.currentUseOfProperty || "Not Provided",
+          value: propertyDetails?.currentUseOfProperty || "Not Provided",
         },
         {
           key: "Occupancy status:",
-          value: reportData?.propertyDetails?.occupancyStatus || "Not Provided",
+          value: propertyDetails?.occupancyStatus || "Not Provided",
         },
         {
           key: "Relation with loan applicant:",
-          value:
-            reportData?.propertyDetails?.relationWithLoanApplicant ||
-            "Not Provided",
+          value: propertyDetails?.relationWithLoanApplicant || "Not Provided",
         },
       ],
     },
@@ -248,25 +253,25 @@ const CompareDisplay = () => {
         {
           key: "Tenant Name:",
           value:
-            reportData?.propertyDetails?.detailsOfRentedProperty
-              ?.nameOfTenant || "Not Provided",
+            propertyDetails?.detailsOfRentedProperty?.nameOfTenant ||
+            "Not Provided",
         },
         {
           key: "Tenant Mobile No.:",
           value:
-            reportData?.propertyDetails?.detailsOfRentedProperty?.mobileNo ||
+            propertyDetails?.detailsOfRentedProperty?.mobileNo ||
             "Not Provided",
         },
         {
           key: "year of tenancy:",
           value:
-            reportData?.propertyDetails?.detailsOfRentedProperty
-              ?.yearsOfTenancy || "Not Provided",
+            propertyDetails?.detailsOfRentedProperty?.yearsOfTenancy ||
+            "Not Provided",
         },
         {
           key: "Monthly rent:",
           value:
-            reportData?.propertyDetails?.detailsOfRentedProperty?.monthlyRent ||
+            propertyDetails?.detailsOfRentedProperty?.monthlyRent ||
             "Not Provided",
         },
       ],
@@ -277,90 +282,84 @@ const CompareDisplay = () => {
         {
           key: "stage of construction:",
           value:
-            formatTitle(reportData?.propertyDetails?.stageOfConstruction) ||
-            "Not Provided",
+            formatTitle(propertyDetails?.stageOfConstruction) || "Not Provided",
         },
         {
           key: "Year of construction:",
-          value:
-            reportData?.propertyDetails?.yearOfConstruction || "Not Provided",
+          value: propertyDetails?.yearOfConstruction || "Not Provided",
         },
         {
           key: "Area of plot length:",
-          value:
-            reportData?.propertyDetails?.areaOfPlot?.length || "Not Provided",
+          value: propertyDetails?.areaOfPlot?.length || "Not Provided",
         },
         {
           key: "Area of plot width:",
-          value:
-            reportData?.propertyDetails?.areaOfPlot?.width || "Not Provided",
+          value: propertyDetails?.areaOfPlot?.width || "Not Provided",
         },
         {
           key: "No. of floors:",
           value:
-            reportData?.propertyDetails?.structureOfBuilding?.numberOfFloors ||
+            propertyDetails?.structureOfBuilding?.numberOfFloors ||
             "Not Provided",
         },
         {
           key: "No of basements:",
           value:
-            reportData?.propertyDetails?.structureOfBuilding
-              ?.numberOfBasements || "Not Provided",
+            propertyDetails?.structureOfBuilding?.numberOfBasements ||
+            "Not Provided",
         },
         {
           key: "Height of complete building:",
           value:
-            reportData?.propertyDetails?.structureOfBuilding
-              ?.heightOfCompleteBuilding || "Not Provided",
+            propertyDetails?.structureOfBuilding?.heightOfCompleteBuilding ||
+            "Not Provided",
         },
         {
           key: "Use of ground Floor:",
           value:
-            reportData?.propertyDetails?.groundFloorDetails?.useOfGroundFloor ||
-            "Not Provided",
+            formatTitle(
+              propertyDetails?.groundFloorDetails?.useOfGroundFloor
+            ) || "Not Provided",
         },
         {
           key: "Height of stilt Floor:",
           value:
-            reportData?.propertyDetails?.groundFloorDetails
-              ?.heightOfStiltFloor || "Not Provided",
+            propertyDetails?.groundFloorDetails?.heightOfStiltFloor ||
+            "Not Provided",
         },
         {
           key: "Area of parking:",
           value:
-            reportData?.propertyDetails?.groundFloorDetails?.areaOfParking ||
+            propertyDetails?.groundFloorDetails?.areaOfParking ||
             "Not Provided",
         },
         {
           key: "No. of units at stilt:",
           value:
-            reportData?.propertyDetails?.dwellingUnits
-              ?.numberOfUnitsAtStiltFloor || "Not Provided",
+            propertyDetails?.dwellingUnits?.numberOfUnitsAtStiltFloor ||
+            "Not Provided",
         },
         {
           key: "No. of units per floor:",
           value:
-            reportData?.propertyDetails?.dwellingUnits?.numberOfUnitsPerFloor ||
+            propertyDetails?.dwellingUnits?.numberOfUnitsPerFloor ||
             "Not Provided",
         },
         {
           key: "TotalUnits:",
-          value:
-            reportData?.propertyDetails?.dwellingUnits?.totalUnits ||
-            "Not Provided",
+          value: propertyDetails?.dwellingUnits?.totalUnits || "Not Provided",
         },
         {
           key: "Right roof:",
           value:
-            reportData?.propertyDetails?.structureOfBuilding?.roofRights ===
-            true
+            propertyDetails?.structureOfBuilding?.roofRights === true
               ? "Yes"
               : "No" || "Not Provided",
         },
         {
           key: "Demacration of plot:",
           value:
-            reportData?.propertyDetails?.demarcationOfPlot === true
+            propertyDetails?.demarcationOfPlot === true
               ? "Yes"
               : "No" || "Not Provided",
         },
@@ -369,7 +368,7 @@ const CompareDisplay = () => {
     {
       name: "Floors Info",
       data:
-        reportData?.propertyDetails?.details?.map((floor) => ({
+        propertyDetails?.details?.map((floor) => ({
           floorName: floor.floorName,
           data: [
             { key: "Floor Name:", value: floor.floorName },
@@ -384,23 +383,32 @@ const CompareDisplay = () => {
       data: [
         {
           key: "Value of property:",
-          value: reportData?.propertyDetails?.valueOfProperty || "Not Provided",
+          value: propertyDetails?.valueOfProperty || "Not Provided",
         },
         {
           key: "Remark.:",
-          value: reportData?.propertyDetails?.remarks || "Not Provided",
+          value: propertyDetails?.remarks || "Not Provided",
         },
       ],
     },
     {
       name: "CapturePhotos",
       data:
-        reportData?.propertyDetails?.images?.map((item, i) => ({
+        propertyDetails?.images?.map((item, i) => ({
           key: `Image ${i + 1}`,
           value: item,
         })) || [],
     },
   ];
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage("");
+  };
   return (
     <div className="w-full flex flex-col gap-6">
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
@@ -517,7 +525,8 @@ const CompareDisplay = () => {
                               <img
                                 src={item?.value}
                                 alt={item?.key}
-                                className="h-full w-full"
+                                className="h-full w-full cursor-pointer"
+                                onClick={() => openModal(item?.value)}
                               />
                             </div>
                             <div className="text-center">
@@ -557,6 +566,28 @@ const CompareDisplay = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal for Enlarged Image */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 md:left-44 flex items-center justify-center bg-black bg-opacity-70 z-50"
+          onClick={closeModal}
+        >
+          <div className="relative bg-white p-0.5 rounded-lg shadow-lg">
+            <button
+              className="absolute top-2 right-2 text-2xl bg-white text-gray-500 hover:text-red-600 rounded-sm"
+              onClick={closeModal}
+            >
+              <MdOutlineCancelPresentation />
+            </button>
+            <img
+              src={selectedImage}
+              alt="profile_pic"
+              className="max-h-[80vh] max-w-[90vw] object-contain mx-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

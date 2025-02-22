@@ -135,20 +135,20 @@ const AllBank = () => {
                     key={index}
                     className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
                   >
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
                       {index + 1}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
                       {highlightMatch(row?.bankName, searchQuery)}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
+                    <td className="py-2.5 px-6 border-b border-gray-200 text-sm truncate">
                       {highlightMatch(row?.branchName, searchQuery)}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
                       {highlightMatch(row?.IFSC, searchQuery)}
                     </td>
 
-                    <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
+                    <td className="py-2.5 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
                       <div
                         className="rounded-full hover:bg-gray-300 py-1 px-1 cursor-not-allowed "
                         // onClick={() => handleUpdateStatusFunc(row)} //its working fine for bank update

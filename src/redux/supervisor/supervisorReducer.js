@@ -7,6 +7,7 @@ const initialData = {
     message: "",
     pagination: { currentPage: 1, totalCases: "", totalPages: "" },
     cases: [],
+    individualCompareData: {},
   },
 };
 
@@ -38,7 +39,7 @@ const supervisorReducer = (state = initialData, { type, payload }) => {
         data: {
           ...state.data,
           message: payload?.message,
-          cases: payload,
+          individualCompareData: payload,
         },
       };
 

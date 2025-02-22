@@ -33,7 +33,6 @@ export const getCaseDataBySupervisor =
         headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then((res) => {
-        console.log("caseData==>", res?.data);
         dispatch({
           type: types.GET_CASE_DATA_BY_SUPERVISOR_SUCCESS,
           payload: res?.data,

@@ -7,78 +7,140 @@ const UpdateFieldExecutive = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const fieldExecutiveId = searchParams.get("fieldExecutiveId");
+  const id = searchParams.get("fieldExecutiveId");
 
   const { accessToken } = useSelector((store) => store?.authReducer);
-  const supervisor = useSelector(
-    (store) => store?.supervisorReducer?.data?.allData
+  const fieldExecutiveDataById = useSelector(
+    (store) => store?.supervisorReducer
   );
-  const feAPiData = supervisor?.PropertyDetails;
+  const caseAllData = fieldExecutiveDataById?.data?.cases?.PropertyDetails;
+  console.log("caseAllData==>", caseAllData);
 
   const [feData, setFieldExecutiveData] = useState({
-    bankName: feAPiData?.bankName,
-    applicantName: feAPiData?.applicantName,
-    mobileNo: feAPiData?.mobileNo,
-    personMetAtSite: feAPiData?.personMetAtSite,
-    personMetAtSiteMobileNo: feAPiData?.personMetAtSiteMobileNo,
-    electricityMeterNo: feAPiData?.electricityMeterNo,
-    street: feAPiData?.propertyAddress?.street,
-    plotNo: feAPiData?.propertyAddress?.plotNo,
-    landmark: feAPiData?.propertyAddress?.landmark,
-    pinCode: feAPiData?.propertyAddress?.pinCode,
-    zone: feAPiData?.propertyAddress?.zone,
-    city: feAPiData?.propertyAddress?.city,
-    state: feAPiData?.propertyAddress?.state,
-    sewerageConnection: feAPiData?.sewerageConnection,
-    roadWidth: feAPiData?.roadPropertySubject?.roadWidth,
-    primaryRoadType: feAPiData?.roadPropertySubject?.primaryRoadType,
-    secondaryRoadType: feAPiData?.roadPropertySubject?.secondaryRoadType,
-    roadWideningProposal: feAPiData?.roadPropertySubject?.roadWideningProposal,
-    identificationOfProperty: feAPiData?.identificationOfProperty,
-    locationOfProperty: feAPiData?.locationOfProperty,
-    typesOfLocality: feAPiData?.typesOfLocality,
-    typesOfArea: feAPiData?.typesOfArea,
-    neighbourhood: feAPiData?.neighbourhood,
-    typesOfProperty: feAPiData?.typesOfProperty,
-    currentUseOfProperty: feAPiData?.currentUseOfProperty,
-    occupancyStatus: feAPiData?.occupancyStatus,
-    relationWithLoanApplicant: feAPiData?.relationWithLoanApplicant,
-    nameOfTenant: feAPiData?.detailsOfRentedProperty?.nameOfTenant,
-
-    mobileNo: feAPiData?.detailsOfRentedProperty.mobileNo,
-
-    yearsOfTenancy: feAPiData?.detailsOfRentedProperty?.yearsOfTenancy,
-    monthlyRent: feAPiData?.detailsOfRentedProperty?.monthlyRent,
-    stageOfConstruction: feAPiData?.stageOfConstruction,
-    yearOfConstruction: feAPiData?.yearOfConstruction,
-    length: feAPiData?.areaOfPlot?.length,
-    width: feAPiData?.areaOfPlot?.width,
-    numberOfFloors: feAPiData?.structureOfBuilding?.numberOfFloors,
-    numberOfBasements: feAPiData?.structureOfBuilding?.numberOfBasements,
-    heightOfCompleteBuilding:
-      feAPiData?.structureOfBuilding?.heightOfCompleteBuilding,
-    useOfGroundFloor: feAPiData?.groundFloorDetails?.useOfGroundFloor,
-    heightOfStiltFloor: feAPiData?.groundFloorDetails?.heightOfStiltFloor,
-    areaOfParking: feAPiData?.groundFloorDetails?.areaOfParking,
-    numberOfUnitsAtStiltFloor:
-      feAPiData?.dwellingUnits?.numberOfUnitsAtStiltFloor,
-    totalUnits: feAPiData?.dwellingUnits?.totalUnits,
-    roofRights: feAPiData?.structureOfBuilding?.roofRights,
-    demarcationOfPlot: feAPiData?.demarcationOfPlot,
-
-    details:
-      feAPiData?.details?.map((item) => ({
-        floorName: item?.floorName || "",
-        accommodation: item?.accommodation || "",
-        builtupArea: item?.builtupArea || "",
-        projectionArea: item?.projectionArea || "",
-      })) || [],
-
-    valueOfProperty: feAPiData?.valueOfProperty,
-    remarks: feAPiData?.remarks,
-
-    images: feAPiData?.images,
+    bankName: "",
+    applicantName: "",
+    mobileNo: "",
+    personMetAtSite: "",
+    personMetAtSiteMobileNo: "",
+    electricityMeterNo: "",
+    street: "",
+    plotNo: "",
+    landmark: "",
+    pinCode: "",
+    zone: "",
+    city: "",
+    state: "",
+    sewerageConnection: "",
+    roadWidth: "",
+    primaryRoadType: "",
+    secondaryRoadType: "",
+    roadWideningProposal: "",
+    identificationOfProperty: "",
+    locationOfProperty: "",
+    typesOfLocality: "",
+    typesOfArea: "",
+    neighbourhood: "",
+    typesOfProperty: "",
+    currentUseOfProperty: "",
+    occupancyStatus: "",
+    relationWithLoanApplicant: "",
+    nameOfTenant: "",
+    mobileNo: "",
+    yearsOfTenancy: "",
+    monthlyRent: "",
+    stageOfConstruction: "",
+    yearOfConstruction: "",
+    length: "",
+    width: "",
+    numberOfFloors: "",
+    numberOfBasements: "",
+    heightOfCompleteBuilding: "",
+    useOfGroundFloor: "",
+    heightOfStiltFloor: "",
+    areaOfParking: "",
+    numberOfUnitsAtStiltFloor: "",
+    totalUnits: "",
+    roofRights: "",
+    demarcationOfPlot: "",
+    floorName: "",
+    accommodation: "",
+    builtupArea: "",
+    projectionArea: "",
+    valueOfProperty: "",
+    remarks: "",
+    images: [],
   });
+
+  useEffect(() => {
+    if (caseAllData) {
+      setFieldExecutiveData({
+        bankName: caseAllData?.bankName,
+        applicantName: caseAllData?.applicantName,
+        mobileNo: caseAllData?.mobileNo,
+        personMetAtSite: caseAllData?.personMetAtSite,
+        personMetAtSiteMobileNo: caseAllData?.personMetAtSiteMobileNo,
+        electricityMeterNo: caseAllData?.electricityMeterNo,
+        street: caseAllData?.propertyAddress?.street,
+        plotNo: caseAllData?.propertyAddress?.plotNo,
+        landmark: caseAllData?.propertyAddress?.landmark,
+        pinCode: caseAllData?.propertyAddress?.pinCode,
+        zone: caseAllData?.propertyAddress?.zone,
+        city: caseAllData?.propertyAddress?.city,
+        state: caseAllData?.propertyAddress?.state,
+        sewerageConnection: caseAllData?.sewerageConnection,
+        roadWidth: caseAllData?.roadPropertySubject?.roadWidth,
+        primaryRoadType: caseAllData?.roadPropertySubject?.primaryRoadType,
+        secondaryRoadType: caseAllData?.roadPropertySubject?.secondaryRoadType,
+        roadWideningProposal:
+          caseAllData?.roadPropertySubject?.roadWideningProposal,
+        identificationOfProperty: caseAllData?.identificationOfProperty,
+        locationOfProperty: caseAllData?.locationOfProperty,
+        typesOfLocality: caseAllData?.typesOfLocality,
+        typesOfArea: caseAllData?.typesOfArea,
+        neighbourhood: caseAllData?.neighbourhood,
+        typesOfProperty: caseAllData?.typesOfProperty,
+        currentUseOfProperty: caseAllData?.currentUseOfProperty,
+        occupancyStatus: caseAllData?.occupancyStatus,
+        relationWithLoanApplicant: caseAllData?.relationWithLoanApplicant,
+        nameOfTenant: caseAllData?.detailsOfRentedProperty?.nameOfTenant,
+        mobileNo: caseAllData?.detailsOfRentedProperty.mobileNo,
+        yearsOfTenancy: caseAllData?.detailsOfRentedProperty?.yearsOfTenancy,
+        monthlyRent: caseAllData?.detailsOfRentedProperty?.monthlyRent,
+        stageOfConstruction: caseAllData?.stageOfConstruction,
+        yearOfConstruction: caseAllData?.yearOfConstruction,
+        length: caseAllData?.areaOfPlot?.length,
+        width: caseAllData?.areaOfPlot?.width,
+        numberOfFloors: caseAllData?.structureOfBuilding?.numberOfFloors,
+        numberOfBasements: caseAllData?.structureOfBuilding?.numberOfBasements,
+        heightOfCompleteBuilding:
+          caseAllData?.structureOfBuilding?.heightOfCompleteBuilding,
+        useOfGroundFloor: caseAllData?.groundFloorDetails?.useOfGroundFloor,
+        heightOfStiltFloor: caseAllData?.groundFloorDetails?.heightOfStiltFloor,
+        areaOfParking: caseAllData?.groundFloorDetails?.areaOfParking,
+        numberOfUnitsAtStiltFloor:
+          caseAllData?.dwellingUnits?.numberOfUnitsAtStiltFloor,
+        totalUnits: caseAllData?.dwellingUnits?.totalUnits,
+        roofRights: caseAllData?.structureOfBuilding?.roofRights,
+        demarcationOfPlot: caseAllData?.demarcationOfPlot,
+        details:
+          caseAllData?.details?.map((item) => ({
+            floorName: item?.floorName || "",
+            accommodation: item?.accommodation || "",
+            builtupArea: item?.builtupArea || "",
+            projectionArea: item?.projectionArea || "",
+          })) || [],
+        valueOfProperty: caseAllData?.valueOfProperty,
+        remarks: caseAllData?.remarks,
+        images: caseAllData?.images,
+      });
+    }
+  }, [caseAllData]);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getCaseDataBySupervisor(accessToken, id));
+    }
+  }, [dispatch, accessToken, id]);
 
   const floorsInfo = feData?.details?.length
     ? feData.details.flatMap((floor, index) => [
@@ -123,21 +185,21 @@ const UpdateFieldExecutive = () => {
           type: "text",
           name: "bankName",
           placeholder: "Enter Bank Name",
-          value: feData.bankName || "",
+          value: feData?.bankName || "",
         },
         {
           label: "Applicant Name",
           type: "text",
           name: "applicantName",
           placeholder: "Enter Applicant Name",
-          value: feData.applicantName || "",
+          value: feData?.applicantName || "",
         },
         {
           label: "Mobile Number",
           type: "number",
           name: "mobileNo",
           placeholder: "Enter Mobile Number",
-          value: feData.mobileNo || "",
+          value: feData?.mobileNo || "",
         },
       ],
     },
@@ -149,14 +211,14 @@ const UpdateFieldExecutive = () => {
           type: "text",
           name: "personMetAtSite",
           placeholder: "Enter Person Met At Site",
-          value: feData.personMetAtSite || "",
+          value: feData?.personMetAtSite || "",
         },
         {
           label: "Person Met Mobile No",
           type: "number",
           name: "personMetAtSiteMobileNo",
           placeholder: "Enter Person Mobile Number",
-          value: feData.personMetAtSiteMobileNo || "",
+          value: feData?.personMetAtSiteMobileNo || "",
         },
       ],
     },
@@ -169,35 +231,35 @@ const UpdateFieldExecutive = () => {
           type: "text",
           name: "electricityMeterNo",
           placeholder: "Enter Electricity Meter No.",
-          value: feData.electricityMeterNo || "",
+          value: feData?.electricityMeterNo || "",
         },
         {
           label: "Street",
           type: "text",
           name: "street",
           placeholder: "Enter Street",
-          value: feData.street || "",
+          value: feData?.street || "",
         },
         {
           label: "Plot",
           type: "text",
           name: "plotNo",
           placeholder: "Enter Plot",
-          value: feData.plotNo || "",
+          value: feData?.plotNo || "",
         },
         {
           label: "Landmark",
           type: "text",
           name: "landmark",
           placeholder: "Enter Landmark",
-          value: feData.landmark || "",
+          value: feData?.landmark || "",
         },
         {
           label: "Pin Code",
           type: "number",
           name: "pinCode",
           placeholder: "Enter Pin Code",
-          value: feData.pinCode || "",
+          value: feData?.pinCode || "",
         },
         {
           label: "Zone",
@@ -209,21 +271,21 @@ const UpdateFieldExecutive = () => {
             { key: 3, value: "east", label: "East" },
             { key: 4, value: "west", label: "West" },
           ],
-          value: feData.zone,
+          value: feData?.zone,
         },
         {
           label: "City",
           type: "text",
           name: "city",
           placeholder: "Enter City",
-          value: feData.city || "",
+          value: feData?.city || "",
         },
         {
           label: "State",
           type: "text",
           name: "state",
           placeholder: "Enter State",
-          value: feData.state || "",
+          value: feData?.state || "",
         },
         {
           label: "Sewerage Connection",
@@ -233,7 +295,7 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: true, label: "True" },
             { key: 2, value: false, label: "False" },
           ],
-          value: feData.sewerageConnection || "",
+          value: feData?.sewerageConnection || "",
         },
       ],
     },
@@ -243,10 +305,10 @@ const UpdateFieldExecutive = () => {
       fields: [
         {
           label: "Road Width(Meters)",
-          type: "number",
+          type: "text",
           name: "roadWidth",
           placeholder: "Enter Road Width",
-          value: feData.roadWidth || "",
+          value: feData?.roadWidth || "",
         },
         {
           label: "Primary road type",
@@ -256,7 +318,7 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: "mainRoad", label: "Main Road" },
             { key: 2, value: "innerRoad", label: "Inner Road" },
           ],
-          value: feData.primaryRoadType || "",
+          value: feData?.primaryRoadType || "",
         },
         {
           label: "Secondary road type",
@@ -266,7 +328,7 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: "pakkaRoad", label: "Pakka Road" },
             { key: 2, value: "kachaRoad", label: "Kacha Road" },
           ],
-          value: feData.secondaryRoadType || "",
+          value: feData?.secondaryRoadType || "",
         },
         {
           label: "Road Widening Proposal",
@@ -276,7 +338,7 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: true, label: "True" },
             { key: 2, value: false, label: "False" },
           ],
-          value: feData.roadWideningProposal || "",
+          value: feData?.roadWideningProposal || "",
         },
       ],
     },
@@ -299,7 +361,7 @@ const UpdateFieldExecutive = () => {
             },
             { key: 5, value: "localInquiry", label: "Local Inquiry" },
           ],
-          value: feData.identificationOfProperty || "",
+          value: feData?.identificationOfProperty || "",
         },
         {
           label: "Location of property",
@@ -311,7 +373,7 @@ const UpdateFieldExecutive = () => {
             { key: 3, value: "corner", label: "Corner" },
             { key: 4, value: "mainRoad", label: "Main Road" },
           ],
-          value: feData.locationOfProperty || "",
+          value: feData?.locationOfProperty || "",
         },
         {
           label: "Type of locality",
@@ -324,7 +386,7 @@ const UpdateFieldExecutive = () => {
             { key: 4, value: "agricultural", label: "Agricultural" },
             { key: 5, value: "institutional", label: "Institutional" },
           ],
-          value: feData.typesOfLocality || "",
+          value: feData?.typesOfLocality || "",
         },
         {
           label: "Type of area",
@@ -336,7 +398,7 @@ const UpdateFieldExecutive = () => {
             { key: 3, value: "unauthorized", label: "Unauthorized" },
             { key: 4, value: "urbanizedVillage", label: "Urbanized Village" },
           ],
-          value: feData.typesOfArea || "",
+          value: feData?.typesOfArea || "",
         },
         {
           label: "Neighbourhood",
@@ -348,7 +410,7 @@ const UpdateFieldExecutive = () => {
             { key: 3, value: "jhuggiArea", label: "Juggi Area" },
             { key: 4, value: "villageArea", label: "Village Area" },
           ],
-          value: feData.neighbourhood || "",
+          value: feData?.neighbourhood || "",
         },
         {
           label: "Type of property",
@@ -366,7 +428,7 @@ const UpdateFieldExecutive = () => {
             { key: 9, value: "warehouse", label: "Warehouse" },
             { key: 10, value: "vacantPlot", label: "Vacant Plot" },
           ],
-          value: feData.typesOfProperty || "",
+          value: feData?.typesOfProperty || "",
         },
         {
           label: "Current use of property",
@@ -379,7 +441,7 @@ const UpdateFieldExecutive = () => {
             { key: 4, value: "agricultural", label: "Agricultural" },
             { key: 5, value: "mixedUse", label: "Mixed Use" },
           ],
-          value: feData.currentUseOfProperty || "",
+          value: feData?.currentUseOfProperty || "",
         },
         {
           label: "Occupation Status",
@@ -391,14 +453,14 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: "selfOccupied", label: "Self Occupied" },
             { key: 2, value: "sellerOccupied", label: "Seller Occupied" },
           ],
-          value: feData.occupancyStatus || "",
+          value: feData?.occupancyStatus || "",
         },
         {
           label: "Relation with loan application",
           type: "text",
           name: "relationWithLoanApplicant",
           placeholder: "Enter Relationship with loan application",
-          value: feData.relationWithLoanApplicant || "",
+          value: feData?.relationWithLoanApplicant || "",
         },
       ],
     },
@@ -416,7 +478,7 @@ const UpdateFieldExecutive = () => {
         },
         {
           label: "Mobile No.",
-          type: "number",
+          type: "text",
           name: "mobileNo",
           placeholder: "Enter Mobile Number",
           value: feData?.mobileNo || "",
@@ -455,28 +517,28 @@ const UpdateFieldExecutive = () => {
         },
         {
           label: "Year Of Construction",
-          type: "text",
+          type: "number",
           name: "yearOfConstruction",
           placeholder: "Enter Year Of Construction",
           value: feData?.yearOfConstruction || "",
         },
         {
           label: "Area Of Plot Length",
-          type: "text",
+          type: "number",
           name: "length",
           placeholder: "Enter Area Of Plot Length",
           value: feData?.length || "",
         },
         {
           label: "Area Of Plot Width",
-          type: "text",
+          type: "number",
           name: "width",
           placeholder: "Enter Area Of Plot Width",
           value: feData?.width || "",
         },
         {
           label: "No. Of Floors",
-          type: "text",
+          type: "number",
           name: "numberOfFloors",
           placeholder: "Enter No. Of Floors",
           value: feData?.numberOfFloors || "",
@@ -490,7 +552,7 @@ const UpdateFieldExecutive = () => {
         },
         {
           label: "Height Of Complete Building",
-          type: "text",
+          type: "number",
           name: "heightOfCompleteBuilding",
           placeholder: "Enter Height Of Complete Building",
           value: feData?.heightOfCompleteBuilding || "",
@@ -509,28 +571,28 @@ const UpdateFieldExecutive = () => {
         },
         {
           label: "Height Of Stilt Floor",
-          type: "text",
+          type: "number",
           name: "heightOfStiltFloor",
           placeholder: "Enter Use Of Stilt Floor",
           value: feData?.heightOfStiltFloor || "",
         },
         {
           label: "Area Of Parking",
-          type: "text",
+          type: "number",
           name: "areaOfParking",
           placeholder: "Enter Area Of Parking",
           value: feData?.areaOfParking || "",
         },
         {
           label: "Number Of Units At Stilt Floor",
-          type: "text",
+          type: "number",
           name: "numberOfUnitsAtStiltFloor",
           placeholder: "Enter Number Of Units",
           value: feData?.numberOfUnitsAtStiltFloor || "",
         },
         {
           label: "Total Units",
-          type: "text",
+          type: "number",
           name: "totalUnits",
           placeholder: "Enter Total Units",
           value: feData?.totalUnits || "",
@@ -572,14 +634,14 @@ const UpdateFieldExecutive = () => {
           type: "number",
           name: "valueOfProperty",
           placeholder: "Enter Value of Property",
-          value: feData.valueOfProperty || "",
+          value: feData?.valueOfProperty || "",
         },
         {
           label: "Remark",
           type: "text",
           name: "remarks",
           placeholder: "Enter Remarks",
-          value: feData.remarks || "",
+          value: feData?.remarks || "",
         },
       ],
     },
@@ -614,12 +676,6 @@ const UpdateFieldExecutive = () => {
     e.preventDefault();
     console.log("FieldExecutiveData==>", feData);
   };
-
-  useEffect(() => {
-    if(fieldExecutiveId){
-      dispatch(getCaseDataBySupervisor(accessToken, fieldExecutiveId));
-    }
-  }, [fieldExecutiveId]);
 
   return (
     <div>

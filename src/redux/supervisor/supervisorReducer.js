@@ -7,6 +7,8 @@ const initialData = {
     message: "",
     pagination: { currentPage: 1, totalCases: "", totalPages: "" },
     cases: [],
+    individualCompareData: {},
+    updateData: {},
   },
 };
 
@@ -14,6 +16,7 @@ const supervisorReducer = (state = initialData, { type, payload }) => {
   switch (type) {
     case types.GET_SUPERVISOR_DATA_REQUEST:
     case types.GET_CASE_DATA_BY_SUPERVISOR_REQUEST:
+    case types.UPDATE_DATA_BY_SUPERVISOR_REQUEST:
       return {
         ...state,
         isLoading: true,
@@ -38,12 +41,23 @@ const supervisorReducer = (state = initialData, { type, payload }) => {
         data: {
           ...state.data,
           message: payload?.message,
-          cases: payload,
+          individualCompareData: payload,
+        },
+      };
+    case types.UPDATE_DATA_BY_SUPERVISOR_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        data: {
+          ...state.data,
+          message: payload?.message,
+          updateData: payload,
         },
       };
 
     case types.GET_SUPERVISOR_DATA_ERROR:
     case types.GET_CASE_DATA_BY_SUPERVISOR_ERROR:
+    case types.UPDATE_DATA_BY_SUPERVISOR_ERROR:
       return {
         ...state,
         isLoading: false,

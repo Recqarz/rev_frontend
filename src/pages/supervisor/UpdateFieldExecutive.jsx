@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { getCaseDataBySupervisor } from "../../redux/supervisor/supervisorAction";
+import {
+  getCaseDataBySupervisor,
+  updateCaseDataBySupervisor,
+} from "../../redux/supervisor/supervisorAction";
 
 const UpdateFieldExecutive = () => {
   const dispatch = useDispatch();
@@ -13,10 +16,12 @@ const UpdateFieldExecutive = () => {
   const fieldExecutiveDataById = useSelector(
     (store) => store?.supervisorReducer
   );
-  const caseAllData = fieldExecutiveDataById?.data?.cases?.PropertyDetails;
-  console.log("caseAllData==>", caseAllData);
+  const caseAllData =
+    fieldExecutiveDataById?.data?.individualCompareData?.PropertyDetails;
 
-  const [feData, setFieldExecutiveData] = useState({
+  const propertyId = caseAllData?._id;
+
+  const [feData, setFeData] = useState({
     bankName: "",
     applicantName: "",
     mobileNo: "",
@@ -73,7 +78,7 @@ const UpdateFieldExecutive = () => {
 
   useEffect(() => {
     if (caseAllData) {
-      setFieldExecutiveData({
+      setFeData({
         bankName: caseAllData?.bankName,
         applicantName: caseAllData?.applicantName,
         mobileNo: caseAllData?.mobileNo,
@@ -145,28 +150,28 @@ const UpdateFieldExecutive = () => {
   const floorsInfo = feData?.details?.length
     ? feData.details.flatMap((floor, index) => [
         {
-          label: `Floor Name`,
+          label: `Floor ${index + 1} Name`,
           type: "text",
           name: "floorName",
           value: floor.floorName || "",
           index,
         },
         {
-          label: `Floor Accommodation`,
+          label: `Floor ${index + 1} Accommodation`,
           type: "text",
           name: "accommodation",
           value: floor.accommodation || "",
           index,
         },
         {
-          label: `Floor Builtup Area`,
+          label: `Floor ${index + 1} Builtup Area`,
           type: "text",
           name: "builtupArea",
           value: floor.builtupArea || "",
           index,
         },
         {
-          label: `Floor Projection Area`,
+          label: `Floor ${index + 1} Projection Area`,
           type: "text",
           name: "projectionArea",
           placeholder: "Enter Floor Name",
@@ -335,8 +340,8 @@ const UpdateFieldExecutive = () => {
           type: "select",
           name: "roadWideningProposal",
           options: [
-            { key: 1, value: true, label: "True" },
-            { key: 2, value: false, label: "False" },
+            { key: 1, value: true, label: "Yes" },
+            { key: 2, value: false, label: "No" },
           ],
           value: feData?.roadWideningProposal || "",
         },
@@ -602,8 +607,8 @@ const UpdateFieldExecutive = () => {
           type: "select",
           name: "roofRights",
           options: [
-            { key: 1, value: true, label: "True" },
-            { key: 2, value: false, label: "False" },
+            { key: 1, value: true, label: "Yes" },
+            { key: 2, value: false, label: "No" },
           ],
           value: feData?.roofRights || "",
         },
@@ -612,8 +617,8 @@ const UpdateFieldExecutive = () => {
           type: "select",
           name: "demarcationOfPlot",
           options: [
-            { key: 1, value: true, label: "True" },
-            { key: 2, value: false, label: "False" },
+            { key: 1, value: true, label: "Yes" },
+            { key: 2, value: false, label: "No" },
           ],
           value: feData?.demarcationOfPlot || "",
         },
@@ -657,7 +662,7 @@ const UpdateFieldExecutive = () => {
 
     if (index !== null) {
       // Updating floors data
-      setFieldExecutiveData((prevData) => {
+      setFeData((prevData) => {
         const updatedDetails = [...prevData.details];
         updatedDetails[index] = { ...updatedDetails[index], [name]: value };
 
@@ -665,7 +670,7 @@ const UpdateFieldExecutive = () => {
       });
     } else {
       // Updating basic fields
-      setFieldExecutiveData((prevData) => ({
+      setFeData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
@@ -674,7 +679,102 @@ const UpdateFieldExecutive = () => {
 
   const handleFormUpdateUser = (e) => {
     e.preventDefault();
-    console.log("FieldExecutiveData==>", feData);
+
+    const formattedData = {
+      bankName: feData.bankName,
+      applicantName: feData.applicantName,
+      mobileNo: feData.mobileNo,
+      personMetAtSite: feData.personMetAtSite,
+      personMetAtSiteMobileNo: feData.personMetAtSiteMobileNo,
+      electricityMeterNo: feData.electricityMeterNo,
+      propertyAddress: {
+        street: feData.street,
+        plotNo: feData.plotNo,
+        landmark: feData.landmark,
+        pinCode: feData.pinCode,
+        zone: feData.zone,
+        city: feData.city,
+        state: feData.state,
+      },
+      sewerageConnection: feData.sewerageConnection,
+      roadPropertySubject: {
+        roadWidth: feData.roadWidth,
+        primaryRoadType: feData.primaryRoadType,
+        secondaryRoadType: feData.secondaryRoadType,
+        roadWideningProposal: feData.roadWideningProposal,
+      },
+      identificationOfProperty: feData.identificationOfProperty,
+      locationOfProperty: feData.locationOfProperty,
+      typesOfLocality: feData.typesOfLocality,
+      typesOfArea: feData.typesOfArea,
+      neighbourhood: feData.neighbourhood,
+      typesOfProperty: feData.typesOfProperty,
+      currentUseOfProperty: feData.currentUseOfProperty,
+      occupancyStatus: feData.occupancyStatus,
+      relationWithLoanApplicant: feData.relationWithLoanApplicant,
+      detailsOfRentedProperty: {
+        nameOfTenant: feData.nameOfTenant,
+        mobileNo: feData.mobileNo,
+        yearsOfTenancy: feData.yearsOfTenancy,
+        monthlyRent: feData.monthlyRent,
+      },
+      stageOfConstruction: feData.stageOfConstruction,
+      yearOfConstruction: feData.yearOfConstruction,
+      areaOfPlot: {
+        length: feData.length,
+        width: feData.width,
+      },
+      structureOfBuilding: {
+        numberOfFloors: feData.numberOfFloors,
+        numberOfBasements: feData.numberOfBasements,
+        heightOfCompleteBuilding: feData.heightOfCompleteBuilding,
+        roofRights: feData.roofRights,
+      },
+      groundFloorDetails: {
+        useOfGroundFloor: feData.useOfGroundFloor,
+        heightOfStiltFloor: feData.heightOfStiltFloor,
+        areaOfParking: feData.areaOfParking,
+      },
+      dwellingUnits: {
+        numberOfUnitsAtStiltFloor: feData.numberOfUnitsAtStiltFloor,
+        totalUnits: feData.totalUnits,
+      },
+      demarcationOfPlot: feData.demarcationOfPlot,
+      details: feData.details || [],
+      valueOfProperty: feData.valueOfProperty,
+      remarks: feData.remarks,
+      images: feData.images || [],
+    };
+console.log(formattedData, "formattedData")
+    const formData = new FormData();
+
+    Object.keys(formattedData).forEach((key) => {
+      if (
+        typeof formattedData[key] === "object" &&
+        formattedData[key] !== null
+      ) {
+        formData.append(key, JSON.stringify(formattedData[key]));
+      } else {
+        formData.append(key, formattedData[key]);
+      }
+    });
+
+    // Append images correctly
+    if (feData.images && feData.images.length > 0) {
+      feData.images.forEach((image) => {
+        if (image instanceof File) {
+          formData.append("images", image); // Use "images" to match your backend
+        }
+      });
+    }
+
+    dispatch(updateCaseDataBySupervisor(accessToken, propertyId, formData))
+      .then(() => {
+        dispatch(getCaseDataBySupervisor(accessToken, id));
+      })
+      .catch((error) => {
+        console.error("Error updating case:", error);
+      });
   };
 
   return (
@@ -714,6 +814,7 @@ const UpdateFieldExecutive = () => {
                                 <label htmlFor={field.name}>
                                   {field.label}
                                 </label>
+
                                 {field.type === "select" ? (
                                   <select
                                     type={field?.type}
@@ -753,12 +854,6 @@ const UpdateFieldExecutive = () => {
               ))}
 
               <div className="mt-5 flex justify-center">
-                <button
-                  type="button"
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
-                >
-                  Cancel
-                </button>
                 <button
                   type="submit"
                   className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-gray-200 hover:bg-blue-900 focus:z-10"

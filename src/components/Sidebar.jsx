@@ -59,11 +59,11 @@ const roleBasedMenu = {
       icon: <BiSolidReport />,
       path: "/supervisor/allReports",
     },
-    {
-      name: "Report Details",
-      icon: <IoBriefcase />,
-      path: "/supervisor/reportDetails",
-    },
+    // {
+    //   name: "Report Details",
+    //   icon: <IoBriefcase />,
+    //   path: "/supervisor/reportDetails",
+    // },
     {
       name: "Form Field Executive",
       icon: <IoBriefcase />,

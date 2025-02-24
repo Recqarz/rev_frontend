@@ -169,6 +169,7 @@ const AddUser = () => {
         otherwise: (schema) => schema.notRequired(),
       }),
       initialValue: [],
+      // initialValue: arrayData.map((item) => item._id) || [], // while updating
     },
   ];
   const validationSchema = Yup.object({
@@ -387,7 +388,7 @@ const AddUser = () => {
                                               item?.options?.map(
                                                 (option) => option.value
                                               )
-                                            ); // Select all
+                                            );
                                           }
                                         }}
                                       />
@@ -395,13 +396,11 @@ const AddUser = () => {
                                     </label>
                                   </div>
                                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 ">
-                                    {/* Select All / Unselect All */}
-
                                     {/* Individual Checkboxes */}
                                     {item?.options?.map((option) => (
                                       <label
                                         key={option.key}
-                                        className="flex items-center gap-2"
+                                        className="flex items-center gap-2 hover:bg-blue-100 hover:rounded-sm"
                                       >
                                         <input
                                           type="checkbox"
@@ -467,25 +466,6 @@ const AddUser = () => {
                         </div>
                       );
                     })}
-                    {/* {values?.role === "fieldExecutive" && (
-                      <div className="col-span-4">
-                        <GeolocationAutoComplete
-                          existingUserGeoFormattedAddress={""}
-                          onSelect={(val) => {
-                            setFieldValue("geoLocation", {
-                              longitude: val?.longitude,
-                              latitude: val?.latitude,
-                              formattedAddress: val?.address,
-                            });
-                          }}
-                        />
-                        <ErrorMessage
-                          name="geoLocation.formattedAddress"
-                          component="div"
-                          className="text-red-500 text-sm"
-                        />
-                      </div>
-                    )} */}
                   </div>
                   {values?.role === "fieldExecutive" && (
                     <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">

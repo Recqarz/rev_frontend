@@ -135,23 +135,23 @@ const AllBank = () => {
                     key={index}
                     className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
                   >
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
                       {index + 1}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
                       {highlightMatch(row?.bankName, searchQuery)}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 text-sm truncate">
+                    <td className="py-2.5 px-6 border-b border-gray-200 text-sm truncate">
                       {highlightMatch(row?.branchName, searchQuery)}
                     </td>
-                    <td className="py-3 px-6 border-b border-gray-200 truncate text-sm">
+                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
                       {highlightMatch(row?.IFSC, searchQuery)}
                     </td>
 
-                    <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
+                    <td className="py-2.5 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
                       <div
-                        className="rounded-full hover:bg-gray-300 py-1 px-1 cursor-not-allowed"
-                        // onClick={() => handleUpdateStatusFunc(row)}
+                        className="rounded-full hover:bg-gray-300 py-1 px-1 cursor-not-allowed "
+                        // onClick={() => handleUpdateStatusFunc(row)} //its working fine for bank update
                       >
                         <MdOutlineEdit className="text-xl text-[#3fb597]" />
                       </div>
@@ -215,7 +215,7 @@ const AllBank = () => {
                   onSubmit={handleUpdateBankFunc}
                 >
                   <div className=" border rounded-lg p-6 flex flex-col gap-5">
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                       <label
                         htmlFor="bankName"
                         className="block text-gray-700 text-sm font-medium"
@@ -228,13 +228,13 @@ const AllBank = () => {
                         name="bankName"
                         value={bankUpdateData.bankName}
                         onChange={handleChangeBankData}
-                        className="bg-gray-200 border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400 cursor-not-allowed text-gray-400"
+                        className="bg-gray-200 border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400 cursor-not-allowed text-gray-400"
                         required
                         disabled
                       />
                     </div>
 
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                       <label
                         htmlFor="branchName"
                         className="block text-gray-700 font-medium text-sm"
@@ -247,12 +247,12 @@ const AllBank = () => {
                         name="branchName"
                         value={bankUpdateData.branchName}
                         onChange={handleChangeBankData}
-                        className="border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400"
+                        className="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400"
                         required
                       />
                     </div>
 
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                       <label
                         htmlFor="IFSC"
                         className="block text-gray-700 font-medium text-sm"
@@ -265,7 +265,7 @@ const AllBank = () => {
                         name="IFSC"
                         value={bankUpdateData.IFSC}
                         onChange={handleChangeBankData}
-                        className="border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400"
+                        className="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400"
                         required
                       />
                     </div>

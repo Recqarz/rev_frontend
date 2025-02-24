@@ -18,6 +18,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: profileData } = useSelector((state) => state.profileReducer);
+  // console.log("profileData==>", profileData);
   const [profilePic, setProfilePic] = useState(null); //for getting image file //file like: all object keys of file
   const [onchangeAvatar, setOnchangeAvatar] = useState(null); //for getting to preview the
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -141,38 +142,45 @@ const Profile = () => {
         { key: 3, value: "fieldExecutive", label: "Field Executive" },
         { key: 4, value: "coordinator", label: "Coordinator" },
         { key: 5, value: "auditor", label: "Auditor" },
-        { key: 6, value: "superVisor", label: "Supervisor" },
+        { key: 6, value: "supervisor", label: "Supervisor" },
         { key: 7, value: "admin", label: "Admin" },
       ],
       validation: Yup.string().required("Role is required"),
       disabled: true,
       initialValue: profileData?.role || "",
     },
-    {
-      key: 7,
-      label: "Work for bank",
-      htmlFor: "workForBank",
-      as: "select",
-      name: "workForBank",
-      // type: 'workForBank',
-      id: "workForBank",
-      mainDivClassname: "col-span-4",
-      inputFieldClassName:
-        "cursor-not-allowed shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-      placeholder: "Enter country name",
+    // {
+    //   key: 7,
+    //   label: "Work for bank",
+    //   htmlFor: "workForBank",
+    //   as: "select",
+    //   name: "workForBank",
+    //   // type: 'workForBank',
+    //   id: "workForBank",
+    //   mainDivClassname: "col-span-4",
+    //   inputFieldClassName:
+    //     "cursor-not-allowed shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    //   placeholder: "Enter country name",
 
-      options: [
-        { key: 0, value: "", label: "Select Bank" }, // Default empty value
-        ...(banks ?? [])?.map((bank, index) => ({
-          key: index + 1, // Adjust index to avoid conflict with the default option key
-          value: bank?._id,
-          label: `${bank?.bankName} (${bank?.branchName})`,
-        })),
-      ],
-      validation: Yup.string().required("Bank Name is required"),
-      disabled: true,
-      initialValue: profileData?.workForBank || "",
-    },
+    //   options: [
+    //     { key: 0, value: "", label: "Select Bank" }, // Default empty value
+    //     ...(banks ?? [])?.map((bank, index) => ({
+    //       key: index + 1, // Adjust index to avoid conflict with the default option key
+    //       value: bank?._id,
+    //       label: `${bank?.bankName} (${bank?.branchName})`,
+    //     })),
+    //   ],
+    //   validation: Yup.array().when("role", {
+    //     is: "supervisor",
+    //     then: (schema) =>
+    //       schema
+    //         .min(1, "At least one bank is required")
+    //         .required("Bank Name is required"),
+    //     otherwise: (schema) => schema.notRequired(),
+    //   }),
+    //   disabled: true,
+    //   initialValue: profileData?.workForBank?.map((item) => item._id) || [],
+    // },
   ];
   const validationSchema = Yup.object(
     AddUserFormSchema.reduce((schema, field) => {
@@ -296,52 +304,91 @@ const Profile = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
-            enableReinitialize
+            enableReinitialize={true}
           >
             {({ isSubmitting, resetForm, dirty }) => (
               <Form>
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-4 m-4">
-                  {AddUserFormSchema?.map((item) => (
-                    <div key={item?.key} className={item?.mainDivClassname}>
-                      <div>
+                  {AddUserFormSchema?.map((item) => {
+                    {
+                      /* {
+                      if (
+                        item?.name === "workForBank" &&
+                        profileData?.role !== "supervisor"
+                      ) {
+                        return null; // Hide workForBank field if role is not supervisor
+                      }
+                    } */
+                    }
+                    return (
+                      <div key={item?.key} className={item?.mainDivClassname}>
+                        <div>
+                          <label
+                            htmlFor={item?.htmlFor}
+                            className="text-sm font-medium text-gray-900 block mb-2"
+                          >
+                            {item?.label}
+                          </label>
+                          {item?.as === "select" ? (
+                            <Field
+                              disabled={item?.disabled}
+                              as="select"
+                              name={item?.name}
+                              id={item?.id}
+                              className={item?.inputFieldClassName}
+                            >
+                              {item?.options?.map((option) => (
+                                <option key={option?.key} value={option?.value}>
+                                  {option?.label}
+                                </option>
+                              ))}
+                            </Field>
+                          ) : (
+                            <Field
+                              disabled={item?.disabled}
+                              type={item?.type}
+                              name={item?.name}
+                              id={item?.id}
+                              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                              placeholder={item?.placeholder}
+                            />
+                          )}
+                          <ErrorMessage
+                            name={item?.name}
+                            component="p"
+                            className="text-red-500 text-sm"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {profileData &&
+                    profileData?.workForBank &&
+                    profileData?.workForBank?.length > 0 && (
+                      <div className="col-span-4">
                         <label
-                          htmlFor={item?.htmlFor}
+                          htmlFor="workForBank"
                           className="text-sm font-medium text-gray-900 block mb-2"
                         >
-                          {item?.label}
+                          Work For Bank
                         </label>
-                        {item?.as === "select" ? (
-                          <Field
-                            disabled={item?.disabled}
-                            as="select"
-                            name={item?.name}
-                            id={item?.id}
-                            className={item?.inputFieldClassName}
-                          >
-                            {item?.options?.map((option) => (
-                              <option key={option?.key} value={option?.value}>
-                                {option?.label}
-                              </option>
-                            ))}
-                          </Field>
-                        ) : (
-                          <Field
-                            disabled={item?.disabled}
-                            type={item?.type}
-                            name={item?.name}
-                            id={item?.id}
-                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                            placeholder={item?.placeholder}
-                          />
-                        )}
-                        <ErrorMessage
-                          name={item?.name}
-                          component="p"
-                          className="text-red-500 text-sm"
-                        />
+                        <div className="w-full flex gap-2 border border-gray-300 p-2 rounded-lg bg-gray-100 h-30 overflow-y-auto custom-scrollbar">
+                          {profileData?.workForBank?.map((item, i) => {
+                            return (
+                              <div
+                                key={i}
+                                className="flex items-center justify-center gap-1 p-1.5 bg-blue-100 text-blue-900 rounded-xl text-sm"
+                              >
+                                <span>{`${item?.bankName ?? item?.bankName}- (${
+                                  item?.branchName ?? item?.branchName
+                                })`}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )}
                 </div>
                 <div className="flex gap-4 justify-center md:justify-end m-4">
                   {/* <button

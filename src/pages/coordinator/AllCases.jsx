@@ -224,7 +224,7 @@ const AllCases = () => {
                     {/* Main Row */}
                     <tr
                       className="hover:bg-gray-200 cursor-pointer hover:shadow-md text-sm"
-                      onClick={() => toggleDetails(index)}
+                      // onClick={() => toggleDetails(index)}
                     >
                       <td className="py-3 px-6 border-b border-gray-200">
                         {highlightMatch(row?.caseCode, searchQuery)}
@@ -272,6 +272,7 @@ const AllCases = () => {
                         className={`py-3 px-6 border-b border-gray-200 hover:bg-blue-50 ${
                           expandedRow === index ? "bg-blue-50" : ""
                         }`}
+                        onClick={() => toggleDetails(index)}
                       >
                         <div className="flex gap-2 items-center">
                           {role && role === "coordinator" && (
@@ -323,7 +324,7 @@ const AllCases = () => {
                                       year: "numeric",
                                     }
                                   )}{" "}
-                                  {"(MM/DD/YYYY)"}
+                                  {"(mm/dd/yyyy)"}
                                 </div>
                               </div>
                               <div className="flex w-full font-normal">

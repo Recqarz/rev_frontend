@@ -411,6 +411,16 @@ const CompareDisplay = () => {
   };
   return (
     <div className="w-full flex flex-col gap-6">
+      {/* <div className="flex justify-end">
+        <Link
+          to={`/supervisor/updatecoordinator?coordinatorId=${caseId}`}
+        >
+          <button className="px-2 py-2 mr-1 bg-blue-700 rounded-md text-white">
+            Update Coordinator Data
+          </button>
+        </Link>
+      </div> */}
+
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
           <h3 className=" text-white font-semibold uppercase">
@@ -444,11 +454,15 @@ const CompareDisplay = () => {
         </div>
       </div>
 
-      <Link to={`/supervisor/updateFieldExecutive?fieldExecutiveId=${caseId}`}>
-        <div className="flex justify-end">
-          <button className="px-2 py-1 bg-[#51677e] rounded-md">Update</button>
-        </div>
-      </Link>
+      <div className="flex justify-end">
+        <Link
+          to={`/supervisor/updateFieldExecutive?fieldExecutiveId=${caseId}`}
+        >
+          <button className="px-2 py-2 mr-1 bg-blue-700 rounded-md text-white">
+            Update FE Data
+          </button>
+        </Link>
+      </div>
 
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
@@ -565,6 +579,12 @@ const CompareDisplay = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex justify-center">
+        <button className="px-2 py-2 mr-1 bg-green-900 rounded-md text-white">
+          Approve
+        </button>
       </div>
 
       {/* Modal for Enlarged Image */}

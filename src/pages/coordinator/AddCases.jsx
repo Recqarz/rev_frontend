@@ -61,7 +61,7 @@ const AddCases = () => {
     if (caseId) {
       dispatch(getCaseById(caseId));
     }
-    dispatch(getAllBankData());
+    dispatch(getAllBankData(`limit=${Infinity}`));
     if (caseData?.state) {
       dispatch(getAllDistricts(caseData?.state, accessToken));
     }

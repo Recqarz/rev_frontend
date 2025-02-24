@@ -64,7 +64,9 @@ export const addUserData =
     }
   };
 
+  // Update user details
 export const updateUserData = (data, accessToken, id) => async (dispatch) => {
+  console.log("updatedUserData:", data)
   const toastId = toastLoading("Loading...");
   dispatch({ type: UPDATE_USER_DATA_REQUEST });
   return axios

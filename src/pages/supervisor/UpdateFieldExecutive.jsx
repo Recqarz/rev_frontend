@@ -18,7 +18,6 @@ const UpdateFieldExecutive = () => {
   );
   const caseAllData =
     fieldExecutiveDataById?.data?.individualCompareData?.PropertyDetails;
-
   const propertyId = caseAllData?._id;
 
   const [feData, setFeData] = useState({
@@ -50,7 +49,7 @@ const UpdateFieldExecutive = () => {
     occupancyStatus: "",
     relationWithLoanApplicant: "",
     nameOfTenant: "",
-    mobileNo: "",
+    mobileNo2: "",
     yearsOfTenancy: "",
     monthlyRent: "",
     stageOfConstruction: "",
@@ -108,7 +107,7 @@ const UpdateFieldExecutive = () => {
         occupancyStatus: caseAllData?.occupancyStatus,
         relationWithLoanApplicant: caseAllData?.relationWithLoanApplicant,
         nameOfTenant: caseAllData?.detailsOfRentedProperty?.nameOfTenant,
-        mobileNo: caseAllData?.detailsOfRentedProperty.mobileNo,
+        mobileNo2: caseAllData?.detailsOfRentedProperty.mobileNo,
         yearsOfTenancy: caseAllData?.detailsOfRentedProperty?.yearsOfTenancy,
         monthlyRent: caseAllData?.detailsOfRentedProperty?.monthlyRent,
         stageOfConstruction: caseAllData?.stageOfConstruction,
@@ -297,10 +296,10 @@ const UpdateFieldExecutive = () => {
           type: "select",
           name: "sewerageConnection",
           options: [
-            { key: 1, value: true, label: "True" },
-            { key: 2, value: false, label: "False" },
+            { key: 1, value: true, label: "Yes" },
+            { key: 2, value: false, label: "No" },
           ],
-          value: feData?.sewerageConnection || "",
+          value: feData.sewerageConnection || false,
         },
       ],
     },
@@ -343,7 +342,7 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: true, label: "Yes" },
             { key: 2, value: false, label: "No" },
           ],
-          value: feData?.roadWideningProposal || "",
+          value: feData?.roadWideningProposal || false,
         },
       ],
     },
@@ -486,7 +485,7 @@ const UpdateFieldExecutive = () => {
           type: "text",
           name: "mobileNo",
           placeholder: "Enter Mobile Number",
-          value: feData?.mobileNo || "",
+          value: feData?.mobileNo2 || "",
         },
         {
           label: "Year of Tenancy",
@@ -610,7 +609,7 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: true, label: "Yes" },
             { key: 2, value: false, label: "No" },
           ],
-          value: feData?.roofRights || "",
+          value: feData?.roofRights || false,
         },
         {
           label: "Demarcation Of Plot",
@@ -620,7 +619,7 @@ const UpdateFieldExecutive = () => {
             { key: 1, value: true, label: "Yes" },
             { key: 2, value: false, label: "No" },
           ],
-          value: feData?.demarcationOfPlot || "",
+          value: feData?.demarcationOfPlot || false,
         },
       ],
     },
@@ -745,7 +744,7 @@ const UpdateFieldExecutive = () => {
       remarks: feData.remarks,
       images: feData.images || [],
     };
-console.log(formattedData, "formattedData")
+
     const formData = new FormData();
 
     Object.keys(formattedData).forEach((key) => {

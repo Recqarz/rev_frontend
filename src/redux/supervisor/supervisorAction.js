@@ -1,5 +1,9 @@
 import axios from "axios";
-import { toastError, toastUpdate, toastLoading, } from "../../utils/react-toastify/ReactToastiry";
+import {
+  toastError,
+  toastUpdate,
+  toastLoading,
+} from "../../utils/react-toastify/ReactToastiry";
 import { baseURL } from "../../utils/urls/baseURL";
 import * as types from "./supervisorType";
 
@@ -46,7 +50,7 @@ export const getCaseDataBySupervisor =
       });
   };
 
-// Update data by supervisor of specific id
+// Update data of FE by supervisor of specific id
 export const updateCaseDataBySupervisor =
   (accessToken, id, formData) => async (dispatch) => {
     dispatch({ type: types.UPDATE_DATA_BY_SUPERVISOR_REQUEST });
@@ -61,7 +65,6 @@ export const updateCaseDataBySupervisor =
         }
       )
       .then((res) => {
-
         dispatch({
           type: types.UPDATE_DATA_BY_SUPERVISOR_SUCCESS,
           payload: res?.data,
@@ -71,6 +74,38 @@ export const updateCaseDataBySupervisor =
       .catch((err) => {
         console.error("Error updating data of id:", err?.response?.data?.error);
         dispatch({ type: types.UPDATE_DATA_BY_SUPERVISOR_ERROR });
+        toastError(err?.response?.data?.error);
+      });
+  };
+
+// approve by suprvisor
+
+export const handleApproveCaseBySupervisor =
+  (accessToken, id) => async (dispatch) => {
+    dispatch({ type: types.APPROVE_CASE_BY_SUPERVISOR_REQUEST });
+    const toastId = toastLoading("Loading...");
+
+    return axios
+      .patch(
+        `${baseURL}/api/v1/supervisor/case/${id}/verify`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      )
+      .then((res) => {
+        toastUpdate(toastId, 200, "Case Approved Successfully!");
+        dispatch({
+          type: types.APPROVE_CASE_BY_SUPERVISOR_SUCCESS,
+          payload: res?.data,
+        });
+      })
+      .catch((err) => {
+        console.error(
+          "Error approving data of id:",
+          err?.response?.data?.error
+        );
+        dispatch({ type: types.APPROVE_CASE_BY_SUPERVISOR_ERROR });
         toastError(err?.response?.data?.error);
       });
   };

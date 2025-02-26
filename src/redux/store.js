@@ -11,6 +11,7 @@ import adminReducer from "./dashboard/admin/adminReducer";
 import locationReducer from "./location/locationReducer";
 import coordinatorReducer from "./dashboard/coordinator/coordinator.Reducer";
 import supervisorReducer from "./supervisor/supervisorReducer";
+import { auditorReducer } from "./auditor/auditorReducer";
 
 const rootReducer = combineReducers({
   caseReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   coordinatorReducer,
   locationReducer,
   supervisorReducer,
+  auditorReducer
 });
 
 export const store = legacy_createStore(rootReducer, applyMiddleware(thunk));

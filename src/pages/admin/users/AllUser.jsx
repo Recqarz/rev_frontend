@@ -476,7 +476,7 @@ const AllUser = () => {
                                   {row?.email ?? "Not Provided"}
                                 </div>
                               </div>
-                              {row?.role === "supervisor" && (
+                              {(row?.role === "supervisor" || row?.role === "auditor") && (
                                 <div className="flex gap-8 w-full">
                                   <div className="flex justify-between w-[20%]">
                                     <h1>Work for bank</h1>

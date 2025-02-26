@@ -72,7 +72,7 @@ const roleBasedMenu = {
   ],
   auditor: [
     { name: "Dashboard", icon: <MdDashboard />, path: "/auditor/dashboard" },
-    { name: "Audits", icon: <IoBriefcase />, path: "/auditor/audits" },
+    { name: "All Reports", icon: <IoBriefcase />, path: "/auditor/allReports" },
   ],
 };
 

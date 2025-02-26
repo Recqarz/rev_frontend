@@ -254,6 +254,9 @@ const AddUser = () => {
       ...(values?.role === "supervisor" && {
         workForBank: values?.workForBank,
       }),
+      ...(values?.role === "auditor" && {
+        workForBank: values?.workForBank,
+      }),
       // if role is fieldExecutive only
       ...(values?.role === "fieldExecutive" && {
         address: {
@@ -317,7 +320,7 @@ const AddUser = () => {
                     {AddUserFormSchema?.map((item) => {
                       if (
                         item?.name === "workForBank" &&
-                        values?.role !== "supervisor"
+                        values?.role !== "supervisor" && values?.role !== "auditor"
                       ) {
                         return null; // Hide workForBank field if role is not supervisor
                       }

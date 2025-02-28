@@ -1,4 +1,14 @@
-import { ALL_CASE_DATA_AUDITOR_ERROR, ALL_CASE_DATA_AUDITOR_REQUEST, ALL_CASE_DATA_AUDITOR_SUCCESS } from "./auditorType";
+import {
+  ALL_CASE_DATA_AUDITOR_ERROR,
+  ALL_CASE_DATA_AUDITOR_REQUEST,
+  ALL_CASE_DATA_AUDITOR_SUCCESS,
+  CASE_DATA_ID_AUDITOR_REQUEST,
+  CASE_DATA_ID_AUDITOR_SUCCESS,
+  CASE_DATA_ID_AUDITOR_ERROR,
+  APPROVE_DATA_BY_AUDITOR_REQUEST,
+  APPROVE_DATA_BY_AUDITOR_SUCCESS,
+  APPROVE_DATA_BY_AUDITOR_ERROR
+} from "./auditorType";
 
 const initialData = {
   isLoading: false,
@@ -6,13 +16,17 @@ const initialData = {
   data: {
     message: "",
     pagination: { currentPage: 1, totalCases: "", totalPages: "" },
-    cases: []
+    cases: [],
+    indivisualData: {},
+    approvedData:{}
   },
 };
 
 export const auditorReducer = (state = initialData, { type, payload }) => {
   switch (type) {
     case ALL_CASE_DATA_AUDITOR_REQUEST:
+    case CASE_DATA_ID_AUDITOR_REQUEST:
+    case APPROVE_DATA_BY_AUDITOR_REQUEST:
       return {
         ...state,
         isLoading: true,
@@ -30,8 +44,32 @@ export const auditorReducer = (state = initialData, { type, payload }) => {
           pagination: payload?.pagination,
         },
       };
+    case CASE_DATA_ID_AUDITOR_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: {
+            ...state.data,
+            message: payload?.message,
+            indivisualData: payload,
+        },
+      };
+    case APPROVE_DATA_BY_AUDITOR_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: {
+            ...state.data,
+            message: payload?.message,
+            approvedData: payload,
+        },
+      };
 
     case ALL_CASE_DATA_AUDITOR_ERROR:
+    case CASE_DATA_ID_AUDITOR_ERROR:
+    case APPROVE_DATA_BY_AUDITOR_ERROR:
       return {
         ...state,
         isLoading: false,

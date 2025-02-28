@@ -16,7 +16,7 @@ export const getSupervisorData =
         headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then((res) => {
-        console.log("all supervisor res==>", res?.data);
+        // console.log("all supervisor res==>", res?.data);
         dispatch({
           type: types.GET_SUPERVISOR_DATA_SUCCESS,
           payload: res?.data,

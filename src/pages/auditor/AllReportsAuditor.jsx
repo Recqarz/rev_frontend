@@ -9,10 +9,10 @@ import { Link } from "react-router-dom";
 const AllReportsAuditor = () => {
   const dispatch = useDispatch();
   const { accessToken } = useSelector((store) => store?.authReducer);
-  const { data: isAuditorData } = useSelector((store) => store?.auditorReducer);
-  const isLoadingAuditor = useSelector(
-    (store) => store?.auditorReducer?.isLoadingSupervisor
+  const { data: isAuditorData, isLoading: isLoadingAuditor } = useSelector(
+    (store) => store?.auditorReducer
   );
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     status: "",

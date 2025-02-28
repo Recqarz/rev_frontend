@@ -64,15 +64,15 @@ const roleBasedMenu = {
     //   icon: <IoBriefcase />,
     //   path: "/supervisor/reportDetails",
     // },
-    {
-      name: "Form Field Executive",
-      icon: <IoBriefcase />,
-      path: "/supervisor/updateFieldExecutive",
-    },
+    // {
+    //   name: "Form Field Executive",
+    //   icon: <IoBriefcase />,
+    //   path: "/supervisor/updateFieldExecutive",
+    // },
   ],
   auditor: [
     { name: "Dashboard", icon: <MdDashboard />, path: "/auditor/dashboard" },
-    { name: "Audits", icon: <IoBriefcase />, path: "/auditor/audits" },
+    { name: "All Reports", icon: <IoBriefcase />, path: "/auditor/allReports" },
   ],
 };
 

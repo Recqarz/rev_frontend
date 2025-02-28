@@ -1,40 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
-import { formatTitle } from "../../utils/formatTitle";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import {
-  getCaseDataBySupervisor,
-  handleApproveCaseBySupervisor,
-  getSupervisorData
-} from "../../redux/supervisor/supervisorAction";
+  caseDataIdByAuditor,
+  approveDataByAuditor,
+  getAllAssignCaseByAudior,
+} from "../../redux/auditor/auditorAction";
+import { formatTitle } from "../../utils/formatTitle";
 import { MdOutlineCancelPresentation } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { getFinalReports } from "../../redux/reports/reportAction";
 
-const CompareDisplay = () => {
-  const navigate=useNavigate();
-  const [searchParams] = useSearchParams();
-  const caseId = searchParams.get("caseId");
-  const reportData = [];
+const CompareDataAuditor = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [isModalOpenForApprove, setIsModalOpenForApprove] = useState(false);
+
   const [selectedImage, setSelectedImage] = useState("");
+  const [searchParams] = useSearchParams();
+  const caseId = searchParams.get("caseId");
   const { accessToken } = useSelector((store) => store?.authReducer);
-  const fieldExecutiveDataById = useSelector(
-    (store) => store?.supervisorReducer
+  const caseAllData = useSelector(
+    (store) => store?.auditorReducer?.data?.indivisualData
   );
-  const caseDetails =
-    fieldExecutiveDataById?.data?.individualCompareData?.caseData || {};
+  const caseDetails = caseAllData.caseData;
+  const propertyDetails = caseAllData.PropertyDetails;
 
-  const supervisorStatus =
-    fieldExecutiveDataById?.data?.individualCompareData?.caseData?.verifiedBy
-      ?.supervisor || false;
-
-  const propertyDetails =
-    fieldExecutiveDataById?.data?.individualCompareData?.PropertyDetails || {};
+  const auditorStatus = caseDetails?.verifiedBy?.auditor || false;
+  const downloadReportStatus = useSelector(
+    (store) => store?.reportReducer?.loading
+  );
 
   useEffect(() => {
     if (accessToken && caseId) {
-      dispatch(getCaseDataBySupervisor(accessToken, caseId));
+      dispatch(caseDataIdByAuditor(accessToken, caseId));
     }
   }, [dispatch, caseId, accessToken]);
 
@@ -404,6 +404,7 @@ const CompareDisplay = () => {
         })) || [],
     },
   ];
+
   const openModal = (image) => {
     setSelectedImage(image);
     setIsModalOpen(true);
@@ -414,34 +415,43 @@ const CompareDisplay = () => {
     setSelectedImage("");
   };
 
-  const handleApproveBySupervisor = () => {
+  const handleApproveByAuditor = () => {
     setIsModalOpenForApprove(true);
   };
 
   const handleApproveCaseData = () => {
-    dispatch(handleApproveCaseBySupervisor(accessToken, caseId))
-    .then((res)=>{
-      navigate("/supervisor/allReports");
-      dispatch(getSupervisorData(accessToken))
-    })
-    .catch((error) => {
-      console.error("Error case:", error);
-    });
+    dispatch(approveDataByAuditor(accessToken, caseId))
+      .then((res) => {
+        dispatch(getAllAssignCaseByAudior(accessToken));
+        navigate("/auditor/allReports");
+      })
+      .catch((error) => {
+        console.error("Error case:", error);
+      });
     setIsModalOpenForApprove(false);
+  };
+
+  const handelDownFinalReport = () => {
+    dispatch(getFinalReports(accessToken, caseId));
   };
 
   return (
     <div className="w-full flex flex-col gap-6">
-      {/* <div className="flex justify-end">
-        <Link
-          to={`/supervisor/updatecoordinator?coordinatorId=${caseId}`}
+      <div className="text-end mr-3">
+        <button
+          className={` p-2 rounded-md text-white ${
+            auditorStatus ? "bg-blue-600" : "bg-gray-600 cursor-not-allowed"
+          } ${
+            downloadReportStatus
+              ? "cursor-not-allowed bg-gray-600"
+              : "bg-blue-600"
+          }`}
+          disabled={downloadReportStatus}
+          onClick={handelDownFinalReport}
         >
-          <button className="px-2 py-2 mr-1 bg-blue-700 rounded-md text-white">
-            Update Coordinator Data
-          </button>
-        </Link>
-      </div> */}
-
+          {downloadReportStatus ? "Downloading" : "Final Report"}
+        </button>
+      </div>
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
           <h3 className=" text-white font-semibold uppercase">
@@ -474,22 +484,6 @@ const CompareDisplay = () => {
           </div>
         </div>
       </div>
-
-      <div className="flex justify-end">
-        <Link
-          to={`/supervisor/updateFieldExecutive?fieldExecutiveId=${caseId}`}
-        >
-          <button
-            className={`px-2 py-2 mr-1 rounded-md text-white ${
-              supervisorStatus ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700"
-            }`}
-            disabled={supervisorStatus}
-          >
-            {supervisorStatus ? "Updated" : "Update FE Data"}
-          </button>
-        </Link>
-      </div>
-
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
           <h3 className=" text-white font-semibold uppercase">
@@ -606,19 +600,18 @@ const CompareDisplay = () => {
           </div>
         </div>
       </div>
-
       <div className="flex justify-center">
         <button
           className={`px-2 py-2 mr-1 rounded-md text-white ${
-            supervisorStatus ? "bg-gray-500 cursor-not-allowed" : "bg-green-900"
+            auditorStatus ? "bg-gray-500 cursor-not-allowed" : "bg-green-900"
           }`}
-          onClick={handleApproveBySupervisor}
-          disabled={supervisorStatus}
+          onClick={handleApproveByAuditor}
+          disabled={auditorStatus}
         >
-          {supervisorStatus ? "Approved" : "Approve"}
+          {auditorStatus ? "Approved" : "Approve"}
         </button>
       </div>
-
+      v
       {isModalOpenForApprove && (
         <div
           id="popup-modal"
@@ -690,7 +683,6 @@ const CompareDisplay = () => {
           </div>
         </div>
       )}
-
       {/* Modal for Enlarged Image */}
       {isModalOpen && (
         <div
@@ -716,4 +708,4 @@ const CompareDisplay = () => {
   );
 };
 
-export default CompareDisplay;
+export default CompareDataAuditor;

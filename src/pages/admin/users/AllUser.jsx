@@ -17,6 +17,8 @@ import {
   getAllStates,
   getAllZones,
 } from "../../../redux/location/locationAction";
+import GeolocationAutoComplete from "../../../components/google-map/GeolocationAutoComplete";
+import { ErrorMessage } from "formik";
 const AllUser = () => {
   const dispatch = useDispatch();
   const {
@@ -25,7 +27,6 @@ const AllUser = () => {
     data,
   } = useSelector((state) => state.allUserReducer);
   const { message, currentPage, totalPages, totalUser, users } = data;
-  console.log("users==>", users);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
   const [userId, setUserId] = useState("");
   const [userData, setUserData] = useState({
@@ -36,6 +37,8 @@ const AllUser = () => {
     mobile: "",
     role: "",
     isActive: "",
+    userGeoFormattedAddress: "",
+    userGeolocation: "",
   });
   const accessToken = useSelector((store) => store.authReducer.accessToken);
   const [searchQuery, setSearchQuery] = useState("");
@@ -262,8 +265,29 @@ const AllUser = () => {
       mobile: item?.mobile,
       role: item?.role,
       isActive: item.isActive,
+      userGeoFormattedAddress: item?.userGeoFormattedAddress,
+      userGeolocation: {
+        longitude: item?.userGeolocation?.coordinates?.length
+          ? item?.userGeolocation?.coordinates[0]
+          : "",
+        latitude: item?.userGeolocation?.coordinates?.length
+          ? item?.userGeolocation?.coordinates[1]
+          : "",
+      },
     });
   };
+
+  const handleLocationSelect = (val) => {
+    setUserData((prev) => ({
+      ...prev,
+      userGeoFormattedAddress: val.address,
+      userGeolocation: {
+        longitude: val.longitude,
+        latitude: val.latitude,
+      },
+    }));
+  };
+
   const handleInputOnchange = (e) => {
     const { name, value } = e.target;
     setUserData((prevUserData) => ({
@@ -452,7 +476,7 @@ const AllUser = () => {
                                   {row?.email ?? "Not Provided"}
                                 </div>
                               </div>
-                              {row?.role === "supervisor" && (
+                              {(row?.role === "supervisor" || row?.role === "auditor") && (
                                 <div className="flex gap-8 w-full">
                                   <div className="flex justify-between w-[20%]">
                                     <h1>Work for bank</h1>
@@ -571,10 +595,10 @@ const AllUser = () => {
             } fixed inset-0 z-50 justify-center items-center backdrop-blur-sm w-[100%]`}
           >
             <div
-              className="relative  max-w-md px-0 h-full md:h-auto !w-[100%]"
+              className="relative max-w-lg px-0 h-full md:h-auto !w-[100%]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="rounded-lg shadow relative dark:bg-gray-700 bg-gray-100">
+              <div className="rounded-lg shadow relative dark:bg-gray-700 bg-gray-100 w-full lg:w-[700px] ml:10 md:ml-16 lg:ml-0">
                 <div className="flex justify-between items-center p-2">
                   <div></div>
                   <div>
@@ -584,17 +608,17 @@ const AllUser = () => {
                   </div>
                   <button
                     type="button"
-                    className="text-black hover:text-red-600 hover:bg-gray-400 hover:rounded-full p-1"
+                    className="text-black hover:bg-gray-400 hover:rounded-full p-1"
                     onClick={() => setChangeStatusModal(false)}
                   >
                     <IoCloseCircleOutline className="text-2xl font-semibold" />
                   </button>
                 </div>
                 <form
-                  className="p-4 overflow-y-auto custom-scrollbar max-h-[70vh]"
+                  className="p-4 overflow-y-auto custom-scrollbar max-h-[90vh]"
                   onSubmit={handleFormUpdateUser}
                 >
-                  <div className="bg-white border rounded-lg p-6 flex flex-col gap-5">
+                  <div className="bg-white border rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4">
                     {userUpdateSchema?.map((item) => (
                       <div className="flex flex-col gap-1" key={item?.key}>
                         <label
@@ -610,7 +634,7 @@ const AllUser = () => {
                             name={item?.name}
                             value={item?.value}
                             onChange={handleInputOnchange}
-                            className={`${item?.inputClassName}border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400 px-2`}
+                            className={`${item?.inputClassName}border border-gray-400 p-2 w-full lg:w-[260px] rounded-lg focus:outline-none focus:border-blue-400`}
                           >
                             {item?.options?.map((item) => (
                               <option key={item?.key} value={item?.value}>
@@ -625,32 +649,40 @@ const AllUser = () => {
                             name={item?.name}
                             value={item?.value}
                             onChange={handleInputOnchange}
-                            className={`${item?.inputClassName} border border-gray-400 p-1 w-full rounded-lg focus:outline-none focus:border-blue-400 px-2`}
+                            className={`${item?.inputClassName} border border-gray-400 p-2 w-full lg:w-[260px] rounded-lg focus:outline-none focus:border-blue-400`}
                             required={item?.required}
                             disabled={item?.disabled}
                           />
                         )}
                       </div>
                     ))}
-                    <div className="flex justify-center">
-                      <div className="flex gap-4">
-                        <div>
-                          <button
-                            onClick={() => setChangeStatusModal(false)}
-                            type="button"
-                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                          >
-                            Close
-                          </button>
-                        </div>
-                        <button
-                          type="submit"
-                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                        >
-                          Update
-                        </button>
-                      </div>
+
+                    <div key="userGeoFormattedAddress" className="col-span-2">
+                      <GeolocationAutoComplete
+                        existingClientGeoFormattedAddress={
+                          userData.userGeoFormattedAddress || ""
+                        }
+                        onSelect={handleLocationSelect} 
+                      />
                     </div>
+
+                  </div>
+                  <div className="flex justify-center gap-4 mt-5">
+                    <div>
+                      <button
+                        onClick={() => setChangeStatusModal(false)}
+                        type="button"
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                      >
+                        Close
+                      </button>
+                    </div>
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    >
+                      Update
+                    </button>
                   </div>
                 </form>
               </div>

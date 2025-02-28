@@ -21,6 +21,8 @@ import PageNotFound from "./PageNotFound";
 import CompareDisplay from "../pages/supervisor/CompareDisplay";
 import AllReports from "../pages/supervisor/AllReports";
 import UpdateFieldExecutive from "../pages/supervisor/UpdateFieldExecutive";
+import AllReportsAuditor from "../pages/auditor/AllReportsAuditor";
+import CompareDataAuditor from "../pages/auditor/CompareDataAuditor";
 
 const roleBasedRoutes = {
   admin: [
@@ -57,7 +59,12 @@ const roleBasedRoutes = {
     },
     { path: "/supervisor/profile", element: <Profile /> },
   ],
-  auditor: [{ path: "/auditor/dashboard", element: <AuditorDashboard /> }],
+  auditor: [
+    { path: "/auditor/dashboard", element: <AuditorDashboard /> },
+    { path: "/auditor/allReports", element: <AllReportsAuditor /> },
+    { path: "/auditor/reportDetails", element: <CompareDataAuditor/> },
+    { path: "/auditor/profile", element: <Profile /> },
+  ],
 };
 
 const AllRoutes = () => {

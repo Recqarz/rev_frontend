@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { formatTitle } from "../../utils/formatTitle";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCaseDataBySupervisor,
   handleApproveCaseBySupervisor,
+  getSupervisorData
 } from "../../redux/supervisor/supervisorAction";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 
 const CompareDisplay = () => {
+  const navigate=useNavigate();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
-  // console.log("caseId==>", caseId);
   const reportData = [];
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -418,7 +419,14 @@ const CompareDisplay = () => {
   };
 
   const handleApproveCaseData = () => {
-    dispatch(handleApproveCaseBySupervisor(accessToken, caseId));
+    dispatch(handleApproveCaseBySupervisor(accessToken, caseId))
+    .then((res)=>{
+      navigate("/supervisor/allReports");
+      dispatch(getSupervisorData(accessToken))
+    })
+    .catch((error) => {
+      console.error("Error case:", error);
+    });
     setIsModalOpenForApprove(false);
   };
 
@@ -473,7 +481,7 @@ const CompareDisplay = () => {
         >
           <button
             className={`px-2 py-2 mr-1 rounded-md text-white ${
-              supervisorStatus ? "bg-gray-500" : "bg-blue-700"
+              supervisorStatus ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700"
             }`}
             disabled={supervisorStatus}
           >
@@ -602,7 +610,7 @@ const CompareDisplay = () => {
       <div className="flex justify-center">
         <button
           className={`px-2 py-2 mr-1 rounded-md text-white ${
-            supervisorStatus ? "bg-gray-500" : "bg-green-900"
+            supervisorStatus ? "bg-gray-500 cursor-not-allowed" : "bg-green-900"
           }`}
           onClick={handleApproveBySupervisor}
           disabled={supervisorStatus}

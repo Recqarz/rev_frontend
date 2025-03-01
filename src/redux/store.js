@@ -13,6 +13,8 @@ import coordinatorReducer from "./dashboard/coordinator/coordinator.Reducer";
 import supervisorReducer from "./supervisor/supervisorReducer";
 import { auditorReducer } from "./auditor/auditorReducer";
 import { reportReducer } from "./reports/reportReducer";
+import supervisorDashReducer from "./dashboard/supervisor/supervisor.Reducer";
+import auditorDashReducer from "./dashboard/auditor/auditor.Reducer";
 
 const rootReducer = combineReducers({
   caseReducer,
@@ -23,6 +25,8 @@ const rootReducer = combineReducers({
   profileReducer,
   adminReducer,
   coordinatorReducer,
+  supervisorDashReducer,
+  auditorDashReducer,
   locationReducer,
   supervisorReducer,
   auditorReducer,

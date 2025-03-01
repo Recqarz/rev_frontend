@@ -438,19 +438,23 @@ const CompareDataAuditor = () => {
   return (
     <div className="w-full flex flex-col gap-6">
       <div className="text-end mr-3">
-        <button
-          className={` p-2 rounded-md text-white ${
-            auditorStatus ? "bg-blue-600" : "bg-gray-600 cursor-not-allowed"
-          } ${
-            downloadReportStatus
-              ? "cursor-not-allowed bg-gray-600"
-              : "bg-blue-600"
-          }`}
-          disabled={downloadReportStatus}
-          onClick={handelDownFinalReport}
-        >
-          {downloadReportStatus ? "Downloading" : "Final Report"}
-        </button>
+        {!auditorStatus ? (
+          <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">
+            Final Report
+          </button>
+        ) : (
+          <button
+            className={` p-2 rounded-md text-white ${
+              downloadReportStatus
+                ? "cursor-not-allowed bg-gray-600"
+                : "bg-blue-600"
+            }`}
+            disabled={downloadReportStatus}
+            onClick={handelDownFinalReport}
+          >
+            {downloadReportStatus ? "Downloading" : "Final Report"}
+          </button>
+        )}
       </div>
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">

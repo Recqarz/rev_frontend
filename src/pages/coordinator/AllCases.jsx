@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -38,7 +38,7 @@ const AllCases = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const locationData = useSelector((store) => store.locationReducer);
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     dispatch(getAllStates(accessToken));
     dispatch(
       getAllCaseData(
@@ -46,22 +46,16 @@ const AllCases = () => {
         accessToken
       )
     );
-  }, [
-    accessToken,
-    dispatch,
-    limit,
-    currentPageState,
-    searchQuery,
-    filters.status,
-    filters.zone,
-    filters.state,
-    filters.district,
-  ]);
+  }, [accessToken, dispatch, limit, currentPageState, searchQuery, filters]);
 
-  const handleResetFilters = () => {
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleResetFilters = useCallback(() => {
     setSearchQuery("");
     setFilters({ status: "", state: "", district: "", zone: "" });
-  };
+  }, []);
 
   const changeState = (stateId) => {
     stateId && dispatch(getAllDistricts(stateId, accessToken));
@@ -71,7 +65,7 @@ const AllCases = () => {
     // console.log(distId);
     distId && dispatch(getAllZones(distId, accessToken));
   };
-  const handleFilterChange = (filterName, value) => {
+  const handleFilterChange = useCallback((filterName, value) => {
     setFilters((prev) => ({
       ...prev,
       [filterName]: value,
@@ -84,71 +78,71 @@ const AllCases = () => {
     if (filterName === "district") {
       changeDistrict(value);
     }
-  };
+  }, []);
 
-  const filterOptions = [
-    {
-      name: "status",
-      value: filters.status,
-      placeholder: "Filter by Status",
-      options: [
-        { label: "Process", value: "process" },
-        { label: "Pending", value: "pending" },
-        { label: "Completed", value: "completed" },
-        { label: "Rejected", value: "rejected" },
-      ],
-    },
-    {
-      name: "state",
-      value: filters.state,
-      placeholder: "Filter by State",
-      options: [
-        ...(locationData?.data?.states ?? [])?.map((state) => ({
-          label: state?.name,
-          value: state?._id,
-        })),
-      ],
-    },
-    {
-      name: "district",
-      value: filters.district,
-      placeholder: "Filter by District",
-      options: [
-        ...(filters.state && locationData?.data?.districts
-          ? locationData?.data?.districts.map((dist) => ({
-              label: dist?.name,
-              value: dist?._id,
-            }))
-          : []),
-      ],
-    },
-    {
-      name: "zone",
-      value: filters.zone,
-      placeholder: "Filter by Zone",
-      options: [
-        ...(filters.state && filters?.district && locationData?.data?.zones
-          ? locationData?.data?.zones.map((zone) => ({
-              label: zone?.name,
-              value: zone?._id,
-            }))
-          : []),
-      ],
-    },
-  ];
+  const filterOptions = useMemo(
+    () => [
+      {
+        name: "status",
+        value: filters.status,
+        placeholder: "Filter by Status",
+        options: [
+          { label: "Process", value: "process" },
+          { label: "Pending", value: "pending" },
+          { label: "Completed", value: "completed" },
+          { label: "Rejected", value: "rejected" },
+        ],
+      },
+      {
+        name: "state",
+        value: filters.state,
+        placeholder: "Filter by State",
+        options:
+          locationData?.data?.states?.map((state) => ({
+            label: state.name,
+            value: state._id,
+          })) || [],
+      },
+      {
+        name: "district",
+        value: filters.district,
+        placeholder: "Filter by District",
+        options:
+          filters.state && locationData?.data?.districts
+            ? locationData.data.districts.map((dist) => ({
+                label: dist.name,
+                value: dist._id,
+              }))
+            : [],
+      },
+      {
+        name: "zone",
+        value: filters.zone,
+        placeholder: "Filter by Zone",
+        options:
+          filters.state && filters.district && locationData?.data?.zones
+            ? locationData.data.zones.map((zone) => ({
+                label: zone.name,
+                value: zone._id,
+              }))
+            : [],
+      },
+    ],
+    [filters, locationData]
+  );
 
-  const handleLimit = (val) => {
+  const handleLimit = useCallback((val) => {
     setLimit(val);
     setCurrentPageState(1);
-  };
+  }, []);
 
-  const handleCurrentPageState = (val) => {
+  const handleCurrentPageState = useCallback((val) => {
     setCurrentPageState((prev) => prev + val);
-  };
+  }, []);
 
-  const toggleDetails = (index) => {
+  const toggleDetails = useCallback((index) => {
     setExpandedRow((prev) => (prev === index ? null : index)); // Toggle row expansion
-  };
+  }, []);
 
   // Highlight matching text function
 
@@ -327,55 +321,121 @@ const AllCases = () => {
                                   {"(mm/dd/yyyy)"}
                                 </div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Address Line1 :</div>
+                                <div className="w-[30%]">FE Name :</div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.addressLine1}
+                                  {row?.fieldExecutiveId?.firstName}{" "}
+                                  {row?.fieldExecutiveId?.lastName}
                                 </div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Address Line2 :</div>
+                                <div className="w-[30%]">FE Email :</div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.addressLine2}
+                                  {row?.fieldExecutiveId?.email}
                                 </div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Land Mark :</div>
+                                <div className="w-[30%]">FE Number :</div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.landMark}
+                                  {row?.fieldExecutiveId?.mobile}
                                 </div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Plot No. :</div>
+                                <div className="w-[30%]">Client Name :</div>
+                                <div className="w-[70%]">{row?.clientName}</div>
+                              </div>
+
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Client Number :</div>
+                                <div className="w-[70%]">{row?.contactNo}</div>
+                              </div>
+
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">
+                                  Client GeoLocation :
+                                </div>
                                 <div className="w-[70%]">
-                                  {row?.clientAddress?.plotNumber}
+                                  {row?.clientGeoFormattedAddress}
+                                </div>
+                              </div>
+
+                              <div className="flex w-full font-normal mt-2">
+                                <div className="w-[30%]">Case Status :</div>
+                                <div
+                                  className={`w-[15%] text-center rounded-xl text-white p-0.5  ${
+                                    row.status === "pending"
+                                      ? "bg-orange-500"
+                                      : row.status === "process"
+                                      ? "bg-blue-500"
+                                      : row.status === "completed"
+                                      ? "bg-green-500"
+                                      : "bg-red-500"
+                                  }`}
+                                >
+                                  {row?.status}
                                 </div>
                               </div>
                             </div>
 
                             <div className="flex flex-col gap-1">
                               <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Address Line1 :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.addressLine1}
+                                </div>
+                              </div>
+
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Address Line2 :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.addressLine2}
+                                </div>
+                              </div>
+
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Plot No. :</div>
+                                <div className="w-[70%]">
+                                  {row?.clientAddress?.plotNumber}
+                                </div>
+                              </div>
+
+                              <div className="flex w-full font-normal">
                                 <div className="w-[30%]">Street Name :</div>
                                 <div className="w-[70%]">
                                   {row?.clientAddress?.streetName}
                                 </div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">State :</div>
+                                <div className="w-[30%]">Zone :</div>
+                                <div className="w-[70%]">{row?.zone?.name}</div>
+                              </div>
+
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Land Mark :</div>
                                 <div className="w-[70%]">
-                                  {row?.state?.name}
+                                  {row?.clientAddress?.landMark}
                                 </div>
                               </div>
+
                               <div className="flex w-full font-normal">
                                 <div className="w-[30%]">District :</div>
                                 <div className="w-[70%]">
                                   {row?.district?.name}
                                 </div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Zone :</div>
-                                <div className="w-[70%]">{row?.zone?.name}</div>
+                                <div className="w-[30%]">State :</div>
+                                <div className="w-[70%]">
+                                  {row?.state?.name}
+                                </div>
                               </div>
+
                               <div className="flex w-full font-normal">
                                 <div className="w-[30%]">Pin code :</div>
                                 <div className="w-[70%]">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -24,7 +24,7 @@ const AllFieldExecutives = () => {
     data,
   } = useSelector((state) => state.allFieldExecutiveReducer);
   const { message, currentPage, totalPages, totalUser, fieldExecutives } = data;
-  // console.log("fieldExecutives==>", fieldExecutives);
+
   const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
@@ -37,74 +37,70 @@ const AllFieldExecutives = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const locationData = useSelector((store) => store.locationReducer);
 
-  const handleSearch = (val) => {
+  const handleSearch = useCallback((val) => {
     setSearchQuery(val);
     // setCurrentPageState(1)
-  };
+  },[])
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     dispatch(getAllStates(accessToken));
     dispatch(
       getAllFieldExecutiveData(
         `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&state=${filters.state}&district=${filters.district}&zone=${filters.zone}`
       )
     );
-  }, [
-    limit,
-    currentPageState,
-    searchQuery,
-    filters.status,
-    filters.state,
-    filters.district,
-    filters.zone,
-  ]);
+  }, [limit, currentPageState, searchQuery, filters, dispatch, accessToken]);
 
-  const filterOptions = [
-    {
-      name: "status",
-      value: filters.status,
-      placeholder: "Filter by Status",
-      options: [
-        { label: "Process", value: "process" },
-        { label: "Pending", value: "pending" },
-        { label: "Completed", value: "completed" },
-        { label: "Rejected", value: "rejected" },
-      ],
-    },
-    {
-      name: "state",
-      value: filters.state,
-      placeholder: "Filter by State",
-      options: [
-        ...(locationData?.data?.states ?? [])?.map((state) => ({
-          label: state?.name,
-          value: state?._id,
-        })),
-      ],
-    },
-    {
-      name: "district",
-      value: filters.district,
-      placeholder: "Filter by District",
-      options: [
-        ...(locationData?.data?.districts ?? [])?.map((dist) => ({
-          label: dist?.name,
-          value: dist?._id,
-        })),
-      ],
-    },
-    {
-      name: "zone",
-      value: filters.zone,
-      placeholder: "Filter by Zone",
-      options: [
-        ...(locationData?.data?.zones ?? [])?.map((zone) => ({
-          label: zone?.name,
-          value: zone?._id,
-        })),
-      ],
-    },
-  ];
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const filterOptions = useMemo(
+    () => [
+      {
+        name: "status",
+        value: filters.status,
+        placeholder: "Filter by Status",
+        options: [
+          { label: "Process", value: "process" },
+          { label: "Pending", value: "pending" },
+          { label: "Completed", value: "completed" },
+          { label: "Rejected", value: "rejected" },
+        ],
+      },
+      {
+        name: "state",
+        value: filters.state,
+        placeholder: "Filter by State",
+        options:
+          locationData?.data?.states?.map((state) => ({
+            label: state.name,
+            value: state._id,
+          })) || [],
+      },
+      {
+        name: "district",
+        value: filters.district,
+        placeholder: "Filter by District",
+        options:
+          locationData?.data?.districts?.map((dist) => ({
+            label: dist.name,
+            value: dist._id,
+          })) || [],
+      },
+      {
+        name: "zone",
+        value: filters.zone,
+        placeholder: "Filter by Zone",
+        options:
+          locationData?.data?.zones?.map((zone) => ({
+            label: zone.name,
+            value: zone._id,
+          })) || [],
+      },
+    ],
+    [filters, locationData]
+  );
 
   const changeState = (stateId) => {
     stateId && dispatch(getAllDistricts(stateId, accessToken));
@@ -128,23 +124,24 @@ const AllFieldExecutives = () => {
       changeDistrict(value);
     }
   };
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSearchQuery("");
     setFilters({ status: "", state: "", district: "", zone: "" });
-  };
+  },[]);
 
-  const handleLimit = (val) => {
+  const handleLimit = useCallback((val) => {
     setLimit(val);
     setCurrentPageState(1);
-  };
+  }, []);
 
-  const handleCurrentPageState = (val) => {
+  const handleCurrentPageState = useCallback((val) => {
     setCurrentPageState((prev) => prev + val);
-  };
+  }, []);
 
-  const toggleDetails = (index) => {
+  const toggleDetails = useCallback((index) => {
     setExpandedRow((prev) => (prev === index ? null : index)); // Toggle row expansion
-  };
+  }, []);
+
   return (
     <div className="w-full">
       <div className="flex flex-col gap-5">
@@ -269,39 +266,75 @@ const AllFieldExecutives = () => {
                           <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1">
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Address Line1 :</div>
-                                <div className="w-[70%]">a</div>
+                                <div className="w-[30%]">Usercode :</div>
+                                <div className="w-[70%]">{row?.userCode}</div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Address Line2 :</div>
-                                <div className="w-[70%]">b</div>
+                                <div className="w-[30%]">First Name :</div>
+                                <div className="w-[70%]">{row?.firstName}</div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Land Mark :</div>
-                                <div className="w-[70%]">c</div>
+                                <div className="w-[30%]">Last Name :</div>
+                                <div className="w-[70%]">{row?.lastName}</div>
                               </div>
+
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Plot No. :</div>
-                                <div className="w-[70%]">d</div>
+                                <div className="w-[30%]">Email :</div>
+                                <div className="w-[70%]">{row?.email}</div>
                               </div>
                             </div>
 
                             <div className="flex flex-col gap-1">
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Street Name :</div>
-                                <div className="w-[70%]">e</div>
+                                <div className="w-[30%]">Mobile No :</div>
+                                <div className="w-[70%]">{row?.mobile}</div>
                               </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Status :</div>
+                                <div
+                                  className={`w-[15%] text-center rounded-lg text-white p-0.5 ${
+                                    row.isActive === true
+                                      ? "bg-green-500"
+                                      : "bg-red-500"
+                                  }`}
+                                >
+                                  {row?.isActive == true
+                                    ? "Active"
+                                    : "Not Active"}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Role :</div>
+                                <div className="w-[70%]">{row?.role}</div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
                               <div className="flex w-full font-normal">
                                 <div className="w-[30%]">State :</div>
-                                <div className="w-[70%]">5</div>
+                                <div className="w-[70%]">
+                                  {row?.address?.state?.name}
+                                </div>
                               </div>
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">City :</div>
-                                <div className="w-[70%]">6</div>
+                                <div className="w-[30%]">District :</div>
+                                <div className="w-[70%]">
+                                  {row?.address?.district?.name}
+                                </div>
                               </div>
                               <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Pin code :</div>
-                                <div className="w-[70%]">7</div>
+                                <div className="w-[30%]">Zone :</div>
+                                <div className="w-[70%]">
+                                  {row?.address?.zone?.name}
+                                </div>
+                              </div>
+                              <div className="flex w-full font-normal">
+                                <div className="w-[30%]">Location :</div>
+                                <div className="w-[70%]">
+                                  {row?.userGeoFormattedAddress}
+                                </div>
                               </div>
                             </div>
                           </div>

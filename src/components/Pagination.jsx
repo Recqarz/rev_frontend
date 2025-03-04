@@ -19,11 +19,16 @@ const Pagination = ({
       >
         {"<"}
       </button>
-      <span>
+      {/* <span>
         {currentPage * limit - limit + 1}-
         {totalData <= currentPage * limit ? totalData : currentPage * limit} of{" "}
         {totalData}
+      </span> */}
+      <span>
+        {(currentPage - 1) * limit + 1} -{" "}
+        {Math.min(totalData, currentPage * limit)} of {totalData}
       </span>
+
       <button
         onClick={() => handleCurrentPageState(1)}
         disabled={currentPage === totalPages}

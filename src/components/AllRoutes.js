@@ -62,7 +62,11 @@ const roleBasedRoutes = {
   auditor: [
     { path: "/auditor/dashboard", element: <AuditorDashboard /> },
     { path: "/auditor/allReports", element: <AllReportsAuditor /> },
-    { path: "/auditor/reportDetails", element: <CompareDataAuditor/> },
+    { path: "/auditor/reportDetails", element: <CompareDataAuditor /> },
+    {
+      path: "/auditor/updateFieldExecutive",
+      element: <UpdateFieldExecutive />,
+    },
     { path: "/auditor/profile", element: <Profile /> },
   ],
 };

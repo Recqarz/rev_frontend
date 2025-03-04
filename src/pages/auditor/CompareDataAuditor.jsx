@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   caseDataIdByAuditor,
   approveDataByAuditor,
@@ -437,25 +437,45 @@ const CompareDataAuditor = () => {
 
   return (
     <div className="w-full flex flex-col gap-6">
+      {/* Final Report Button */}
       <div className="text-end mr-3">
         {!auditorStatus ? (
-          <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">
-            Final Report
-          </button>
+          <div className="space-x-4">
+            <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">
+              Pdf Report
+            </button>
+            <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">
+              Word Report
+            </button>
+          </div>
         ) : (
-          <button
-            className={` p-2 rounded-md text-white ${
-              downloadReportStatus
-                ? "cursor-not-allowed bg-gray-600"
-                : "bg-blue-600"
-            }`}
-            disabled={downloadReportStatus}
-            onClick={handelDownFinalReport}
-          >
-            {downloadReportStatus ? "Downloading" : "Final Report"}
-          </button>
+          <div className="space-x-4">
+            <button
+              className={` p-2 rounded-md text-white ${
+                downloadReportStatus
+                  ? "cursor-not-allowed bg-gray-600"
+                  : "bg-[#51677e]"
+              }`}
+              // disabled={downloadReportStatus}
+              // onClick={handelDownFinalReport}
+            >
+              {downloadReportStatus ? "Downloading" : "PDF Report"}
+            </button>
+            <button
+              className={` p-2 rounded-md text-white ${
+                downloadReportStatus
+                  ? "cursor-not-allowed bg-gray-600"
+                  : "bg-[#51677e]"
+              }`}
+              disabled={downloadReportStatus}
+              onClick={handelDownFinalReport}
+            >
+              {downloadReportStatus ? "Downloading" : "MS Report"}
+            </button>
+          </div>
         )}
       </div>
+      {/* Property Details by Coordinator (Case) */}
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
           <h3 className=" text-white font-semibold uppercase">
@@ -488,6 +508,19 @@ const CompareDataAuditor = () => {
           </div>
         </div>
       </div>
+      {/* Update FieldExecutiveData Button */}
+      <div className="flex justify-end">
+        <Link to={`/auditor/updateFieldExecutive?fieldExecutiveId=${caseId}`}>
+          <button
+            className={`px-2 py-2 mr-1 rounded-md text-white bg-[#51677e]`}
+            // disabled={supervisorStatus}
+          >
+            {/* {supervisorStatus ? "Updated" : "Update FE Data"} */}
+            Update FE Data
+          </button>
+        </Link>
+      </div>
+      {/* Property Details Of Client, Collect by Field Executive */}
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
           <h3 className=" text-white font-semibold uppercase">

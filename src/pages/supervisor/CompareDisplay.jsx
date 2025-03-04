@@ -486,7 +486,9 @@ const CompareDisplay = () => {
         >
           <button
             className={`px-2 py-2 mr-1 rounded-md text-white ${
-              supervisorStatus ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700"
+              supervisorStatus
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-blue-700"
             }`}
             disabled={supervisorStatus}
           >

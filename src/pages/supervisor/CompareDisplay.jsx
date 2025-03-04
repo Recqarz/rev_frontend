@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 import { formatTitle } from "../../utils/formatTitle";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCaseDataBySupervisor,
   handleApproveCaseBySupervisor,
-  getSupervisorData
+  getSupervisorData,
 } from "../../redux/supervisor/supervisorAction";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 
 const CompareDisplay = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
   const reportData = [];
@@ -420,13 +425,13 @@ const CompareDisplay = () => {
 
   const handleApproveCaseData = () => {
     dispatch(handleApproveCaseBySupervisor(accessToken, caseId))
-    .then((res)=>{
-      navigate("/supervisor/allReports");
-      dispatch(getSupervisorData(accessToken))
-    })
-    .catch((error) => {
-      console.error("Error case:", error);
-    });
+      .then((res) => {
+        navigate("/supervisor/allReports");
+        dispatch(getSupervisorData(accessToken));
+      })
+      .catch((error) => {
+        console.error("Error case:", error);
+      });
     setIsModalOpenForApprove(false);
   };
 
@@ -474,7 +479,7 @@ const CompareDisplay = () => {
           </div>
         </div>
       </div>
-
+      {/* Update FieldExecutiveData Button */}
       <div className="flex justify-end">
         <Link
           to={`/supervisor/updateFieldExecutive?fieldExecutiveId=${caseId}`}

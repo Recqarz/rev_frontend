@@ -648,7 +648,7 @@ const CompareDataAuditor = () => {
           {auditorStatus ? "Approved" : "Approve"}
         </button>
       </div>
-      v
+
       {isModalOpenForApprove && (
         <div
           id="popup-modal"

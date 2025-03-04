@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
-import { MdOutlineEdit } from "react-icons/md";
+import { MdKeyboardArrowRight, MdOutlineEdit } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { debounce } from "../../../utils/halper";
@@ -378,8 +378,8 @@ const AllUser = () => {
                     <tr
                       className={`${
                         expandedRow === index ? "bg-blue-50" : ""
-                      } hover:bg-gray-100 cursor-pointer hover:shadow-md text-sm`}
-                      onClick={() => toggleDetails(index)}
+                      } hover:bg-gray-100 hover:shadow-md text-sm`}
+                      // onClick={() => toggleDetails(index)}
                     >
                       <td className="py-3 px-6 border-b border-gray-200">
                         {highlightMatch(row?.userCode, searchQuery)}
@@ -420,11 +420,23 @@ const AllUser = () => {
                       </td>
 
                       <td className="py-3 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
-                        <div
-                          className="rounded-full hover:bg-gray-300 py-1 px-1"
-                          onClick={() => handleUserRowData(row)}
-                        >
-                          <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                        <div className="flex gap-2 items-center">
+                          <div
+                            className="rounded-full hover:bg-gray-300 p-1 cursor-pointer"
+                            onClick={() => handleUserRowData(row)}
+                          >
+                            <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                          </div>
+                          <div
+                            className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300 cursor-pointer"
+                            onClick={() => toggleDetails(index)} // Toggle the details panel
+                          >
+                            <MdKeyboardArrowRight
+                              className={`transform transition-transform duration-300 ease-in-out ${
+                                expandedRow === index ? "rotate-90" : ""
+                              }`}
+                            />
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -476,7 +488,8 @@ const AllUser = () => {
                                   {row?.email ?? "Not Provided"}
                                 </div>
                               </div>
-                              {(row?.role === "supervisor" || row?.role === "auditor") && (
+                              {(row?.role === "supervisor" ||
+                                row?.role === "auditor") && (
                                 <div className="flex gap-8 w-full">
                                   <div className="flex justify-between w-[20%]">
                                     <h1>Work for bank</h1>
@@ -662,10 +675,9 @@ const AllUser = () => {
                         existingClientGeoFormattedAddress={
                           userData.userGeoFormattedAddress || ""
                         }
-                        onSelect={handleLocationSelect} 
+                        onSelect={handleLocationSelect}
                       />
                     </div>
-
                   </div>
                   <div className="flex justify-center gap-4 mt-5">
                     <div>

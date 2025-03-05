@@ -40,7 +40,7 @@ const AllFieldExecutives = () => {
   const handleSearch = useCallback((val) => {
     setSearchQuery(val);
     // setCurrentPageState(1)
-  },[])
+  }, []);
 
   const fetchData = useCallback(() => {
     dispatch(getAllStates(accessToken));
@@ -124,10 +124,13 @@ const AllFieldExecutives = () => {
       changeDistrict(value);
     }
   };
-  const handleResetFilters = useCallback(() => {
+  const handleResetFilters = () => {
     setSearchQuery("");
     setFilters({ status: "", state: "", district: "", zone: "" });
-  },[]);
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = ""; // Reset input value
+  };
 
   const handleLimit = useCallback((val) => {
     setLimit(val);

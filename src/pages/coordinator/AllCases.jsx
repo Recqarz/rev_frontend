@@ -52,10 +52,13 @@ const AllCases = () => {
     fetchData();
   }, [fetchData]);
 
-  const handleResetFilters = useCallback(() => {
+  const handleResetFilters = () => {
     setSearchQuery("");
     setFilters({ status: "", state: "", district: "", zone: "" });
-  }, []);
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = ""; // Reset input value
+  };
 
   const changeState = (stateId) => {
     stateId && dispatch(getAllDistricts(stateId, accessToken));

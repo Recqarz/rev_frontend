@@ -101,6 +101,9 @@ const AllReportsAuditor = () => {
       verifiedByFieldExecutive: "",
       verifiedBySupervisor: "",
     });
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = ""; // Reset input value
   };
 
   const handleLimit = (val) => {

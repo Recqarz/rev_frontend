@@ -1,14 +1,18 @@
-
 import {
   GET_FINAL_REPORT_REQUEST,
   GET_FINAL_REPORT_SUCCESS,
   GET_FINAL_REPORT_ERROR,
+  GET_FINAL_REPORT_PDF_REQUEST,
+  GET_FINAL_REPORT_PDF_SUCCESS,
+  GET_FINAL_REPORT_PDF_ERROR,
 } from "./reportType";
 
 const initialState = {
-  loading: false,
+  loadingPDF: false,
+  loadingMS: false,
   error: false,
   report: "",
+  reportpdf: "",
 };
 
 export const reportReducer = (state = initialState, { type, payload }) => {
@@ -16,19 +20,37 @@ export const reportReducer = (state = initialState, { type, payload }) => {
     case GET_FINAL_REPORT_REQUEST:
       return {
         ...state,
-        loading: true,
+        loadingMS: true,
+        error: false,
+      };
+    case GET_FINAL_REPORT_PDF_REQUEST:
+      return {
+        ...state,
+        loadingPDF: true,
         error: false,
       };
     case GET_FINAL_REPORT_SUCCESS:
       return {
         ...state,
-        loading: false,
+        loadingMS: false,
         report: payload,
+      };
+    case GET_FINAL_REPORT_PDF_SUCCESS:
+      return {
+        ...state,
+        loadingPDF: false,
+        reportpdf: payload,
       };
     case GET_FINAL_REPORT_ERROR:
       return {
         ...state,
-        loading: false,
+        loadingMS: false,
+        error: true,
+      };
+    case GET_FINAL_REPORT_PDF_ERROR:
+      return {
+        ...state,
+        loadingPDF: false,
         error: true,
       };
     default:

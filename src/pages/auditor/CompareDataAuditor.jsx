@@ -9,7 +9,7 @@ import {
 import { formatTitle } from "../../utils/formatTitle";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { getFinalReports } from "../../redux/reports/reportAction";
+import { getFinalReports, getFinalReportsPDF } from "../../redux/reports/reportAction";
 
 const CompareDataAuditor = () => {
   const dispatch = useDispatch();
@@ -28,9 +28,14 @@ const CompareDataAuditor = () => {
   const propertyDetails = caseAllData.PropertyDetails;
 
   const auditorStatus = caseDetails?.verifiedBy?.auditor || false;
-  const downloadReportStatus = useSelector(
-    (store) => store?.reportReducer?.loading
+  const downloadReportMSStatus = useSelector(
+    (store) => store?.reportReducer?.loadingMS
   );
+  console.log("ms loading==>",downloadReportMSStatus)
+  const downloadReportPdfStatus = useSelector(
+    (store) => store?.reportReducer?.loadingPDF
+  );
+  console.log("pdf loading==>",downloadReportPdfStatus)
 
   useEffect(() => {
     if (accessToken && caseId) {
@@ -431,8 +436,13 @@ const CompareDataAuditor = () => {
     setIsModalOpenForApprove(false);
   };
 
-  const handelDownFinalReport = () => {
+  const handelDownFinalReportMSWord = () => {
     dispatch(getFinalReports(accessToken, caseId));
+  };
+
+
+  const handelDownFinalReportPDF = () => {
+    dispatch(getFinalReportsPDF(accessToken, caseId));
   };
 
   return (
@@ -452,25 +462,25 @@ const CompareDataAuditor = () => {
           <div className="space-x-4">
             <button
               className={` p-2 rounded-md text-white ${
-                downloadReportStatus
+                downloadReportPdfStatus
                   ? "cursor-not-allowed bg-gray-600"
                   : "bg-[#51677e]"
               }`}
-              // disabled={downloadReportStatus}
-              // onClick={handelDownFinalReport}
+              disabled={downloadReportPdfStatus}
+              onClick={handelDownFinalReportPDF}
             >
-              {downloadReportStatus ? "Downloading" : "PDF Report"}
+              {downloadReportPdfStatus ? "Downloading" : "PDF Report"}
             </button>
             <button
               className={` p-2 rounded-md text-white ${
-                downloadReportStatus
+                downloadReportMSStatus
                   ? "cursor-not-allowed bg-gray-600"
                   : "bg-[#51677e]"
               }`}
-              disabled={downloadReportStatus}
-              onClick={handelDownFinalReport}
+              disabled={downloadReportMSStatus}
+              onClick={handelDownFinalReportMSWord}
             >
-              {downloadReportStatus ? "Downloading" : "MS Report"}
+              {downloadReportMSStatus ? "Downloading" : "MS Report"}
             </button>
           </div>
         )}

@@ -160,6 +160,9 @@ const AllUser = () => {
   const handleResetFilters = () => {
     setSearchQuery("");
     setFilters({ role: "", status: "", state: "", district: "", zone: "" });
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = ""; // Reset input value
   };
 
   // For Update Form

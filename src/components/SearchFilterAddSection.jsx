@@ -33,6 +33,7 @@ const SearchFilterAddSection = ({
             <IoMdSearch />
           </span>
           <input
+            id="searchInput"
             onChange={handleSearchInput}
             type="text"
             placeholder="Search here . . ."

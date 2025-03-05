@@ -245,7 +245,7 @@ const Profile = () => {
                         accept="image/*"
                         id="avatar"
                         name="avatar"
-                        capture="user" // Opens the camera for mobile devices
+                        // capture="user" // Opens the camera for mobile devices
                         className="hidden"
                         onChange={(e) => {
                           const file = e.target.files[0];

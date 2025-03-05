@@ -50,6 +50,9 @@ const AllReports = () => {
   const handleResetFilters = () => {
     setSearchQuery("");
     setFilters({ status: "", verifiedByFieldExecutive: "" });
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = ""; // Reset input value
   };
 
   const handleFilterChange = (filterName, value) => {

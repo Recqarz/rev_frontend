@@ -45,7 +45,7 @@ export const updateProfileByToken = (data, accessToken) => async (dispatch) => {
       },
     })
     .then((res) => {
-      console.log(" profileAction===>", res);
+      // console.log(" profileAction===>", res);
       dispatch({
         type: UPDATE_PROFILE_DATA_SUCCESS,
         payload: res?.data?.data?.updatedUserDetails,

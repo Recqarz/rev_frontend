@@ -35,7 +35,7 @@ const Profile = () => {
   useEffect(() => {
     dispatch(getProfileByToken(accessToken));
     dispatch(getAllBankData());
-  }, [dispatch]);
+  }, [dispatch, accessToken, profileData]);
 
   const AddUserFormSchema = [
     {
@@ -198,7 +198,6 @@ const Profile = () => {
 
   const handleSubmit = (values, { resetForm }) => {
     dispatch(updateProfileByToken(values, accessToken));
-    resetForm();
   };
 
   const handleAvatarUpdate = (e) => {
@@ -252,11 +251,12 @@ const Profile = () => {
                           const file = e.target.files[0];
                           if (file) {
                             setProfilePic(file);
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                              setOnchangeAvatar(event.target.result); // Update the profile picture preview
-                            };
-                            reader.readAsDataURL(file);
+                            setOnchangeAvatar(URL.createObjectURL(file)); // Faster than FileReader
+                            // const reader = new FileReader();
+                            // reader.onload = (event) => {
+                            //   setOnchangeAvatar(event.target.result); // Update the profile picture preview
+                            // };
+                            // reader.readAsDataURL(file);
                           }
                         }}
                       />

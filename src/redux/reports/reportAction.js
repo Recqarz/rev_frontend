@@ -2,10 +2,9 @@ import {
   GET_FINAL_REPORT_REQUEST,
   GET_FINAL_REPORT_SUCCESS,
   GET_FINAL_REPORT_ERROR,
-
   GET_FINAL_REPORT_PDF_REQUEST,
   GET_FINAL_REPORT_PDF_SUCCESS,
-  GET_FINAL_REPORT_PDF_ERROR
+  GET_FINAL_REPORT_PDF_ERROR,
 } from "./reportType";
 import axios from "axios";
 import { baseURL } from "../../utils/urls/baseURL";
@@ -35,7 +34,7 @@ export const getFinalReports = (accessToken, id) => async (dispatch) => {
 
       // Cleanup URL to free memory
       window.URL.revokeObjectURL(url);
-      console.log("response===>MS word", response)
+      console.log("response===>MS word", response);
 
       dispatch({
         type: GET_FINAL_REPORT_SUCCESS,
@@ -47,7 +46,6 @@ export const getFinalReports = (accessToken, id) => async (dispatch) => {
       console.log(error, "error==>");
     });
 };
-
 
 export const getFinalReportsPDF = (accessToken, id) => async (dispatch) => {
   dispatch({ type: GET_FINAL_REPORT_PDF_REQUEST });
@@ -72,7 +70,7 @@ export const getFinalReportsPDF = (accessToken, id) => async (dispatch) => {
 
       // Cleanup URL to free memory
       window.URL.revokeObjectURL(url);
-console.log("response===>pdf", response)
+      console.log("response===>pdf", response);
       dispatch({
         type: GET_FINAL_REPORT_PDF_SUCCESS,
         payload: response?.statusText,

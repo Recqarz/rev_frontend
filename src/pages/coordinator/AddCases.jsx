@@ -31,6 +31,7 @@ import { getAllFieldExecutiveData } from "../../redux/fieldExecutive/fieldExecut
 import LocationFields from "../../components/location/LocationFields";
 import { FaCopy } from "react-icons/fa";
 import { MdContentCopy } from "react-icons/md";
+import { TiTick } from "react-icons/ti";
 
 const AddCases = () => {
   const navigate = useNavigate();
@@ -409,11 +410,16 @@ const AddCases = () => {
                   onClick={handleCopy}
                   className="text-blue-500 hover:text-blue-700"
                 >
-                  <FaCopy
+                  {copied ? (
+                    <TiTick className={`rounded-sm text-sm text-green-500`} />
+                  ) : (
+                    <FaCopy className={`rounded-sm text-sm  text-[#073b4c] `} />
+                  )}
+                  {/* <FaCopy
                     className={`rounded-sm text-sm ${
                       copied ? "text-green-500" : "text-[#073b4c]"
                     }`}
-                  />
+                  /> */}
                 </button>
               </div>
             )}

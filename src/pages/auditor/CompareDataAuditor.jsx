@@ -9,7 +9,10 @@ import {
 import { formatTitle } from "../../utils/formatTitle";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { getFinalReports, getFinalReportsPDF } from "../../redux/reports/reportAction";
+import {
+  getFinalReports,
+  getFinalReportsPDF,
+} from "../../redux/reports/reportAction";
 
 const CompareDataAuditor = () => {
   const dispatch = useDispatch();
@@ -31,11 +34,11 @@ const CompareDataAuditor = () => {
   const downloadReportMSStatus = useSelector(
     (store) => store?.reportReducer?.loadingMS
   );
-  console.log("ms loading==>",downloadReportMSStatus)
+  console.log("ms loading==>", downloadReportMSStatus);
   const downloadReportPdfStatus = useSelector(
     (store) => store?.reportReducer?.loadingPDF
   );
-  console.log("pdf loading==>",downloadReportPdfStatus)
+  console.log("pdf loading==>", downloadReportPdfStatus);
 
   useEffect(() => {
     if (accessToken && caseId) {
@@ -440,7 +443,6 @@ const CompareDataAuditor = () => {
     dispatch(getFinalReports(accessToken, caseId));
   };
 
-
   const handelDownFinalReportPDF = () => {
     dispatch(getFinalReportsPDF(accessToken, caseId));
   };
@@ -448,7 +450,7 @@ const CompareDataAuditor = () => {
   return (
     <div className="w-full flex flex-col gap-6">
       {/* Final Report Button */}
-      <div className="text-end mr-3">
+      <div className="flex justify-end">
         {!auditorStatus ? (
           <div className="space-x-4">
             <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">

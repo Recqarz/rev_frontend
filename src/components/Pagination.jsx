@@ -8,6 +8,7 @@ const Pagination = ({
   limit,
   handleCurrentPageState,
 }) => {
+  // console.log("pagination no******", (currentPage - 1) * limit + 1);
   return (
     <div className="shadow-lg flex justify-center gap-2 items-center rounded-bl-lg rounded-br-lg bg-[#073c4e] text-white font-medium">
       <button

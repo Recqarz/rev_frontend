@@ -161,7 +161,7 @@ const AddUser = () => {
       ],
       // validation: Yup.string().required("Bank Name is required"),
       validation: Yup.array().when("role", {
-        is: "supervisor",
+        is: (role) => role === "supervisor" || role === "auditor",
         then: (schema) =>
           schema
             .min(1, "At least one bank is required")
@@ -320,7 +320,8 @@ const AddUser = () => {
                     {AddUserFormSchema?.map((item) => {
                       if (
                         item?.name === "workForBank" &&
-                        values?.role !== "supervisor" && values?.role !== "auditor"
+                        values?.role !== "supervisor" &&
+                        values?.role !== "auditor"
                       ) {
                         return null; // Hide workForBank field if role is not supervisor
                       }

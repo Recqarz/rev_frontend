@@ -5,7 +5,12 @@ import { highlightMatch } from "../../utils/highlightMatch";
 import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
 import { Link } from "react-router-dom";
-import { FaWhatsappSquare } from "react-icons/fa";
+import {
+  FaCopy,
+  FaRegFilePdf,
+  FaRegFileWord,
+  FaWhatsappSquare,
+} from "react-icons/fa";
 import {
   MdOutlineCancelPresentation,
   MdOutlineEmail,
@@ -13,6 +18,12 @@ import {
 } from "react-icons/md";
 import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { TiTick } from "react-icons/ti";
+import {
+  emailMSWordReportSender,
+  emailPdfReportSender,
+  whatsappPdfReportSender,
+} from "../../redux/sendReport/sendReportAction";
 
 const AllReportsAuditor = () => {
   const dispatch = useDispatch();
@@ -37,9 +48,11 @@ const AllReportsAuditor = () => {
   const [modalState, setModalState] = useState({
     isWhatsAppModalOpen: false,
     isEmailModalOpen: false,
+    rowData: {},
   });
-  console.log("modalState wp==>", modalState?.isWhatsAppModalOpen);
-  console.log("modalState email==>", modalState?.isEmailModalOpen);
+  // console.log("modalState?.rowData*******", modalState?.rowData);
+  // console.log("modalState wp==>", modalState?.isWhatsAppModalOpen);
+  // console.log("modalState email==>", modalState?.isEmailModalOpen);
   useEffect(() => {
     dispatch(
       getAllAssignCaseByAudior(
@@ -129,19 +142,19 @@ const AllReportsAuditor = () => {
   };
 
   const openWhatsAppModal = (rowData) => {
-    console.log("rowData whatsapp", rowData);
-    setModalState({ ...modalState, isWhatsAppModalOpen: true });
+    setModalState({
+      ...modalState,
+      isWhatsAppModalOpen: true,
+      rowData: rowData,
+    });
   };
   const closeWhatsAppModal = () => {
-    console.log("object");
     setModalState({ ...modalState, isWhatsAppModalOpen: false });
   };
   const openEmailModal = (rowData) => {
-    console.log("object email", rowData);
-    setModalState({ ...modalState, isEmailModalOpen: true });
+    setModalState({ ...modalState, isEmailModalOpen: true, rowData: rowData });
   };
   const closeEmailModal = () => {
-    console.log("object");
     setModalState({ ...modalState, isEmailModalOpen: false });
   };
   return (
@@ -343,31 +356,34 @@ const AllReportsAuditor = () => {
 
       {/* Modal for Whatsapp Image */}
       {modalState?.isWhatsAppModalOpen && (
-        <WhatsAppModal closeWhatsAppModal={closeWhatsAppModal} />
+        <WhatsAppModal
+          closeWhatsAppModal={closeWhatsAppModal}
+          modalState={modalState}
+          accessToken={accessToken}
+        />
       )}
       {/* Modal for Email Image */}
       {modalState?.isEmailModalOpen && (
-        <div
-          className="fixed inset-0 md:left-44 flex items-center justify-center bg-black bg-opacity-70 z-50"
-          onClick={closeEmailModal}
-        >
-          <div className="relative bg-white p-0.5 rounded-lg shadow-lg">
-            <button
-              className="absolute top-2 right-2 text-2xl bg-white text-gray-500 hover:text-red-600 rounded-sm"
-              onClick={closeEmailModal}
-            >
-              <MdOutlineCancelPresentation />
-            </button>
-            <div className="h-[25rem] w-[30rem] mt-5 p-4"> Email</div>
-          </div>
-        </div>
+        <EmailModal
+          closeEmailModal={closeEmailModal}
+          modalState={modalState}
+          accessToken={accessToken}
+        />
       )}
     </div>
   );
 };
 
 export default AllReportsAuditor;
-const WhatsAppModal = ({ closeWhatsAppModal }) => {
+const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
+  const dispatch = useDispatch();
+
+  const [copied, setCopied] = useState(false);
+
+  const [reportState, setReportSate] = useState({
+    pdfFormat: false,
+    msWordFormat: false,
+  });
   const validationSchema = Yup.object().shape({
     whatsAppNumbers: Yup.array()
       .of(
@@ -376,7 +392,7 @@ const WhatsAppModal = ({ closeWhatsAppModal }) => {
           .matches(/^\d{10}$/, "WhatsApp No. must be exactly 10 digits") // Only 10-digit numbers allowed
           .required("WhatsApp No. is required")
       )
-      .min(1, "At least one number is required"),
+      .min(1, "At least one whatsapp number is required"),
   });
 
   // Initial Form Values
@@ -384,10 +400,41 @@ const WhatsAppModal = ({ closeWhatsAppModal }) => {
     whatsAppNumbers: [""],
   };
 
+  const pdfFunc = () => {
+    setReportSate((prevState) => ({
+      ...prevState,
+      pdfFormat: !prevState.pdfFormat,
+    }));
+  };
+
+  const msWordFunc = () => {
+    setReportSate((prevState) => ({
+      ...prevState,
+      msWordFormat: !prevState.msWordFormat,
+    }));
+  };
+  const handleCopy = (caseCode) => {
+    navigator.clipboard.writeText(caseCode);
+    setCopied(true);
+
+    // Hide the "Copied" message after 2 seconds
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  };
   // Handle form submission
   const handleSubmit = (values) => {
-    console.log("Values==>", values);
-    closeWhatsAppModal(); // Close modal after submission
+    const formattedValues = {
+      whatsAppNumbers: values?.whatsAppNumbers,
+    };
+    dispatch(
+      whatsappPdfReportSender(
+        modalState?.rowData?._id,
+        accessToken,
+        formattedValues
+      )
+    );
+    closeWhatsAppModal();
   };
   return (
     <div
@@ -405,6 +452,36 @@ const WhatsAppModal = ({ closeWhatsAppModal }) => {
         >
           <MdOutlineCancelPresentation />
         </button>
+        <div className="flex items-center justify-center space-x-2 uppercase">
+          <h3 className="font-semibold">Case Code :</h3>
+          {modalState?.rowData?.caseCode && (
+            <div
+              className={`flex items-center space-x-2 rounded-sm px-2 shadow-sm shadow-[#073b4c]`}
+            >
+              <span className="text-gray-600">
+                {modalState?.rowData?.caseCode}
+              </span>
+              <button
+                onClick={() => handleCopy(modalState?.rowData?.caseCode)}
+                className="text-blue-500 hover:text-blue-700"
+              >
+                {copied ? (
+                  <TiTick className={`rounded-sm text-sm text-green-500`} />
+                ) : (
+                  <FaCopy className={`rounded-sm text-sm  text-[#073b4c] `} />
+                )}
+              </button>
+            </div>
+          )}
+
+          <span
+            className={`text-green-500 ml-2 text-sm ${
+              copied ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Copied!
+          </span>
+        </div>
 
         {/* Form with Formik */}
         <Formik
@@ -468,7 +545,7 @@ const WhatsAppModal = ({ closeWhatsAppModal }) => {
                         className={`w-[50%] p-2 rounded-md mb-3 hover:bg-red-500 text-white  ${
                           dirty
                             ? "bg-red-400 cursor-pointer"
-                            : "bg-gray-400 cursor-not-allowed"
+                            : "bg-gray-300 cursor-not-allowed"
                         }`}
                         onClick={() => resetForm()}
                         disabled={!dirty || isSubmitting}
@@ -496,19 +573,319 @@ const WhatsAppModal = ({ closeWhatsAppModal }) => {
                   </div>
                 )}
               </FieldArray>
-
-              <div className="flex flex-row gap-4 justify-center ">
-                <button className="">PDF</button>
-                <button className="">MS</button>
+              {/* PDF/WORD/SEND Button */}
+              <div className="flex flex-row gap-4 mt-3">
+                <div className="flex flex-row gap-4">
+                  <button
+                    type="button"
+                    className={` px-4 py-3 rounded-lg mb-3 bg-gray-300 text-red-700 text-md ${
+                      reportState?.pdfFormat ? "bg-green-500" : ""
+                    } `}
+                    onClick={pdfFunc}
+                  >
+                    <FaRegFilePdf />
+                  </button>
+                  <button
+                    type="button"
+                    className={` px-4 py-3 rounded-lg mb-3 bg-gray-300 text-violet-700 text-md ${
+                      reportState?.msWordFormat ? "bg-green-500" : ""
+                    }`}
+                    onClick={msWordFunc}
+                  >
+                    <FaRegFileWord />
+                  </button>
+                </div>
+                <button
+                  type="submit"
+                  className={`w-full p-2 bg-green-500 text-white rounded-md mb-3 }`}
+                >
+                  Send
+                </button>
               </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </div>
+  );
+};
 
-              {/* Submit Button */}
+const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
+  const dispatch = useDispatch();
+
+  const [copied, setCopied] = useState(false);
+
+  const [reportState, setReportSate] = useState({
+    emailPdfFormat: false,
+    emailMsWordFormat: false,
+    setErrorMessage: "",
+  });
+  const validationSchema = Yup.object().shape({
+    emails: Yup.array()
+      .of(
+        Yup.string().email("Invalid email format").required("Email is required")
+      )
+      .min(1, "At least one email is required"),
+  });
+
+  // Initial Form Values
+  const initialValues = {
+    emails: [""],
+  };
+
+  const pdfFunc = () => {
+    setReportSate((prevState) => ({
+      ...prevState,
+      emailPdfFormat: !prevState.emailPdfFormat,
+      setErrorMessage: "",
+    }));
+  };
+
+  const msWordFunc = () => {
+    setReportSate((prevState) => ({
+      ...prevState,
+      emailMsWordFormat: !prevState.emailMsWordFormat,
+      setErrorMessage: "",
+    }));
+  };
+  const handleCopy = (caseCode) => {
+    navigator.clipboard.writeText(caseCode);
+    setCopied(true);
+
+    // Hide the "Copied" message after 2 seconds
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  };
+
+  const handleSubmit = async (values) => {
+    // Check if no format is selected
+    if (!reportState.emailPdfFormat && !reportState.emailMsWordFormat) {
+      setReportSate({
+        ...reportState,
+        setErrorMessage: "Please select PDF or MS Word format to send.",
+      });
+      return;
+    }
+
+    setReportSate({
+      ...reportState,
+      setErrorMessage: "",
+    }); // Clear error if formats are selected
+
+    const formattedValues = {
+      emails: values?.emails,
+    };
+
+    try {
+      const promises = [];
+
+      if (reportState?.emailPdfFormat) {
+        // console.log("emailPdfFormat activate");
+        promises.push(
+          dispatch(
+            emailPdfReportSender(
+              modalState?.rowData?._id,
+              accessToken,
+              formattedValues
+            )
+          )
+        );
+      }
+
+      if (reportState?.emailMsWordFormat) {
+        // console.log("emailMsWordFormat activate");
+        promises.push(
+          dispatch(
+            emailMSWordReportSender(
+              modalState?.rowData?._id,
+              accessToken,
+              formattedValues
+            )
+          )
+        );
+      }
+
+      // Execute all dispatch calls concurrently
+      await Promise.all(promises);
+    } catch (error) {
+      console.error("Error sending reports:", error);
+    } finally {
+      closeEmailModal();
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 md:left-44 flex items-center justify-center bg-black bg-opacity-70 z-50"
+      onClick={closeEmailModal}
+    >
+      <div
+        className="relative bg-white p-4 rounded-lg shadow-lg"
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+      >
+        {/* Close Button */}
+        <button
+          className="absolute top-2 right-2 text-2xl bg-white text-gray-500 hover:text-red-600 rounded-sm"
+          onClick={closeEmailModal}
+        >
+          <MdOutlineCancelPresentation />
+        </button>
+        <div className="flex items-center justify-center space-x-2 uppercase">
+          <h3 className="font-semibold">Case Code :</h3>
+          {modalState?.rowData?.caseCode && (
+            <div
+              className={`flex items-center space-x-2 rounded-sm px-2 shadow-sm shadow-[#073b4c]`}
+            >
+              <span className="text-gray-600">
+                {modalState?.rowData?.caseCode}
+              </span>
               <button
-                type="submit"
-                className="w-full bg-green-500 text-white p-2 rounded-md"
+                onClick={() => handleCopy(modalState?.rowData?.caseCode)}
+                className="text-blue-500 hover:text-blue-700"
               >
-                Send
+                {copied ? (
+                  <TiTick className={`rounded-sm text-sm text-green-500`} />
+                ) : (
+                  <FaCopy className={`rounded-sm text-sm  text-[#073b4c] `} />
+                )}
               </button>
+            </div>
+          )}
+
+          <span
+            className={`text-green-500 ml-2 text-sm ${
+              copied ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Copied!
+          </span>
+        </div>
+
+        {/* Form with Formik */}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            validateForm,
+            resetForm,
+            dirty,
+            isSubmitting,
+          }) => (
+            <Form className="h-auto w-[20rem] mt-5 p-4">
+              <h2 className="text-xl font-bold mb-4">Enter Emails</h2>
+
+              <FieldArray name="emails">
+                {({ push, remove }) => (
+                  <div>
+                    <div
+                      className={` ${
+                        values.emails?.length > 3
+                          ? "h-40 overflow-y-auto custom-scrollbar"
+                          : ""
+                      } `}
+                    >
+                      {values.emails.map((_, index) => (
+                        <div key={index} className="flex flex-col mb-3">
+                          <div className="flex items-center">
+                            <Field
+                              name={`emails.${index}`}
+                              type="email"
+                              placeholder="Enter Email Address"
+                              className="w-full px-2 py-1 border rounded-md"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => remove(index)}
+                              className="ml-2 text-red-600 hover:text-red-800"
+                              disabled={values.emails.length === 1} // Prevent removing last input
+                            >
+                              ✖
+                            </button>
+                          </div>
+                          <ErrorMessage
+                            name={`emails.${index}`}
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Add More Button - Prevent adding if errors exist */}
+                    <div className="flex flex-row gap-4 mt-3">
+                      <button
+                        type="button"
+                        className={`w-[50%] p-2 rounded-md mb-3 hover:bg-red-500 text-white  ${
+                          dirty
+                            ? "bg-red-400 cursor-pointer"
+                            : "bg-gray-300 cursor-not-allowed"
+                        }`}
+                        onClick={() => resetForm()}
+                        disabled={!dirty || isSubmitting}
+                      >
+                        Reset
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const errors = await validateForm(); // Validate form before adding
+                          if (!errors.emails) {
+                            push("");
+                          }
+                        }}
+                        className={`w-full p-2 rounded-md mb-3 ${
+                          errors.emails
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-gray-300 text-black"
+                        }`}
+                        disabled={!!errors.emails} // Disable if errors exist
+                      >
+                        + Add Another
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </FieldArray>
+              {/* PDF/WORD/SEND Button */}
+              <div className="flex flex-row gap-4 mt-3">
+                <div className="flex flex-row gap-4">
+                  <button
+                    type="button"
+                    className={` px-4 py-3 rounded-lg mb-3 bg-gray-300 text-red-700 text-md ${
+                      reportState?.emailPdfFormat ? "bg-green-500" : ""
+                    } `}
+                    onClick={pdfFunc}
+                  >
+                    <FaRegFilePdf />
+                  </button>
+                  <button
+                    type="button"
+                    className={` px-4 py-3 rounded-lg mb-3 bg-gray-300 text-violet-700 text-md ${
+                      reportState?.emailMsWordFormat ? "bg-green-500" : ""
+                    }`}
+                    onClick={msWordFunc}
+                  >
+                    <FaRegFileWord />
+                  </button>
+                </div>
+                <button
+                  type="submit"
+                  className={`w-full p-2 bg-green-500 text-white rounded-md mb-3 }`}
+                >
+                  Send
+                </button>
+              </div>
+              {reportState?.setErrorMessage && (
+                <div className="text-red-500 text-sm mb-2">
+                  {reportState?.setErrorMessage}
+                </div>
+              )}
             </Form>
           )}
         </Formik>

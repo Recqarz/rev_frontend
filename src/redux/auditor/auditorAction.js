@@ -18,7 +18,7 @@ import {
 import { baseURL } from "../../utils/urls/baseURL";
 
 // get all the case data
-export const getAllAssignCaseByAudior =
+export const getAllAssignCaseByAuditor =
   (accessToken, queryString) => async (dispatch) => {
     dispatch({ type: ALL_CASE_DATA_AUDITOR_REQUEST });
     return axios

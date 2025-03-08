@@ -4,7 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   caseDataIdByAuditor,
   approveDataByAuditor,
-  getAllAssignCaseByAudior,
+  getAllAssignCaseByAuditor,
 } from "../../redux/auditor/auditorAction";
 import { formatTitle } from "../../utils/formatTitle";
 import { MdOutlineCancelPresentation } from "react-icons/md";
@@ -430,7 +430,7 @@ const CompareDataAuditor = () => {
   const handleApproveCaseData = () => {
     dispatch(approveDataByAuditor(accessToken, caseId))
       .then((res) => {
-        dispatch(getAllAssignCaseByAudior(accessToken));
+        dispatch(getAllAssignCaseByAuditor(accessToken));
         navigate("/auditor/allReports");
       })
       .catch((error) => {

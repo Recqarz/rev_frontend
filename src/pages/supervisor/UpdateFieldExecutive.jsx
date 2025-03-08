@@ -5,6 +5,7 @@ import {
   getCaseDataBySupervisor,
   updateCaseDataBySupervisor,
 } from "../../redux/supervisor/supervisorAction";
+import { getAllBankData } from "../../redux/banks/bankAction";
 
 const UpdateFieldExecutive = () => {
   const dispatch = useDispatch();
@@ -74,7 +75,10 @@ const UpdateFieldExecutive = () => {
     remarks: "",
     images: [],
   });
-
+  const { isLoading, isError, data } = useSelector(
+    (state) => state.allBankReducer
+  );
+  const { banks } = data;
   useEffect(() => {
     if (caseAllData) {
       setFeData({
@@ -141,6 +145,8 @@ const UpdateFieldExecutive = () => {
   }, [caseAllData]);
 
   useEffect(() => {
+    dispatch(getAllBankData(`limit=${Infinity}`));
+
     if (id) {
       dispatch(getCaseDataBySupervisor(accessToken, id));
     }
@@ -186,10 +192,18 @@ const UpdateFieldExecutive = () => {
       fields: [
         {
           label: "Bank Name",
-          type: "text",
+          type: "select",
           name: "bankName",
-          placeholder: "Enter Bank Name",
+          // placeholder: "Enter Bank Name",
           value: feData?.bankName || "",
+          options: [
+            // { key: 0, value: "", label: "Select Bank" },
+            ...(banks ?? [])?.map((bank, index) => ({
+              key: index + 1,
+              value: bank?.bankName,
+              label: `${bank?.bankName} (${bank?.branchName})`,
+            })),
+          ],
         },
         {
           label: "Applicant Name",

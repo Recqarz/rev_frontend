@@ -76,6 +76,8 @@ const AllBank = () => {
 
   const handleResetFilters = () => {
     setSearchQuery("");
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = ""; // Reset input value
   };
 
   const handleLimit = (val) => {

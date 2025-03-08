@@ -161,7 +161,7 @@ const AddUser = () => {
       ],
       // validation: Yup.string().required("Bank Name is required"),
       validation: Yup.array().when("role", {
-        is: "supervisor",
+        is: (role) => role === "supervisor" || role === "auditor",
         then: (schema) =>
           schema
             .min(1, "At least one bank is required")
@@ -320,7 +320,8 @@ const AddUser = () => {
                     {AddUserFormSchema?.map((item) => {
                       if (
                         item?.name === "workForBank" &&
-                        values?.role !== "supervisor" && values?.role !== "auditor"
+                        values?.role !== "supervisor" &&
+                        values?.role !== "auditor"
                       ) {
                         return null; // Hide workForBank field if role is not supervisor
                       }
@@ -338,7 +339,7 @@ const AddUser = () => {
                               <div className="space-y-2">
                                 {/* Chips Display for Selected Banks */}
                                 {values.workForBank.length > 0 && (
-                                  <div className="flex flex-wrap gap-2 border border-gray-300 p-2 rounded-lg bg-gray-100 h-30 overflow-y-auto custom-scrollbar">
+                                  <div className="flex flex-wrap gap-2 border border-gray-300 p-2 rounded-lg bg-gray-100 h-32 overflow-y-auto custom-scrollbar">
                                     {values.workForBank.map((selectedBank) => {
                                       const bankLabel =
                                         item?.options.find(

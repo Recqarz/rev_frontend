@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 import { formatTitle } from "../../utils/formatTitle";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCaseDataBySupervisor,
   handleApproveCaseBySupervisor,
-  getSupervisorData
+  getSupervisorData,
 } from "../../redux/supervisor/supervisorAction";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 
 const CompareDisplay = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const caseId = searchParams.get("caseId");
   const reportData = [];
@@ -420,13 +425,13 @@ const CompareDisplay = () => {
 
   const handleApproveCaseData = () => {
     dispatch(handleApproveCaseBySupervisor(accessToken, caseId))
-    .then((res)=>{
-      navigate("/supervisor/allReports");
-      dispatch(getSupervisorData(accessToken))
-    })
-    .catch((error) => {
-      console.error("Error case:", error);
-    });
+      .then((res) => {
+        navigate("/supervisor/allReports");
+        dispatch(getSupervisorData(accessToken));
+      })
+      .catch((error) => {
+        console.error("Error case:", error);
+      });
     setIsModalOpenForApprove(false);
   };
 
@@ -474,14 +479,16 @@ const CompareDisplay = () => {
           </div>
         </div>
       </div>
-
+      {/* Update FieldExecutiveData Button */}
       <div className="flex justify-end">
         <Link
           to={`/supervisor/updateFieldExecutive?fieldExecutiveId=${caseId}`}
         >
           <button
             className={`px-2 py-2 mr-1 rounded-md text-white ${
-              supervisorStatus ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700"
+              supervisorStatus
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-blue-700"
             }`}
             disabled={supervisorStatus}
           >
@@ -593,7 +600,15 @@ const CompareDisplay = () => {
                               <div className="w-[40%] border-r border-[#68ceb4]">
                                 <p className="pl-2">{data?.key}</p>
                               </div>
-                              <div className="w-[60%]">{data?.value}</div>
+                              <div
+                                className={`w-[60%] ${
+                                  item?.name === "Other Details"
+                                    ? "h-24 overflow-y-auto custom-scrollbar"
+                                    : ""
+                                }`}
+                              >
+                                {data?.value}
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -623,7 +638,7 @@ const CompareDisplay = () => {
         <div
           id="popup-modal"
           tabIndex="-1"
-          className="backdrop-blur overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-10 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+          className="backdrop-brightness-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-10 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
         >
           <div className="relative p-4 w-full max-w-md max-h-full -ml-7 mt-0 md:ml-60 md:mt-60 lg:ml-[500px] lg:mt-[200px]">
             <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">

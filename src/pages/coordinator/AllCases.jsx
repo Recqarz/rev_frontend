@@ -52,10 +52,13 @@ const AllCases = () => {
     fetchData();
   }, [fetchData]);
 
-  const handleResetFilters = useCallback(() => {
+  const handleResetFilters = () => {
     setSearchQuery("");
     setFilters({ status: "", state: "", district: "", zone: "" });
-  }, []);
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = ""; // Reset input value
+  };
 
   const changeState = (stateId) => {
     stateId && dispatch(getAllDistricts(stateId, accessToken));
@@ -299,17 +302,52 @@ const AllCases = () => {
                           colSpan={8}
                           className="p-4 border-b border-gray-200"
                         >
-                          <h1 className="uppercase font-semibold mb-1">
-                            Client Address:
+                          <p className="text-right text-gray-400">
+                            Hints : <span>FE stands for Field Executive, </span>
+                            <span>CL stands for Client</span>
+                          </p>
+
+                          <h1 className="uppercase font-semibold underline mb-1">
+                            Case Details:
                           </h1>
                           <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1">
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">
-                                  Field Executive visit date :
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>FE Name</h1>
+                                  <h1>:</h1>
                                 </div>
-                                <div className="w-[70%]">
-                                  {/* {formattedDate(row?.visitDate)} */}
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.fieldExecutiveId?.firstName}{" "}
+                                  {row?.fieldExecutiveId?.lastName}
+                                </div>
+                              </div>
+
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>FE Email</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.fieldExecutiveId?.email}
+                                </div>
+                              </div>
+
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>FE Number</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.fieldExecutiveId?.mobile}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>FE visit date</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
                                   {new Date(row?.visitDate).toLocaleDateString(
                                     "en-US",
                                     {
@@ -322,123 +360,144 @@ const AllCases = () => {
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">FE Name :</div>
-                                <div className="w-[70%]">
-                                  {row?.fieldExecutiveId?.firstName}{" "}
-                                  {row?.fieldExecutiveId?.lastName}
+                              <div className="flex gap-8 w-full font-normal mt-2">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Client Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.clientName}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">FE Email :</div>
-                                <div className="w-[70%]">
-                                  {row?.fieldExecutiveId?.email}
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Client Number</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.contactNo}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">FE Number :</div>
-                                <div className="w-[70%]">
-                                  {row?.fieldExecutiveId?.mobile}
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Client GeoLocation</h1>
+                                  <h1>:</h1>
                                 </div>
-                              </div>
-
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Client Name :</div>
-                                <div className="w-[70%]">{row?.clientName}</div>
-                              </div>
-
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Client Number :</div>
-                                <div className="w-[70%]">{row?.contactNo}</div>
-                              </div>
-
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">
-                                  Client GeoLocation :
-                                </div>
-                                <div className="w-[70%]">
+                                <div className="flex justify-between w-[70%]">
                                   {row?.clientGeoFormattedAddress}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal mt-2">
-                                <div className="w-[30%]">Case Status :</div>
-                                <div
-                                  className={`w-[15%] text-center rounded-xl text-white p-0.5  ${
-                                    row.status === "pending"
-                                      ? "bg-orange-500"
-                                      : row.status === "process"
-                                      ? "bg-blue-500"
-                                      : row.status === "completed"
-                                      ? "bg-green-500"
-                                      : "bg-red-500"
-                                  }`}
-                                >
-                                  {row?.status}
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Case Status</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="w-[70%] ">
+                                  <div
+                                    className={`w-[30%] pt-0.5 pb-1 text-center rounded-md text-white ${
+                                      row.status === "pending"
+                                        ? "bg-orange-500"
+                                        : row.status === "process"
+                                        ? "bg-blue-500"
+                                        : row.status === "completed"
+                                        ? "bg-green-500"
+                                        : "bg-red-500"
+                                    }`}
+                                  >
+                                    {row?.status}
+                                  </div>
                                 </div>
                               </div>
                             </div>
 
                             <div className="flex flex-col gap-1">
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Address Line1 :</div>
-                                <div className="w-[70%]">
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Address Line1</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
                                   {row?.clientAddress?.addressLine1}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Address Line2 :</div>
-                                <div className="w-[70%]">
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Address Line2</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
                                   {row?.clientAddress?.addressLine2}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Plot No. :</div>
-                                <div className="w-[70%]">
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Plot No.</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
                                   {row?.clientAddress?.plotNumber}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Street Name :</div>
-                                <div className="w-[70%]">
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Street Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
                                   {row?.clientAddress?.streetName}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Zone :</div>
-                                <div className="w-[70%]">{row?.zone?.name}</div>
-                              </div>
-
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Land Mark :</div>
-                                <div className="w-[70%]">
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Land Mark</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
                                   {row?.clientAddress?.landMark}
                                 </div>
                               </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">District :</div>
-                                <div className="w-[70%]">
-                                  {row?.district?.name}
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>State</h1>
+                                  <h1>:</h1>
                                 </div>
-                              </div>
-
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">State :</div>
-                                <div className="w-[70%]">
+                                <div className="flex justify-between w-[70%]">
                                   {row?.state?.name}
                                 </div>
                               </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>District</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.district?.name}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Zone</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.zone?.name}
+                                </div>
+                              </div>
 
-                              <div className="flex w-full font-normal">
-                                <div className="w-[30%]">Pin code :</div>
-                                <div className="w-[70%]">
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1>Pin code</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
                                   {row?.clientAddress?.pincode}
                                 </div>
                               </div>

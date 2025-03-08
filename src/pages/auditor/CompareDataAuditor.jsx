@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   caseDataIdByAuditor,
   approveDataByAuditor,
-  getAllAssignCaseByAudior,
+  getAllAssignCaseByAuditor,
 } from "../../redux/auditor/auditorAction";
 import { formatTitle } from "../../utils/formatTitle";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { getFinalReports } from "../../redux/reports/reportAction";
+import {
+  getFinalReports,
+  getFinalReportsPDF,
+} from "../../redux/reports/reportAction";
 
 const CompareDataAuditor = () => {
   const dispatch = useDispatch();
@@ -28,9 +31,14 @@ const CompareDataAuditor = () => {
   const propertyDetails = caseAllData.PropertyDetails;
 
   const auditorStatus = caseDetails?.verifiedBy?.auditor || false;
-  const downloadReportStatus = useSelector(
-    (store) => store?.reportReducer?.loading
+  const downloadReportMSStatus = useSelector(
+    (store) => store?.reportReducer?.loadingMS
   );
+  console.log("ms loading==>", downloadReportMSStatus);
+  const downloadReportPdfStatus = useSelector(
+    (store) => store?.reportReducer?.loadingPDF
+  );
+  console.log("pdf loading==>", downloadReportPdfStatus);
 
   useEffect(() => {
     if (accessToken && caseId) {
@@ -390,7 +398,7 @@ const CompareDataAuditor = () => {
           value: propertyDetails?.valueOfProperty || "Not Provided",
         },
         {
-          key: "Remark.:",
+          key: "Remarks:",
           value: propertyDetails?.remarks || "Not Provided",
         },
       ],
@@ -422,7 +430,7 @@ const CompareDataAuditor = () => {
   const handleApproveCaseData = () => {
     dispatch(approveDataByAuditor(accessToken, caseId))
       .then((res) => {
-        dispatch(getAllAssignCaseByAudior(accessToken));
+        dispatch(getAllAssignCaseByAuditor(accessToken));
         navigate("/auditor/allReports");
       })
       .catch((error) => {
@@ -431,31 +439,55 @@ const CompareDataAuditor = () => {
     setIsModalOpenForApprove(false);
   };
 
-  const handelDownFinalReport = () => {
+  const handelDownFinalReportMSWord = () => {
     dispatch(getFinalReports(accessToken, caseId));
+  };
+
+  const handelDownFinalReportPDF = () => {
+    dispatch(getFinalReportsPDF(accessToken, caseId));
   };
 
   return (
     <div className="w-full flex flex-col gap-6">
-      <div className="text-end mr-3">
+      {/* Final Report Button */}
+      <div className="flex justify-end">
         {!auditorStatus ? (
-          <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">
-            Final Report
-          </button>
+          <div className="space-x-4">
+            <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">
+              Pdf Report
+            </button>
+            <button className="p-2 rounded-md text-white bg-gray-400 cursor-not-allowed">
+              Word Report
+            </button>
+          </div>
         ) : (
-          <button
-            className={` p-2 rounded-md text-white ${
-              downloadReportStatus
-                ? "cursor-not-allowed bg-gray-600"
-                : "bg-blue-600"
-            }`}
-            disabled={downloadReportStatus}
-            onClick={handelDownFinalReport}
-          >
-            {downloadReportStatus ? "Downloading" : "Final Report"}
-          </button>
+          <div className="space-x-4">
+            <button
+              className={` p-2 rounded-md text-white ${
+                downloadReportPdfStatus
+                  ? "cursor-not-allowed bg-gray-600"
+                  : "bg-[#51677e]"
+              }`}
+              disabled={downloadReportPdfStatus}
+              onClick={handelDownFinalReportPDF}
+            >
+              {downloadReportPdfStatus ? "Downloading" : "PDF Report"}
+            </button>
+            <button
+              className={` p-2 rounded-md text-white ${
+                downloadReportMSStatus
+                  ? "cursor-not-allowed bg-gray-600"
+                  : "bg-[#51677e]"
+              }`}
+              disabled={downloadReportMSStatus}
+              onClick={handelDownFinalReportMSWord}
+            >
+              {downloadReportMSStatus ? "Downloading" : "MS Report"}
+            </button>
+          </div>
         )}
       </div>
+      {/* Property Details by Coordinator (Case) */}
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
           <h3 className=" text-white font-semibold uppercase">
@@ -488,6 +520,19 @@ const CompareDataAuditor = () => {
           </div>
         </div>
       </div>
+      {/* Update FieldExecutiveData Button */}
+      <div className="flex justify-end">
+        <Link to={`/auditor/updateFieldExecutive?fieldExecutiveId=${caseId}`}>
+          <button
+            className={`px-2 py-2 mr-1 rounded-md text-white bg-[#51677e]`}
+            // disabled={supervisorStatus}
+          >
+            {/* {supervisorStatus ? "Updated" : "Update FE Data"} */}
+            Update FE Data
+          </button>
+        </Link>
+      </div>
+      {/* Property Details Of Client, Collect by Field Executive */}
       <div className="bg-[#51677e] shadow-lg shadow-[#68ceb4]">
         <div className="flex justify-center p-3">
           <h3 className=" text-white font-semibold uppercase">
@@ -591,7 +636,15 @@ const CompareDataAuditor = () => {
                               <div className="w-[40%] border-r border-[#68ceb4]">
                                 <p className="pl-2">{data?.key}</p>
                               </div>
-                              <div className="w-[60%]">{data?.value}</div>
+                              <div
+                                className={`w-[60%] ${
+                                  item?.name === "Other Details"
+                                    ? "h-24 overflow-y-auto custom-scrollbar"
+                                    : ""
+                                }`}
+                              >
+                                {data?.value}
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -615,12 +668,12 @@ const CompareDataAuditor = () => {
           {auditorStatus ? "Approved" : "Approve"}
         </button>
       </div>
-      v
+
       {isModalOpenForApprove && (
         <div
           id="popup-modal"
           tabIndex="-1"
-          className="backdrop-blur overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-10 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+          className="backdrop-brightness-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-10 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
         >
           <div className="relative p-4 w-full max-w-md max-h-full -ml-7 mt-0 md:ml-60 md:mt-60 lg:ml-[500px] lg:mt-[200px]">
             <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
@@ -703,7 +756,7 @@ const CompareDataAuditor = () => {
             <img
               src={selectedImage}
               alt="profile_pic"
-              className="max-h-[80vh] max-w-[90vw] object-contain mx-auto rounded-lg"
+              className="max-h-[80vh] max-w-[100vw] object-contain mx-auto rounded-lg"
             />
           </div>
         </div>

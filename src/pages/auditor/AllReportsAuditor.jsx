@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllAssignCaseByAudior } from "../../redux/auditor/auditorAction";
+import { getAllAssignCaseByAuditor } from "../../redux/auditor/auditorAction";
 import { highlightMatch } from "../../utils/highlightMatch";
 import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
@@ -44,18 +44,14 @@ const AllReportsAuditor = () => {
     isAuditorData?.pagination?.currentPage
   );
 
-  // console.log(isAuditorData, "data===>");
   const [modalState, setModalState] = useState({
     isWhatsAppModalOpen: false,
     isEmailModalOpen: false,
     rowData: {},
   });
-  // console.log("modalState?.rowData*******", modalState?.rowData);
-  // console.log("modalState wp==>", modalState?.isWhatsAppModalOpen);
-  // console.log("modalState email==>", modalState?.isEmailModalOpen);
   useEffect(() => {
     dispatch(
-      getAllAssignCaseByAudior(
+      getAllAssignCaseByAuditor(
         accessToken,
         `limit=${limit}&page=${currentPageState}&search=${searchQuery}&status=${filters.status}&verifiedByFieldExecutive=${filters.verifiedByFieldExecutive}&verifiedBySupervisor=${filters.verifiedBySupervisor}`
       )
@@ -291,23 +287,38 @@ const AllReportsAuditor = () => {
                     </td>
                     <td className="py-2 px-6 ">
                       {row?.verifiedBy?.fieldExecutive === true &&
-                        row?.verifiedBy?.supervisor === true &&
-                        row?.verifiedBy?.auditor === true && (
-                          <div className="rounded-sm px-3 py-2 bg-gray-200 shadow-sm text-gray-400 flex flex-row gap-3">
-                            <button
-                              className=""
-                              onClick={() => openWhatsAppModal(row)}
-                            >
-                              <MdOutlineWhatsapp className="text-xl text-green-500" />
-                            </button>
-                            <button
-                              className=""
-                              onClick={() => openEmailModal(row)}
-                            >
-                              <MdOutlineEmail className="text-xl text-red-500" />
-                            </button>
-                          </div>
-                        )}
+                      row?.verifiedBy?.supervisor === true &&
+                      row?.verifiedBy?.auditor === true ? (
+                        <div className="rounded-sm px-3 py-2 bg-sky-200 shadow-sm text-gray-400 flex flex-row gap-3">
+                          <button
+                            className=""
+                            onClick={() => openWhatsAppModal(row)}
+                          >
+                            <MdOutlineWhatsapp className="text-xl text-green-500" />
+                          </button>
+                          <button
+                            className=""
+                            onClick={() => openEmailModal(row)}
+                          >
+                            <MdOutlineEmail className="text-xl text-red-500" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="rounded-sm px-3 py-2 bg-gray-200 shadow-sm text-gray-400 flex flex-row gap-3 cursor-not-allowed">
+                          <button
+                            className="cursor-not-allowed"
+                            // onClick={() => openWhatsAppModal(row)}
+                          >
+                            <MdOutlineWhatsapp className="text-xl text-green-300" />
+                          </button>
+                          <button
+                            className="cursor-not-allowed"
+                            // onClick={() => openEmailModal(row)}
+                          >
+                            <MdOutlineEmail className="text-xl text-red-300" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                     <td className="py-2 px-6 ">
                       {row?.verifiedBy?.fieldExecutive === true &&
@@ -376,13 +387,21 @@ const AllReportsAuditor = () => {
 
 export default AllReportsAuditor;
 const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
+  const wpUserLists =
+    modalState?.rowData?.reportDelivery?.whatsAppStatus?.pdf?.wpUserLists;
+
   const dispatch = useDispatch();
 
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState({
+    caseCodeCopied: false,
+    wpNumberCopied: false,
+    emailAddressCopied: false,
+  });
 
   const [reportState, setReportSate] = useState({
     pdfFormat: false,
     msWordFormat: false,
+    setErrorMessage: "",
   });
   const validationSchema = Yup.object().shape({
     whatsAppNumbers: Yup.array()
@@ -404,6 +423,7 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
     setReportSate((prevState) => ({
       ...prevState,
       pdfFormat: !prevState.pdfFormat,
+      setErrorMessage: "",
     }));
   };
 
@@ -411,30 +431,62 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
     setReportSate((prevState) => ({
       ...prevState,
       msWordFormat: !prevState.msWordFormat,
+      setErrorMessage: "",
     }));
   };
-  const handleCopy = (caseCode) => {
-    navigator.clipboard.writeText(caseCode);
-    setCopied(true);
+  const handleCopy = (copyItem, itemName) => {
+    if (!copyItem) return; // Prevent copying empty values
 
-    // Hide the "Copied" message after 2 seconds
+    navigator.clipboard.writeText(copyItem);
+
+    setCopied((prev) => ({
+      ...prev,
+      [itemName]: true,
+    }));
+
+    // Reset only the copied item after 3 seconds
     setTimeout(() => {
-      setCopied(false);
+      setCopied((prev) => ({
+        ...prev,
+        [itemName]: false,
+      }));
     }, 3000);
   };
+
   // Handle form submission
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
+    if (!reportState.pdfFormat) {
+      setReportSate({
+        ...reportState,
+        setErrorMessage: "Please select PDF format to send.",
+      });
+      return;
+    }
+    setReportSate({ ...reportState, setErrorMessage: "" });
+
     const formattedValues = {
       whatsAppNumbers: values?.whatsAppNumbers,
     };
-    dispatch(
-      whatsappPdfReportSender(
-        modalState?.rowData?._id,
-        accessToken,
-        formattedValues
-      )
-    );
-    closeWhatsAppModal();
+
+    try {
+      const promises = [];
+      if (reportState.pdfFormat) {
+        promises.push(
+          dispatch(
+            whatsappPdfReportSender(
+              modalState?.rowData?._id,
+              accessToken,
+              formattedValues
+            )
+          )
+        );
+      }
+      await Promise.all(promises);
+    } catch (error) {
+      console.error("Error sending reports:", error);
+    } finally {
+      closeWhatsAppModal();
+    }
   };
   return (
     <div
@@ -452,8 +504,9 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
         >
           <MdOutlineCancelPresentation />
         </button>
-        <div className="flex items-center justify-center space-x-2 uppercase">
-          <h3 className="font-semibold">Case Code :</h3>
+        {/* CaseCode header section */}
+        <div className="flex items-center justify-center space-x-2">
+          <h3 className="font-semibold">CASE CODE :</h3>
           {modalState?.rowData?.caseCode && (
             <div
               className={`flex items-center space-x-2 rounded-sm px-2 shadow-sm shadow-[#073b4c]`}
@@ -462,10 +515,12 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                 {modalState?.rowData?.caseCode}
               </span>
               <button
-                onClick={() => handleCopy(modalState?.rowData?.caseCode)}
+                onClick={() =>
+                  handleCopy(modalState?.rowData?.caseCode, "caseCodeCopied")
+                }
                 className="text-blue-500 hover:text-blue-700"
               >
-                {copied ? (
+                {copied?.caseCodeCopied ? (
                   <TiTick className={`rounded-sm text-sm text-green-500`} />
                 ) : (
                   <FaCopy className={`rounded-sm text-sm  text-[#073b4c] `} />
@@ -476,12 +531,40 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
 
           <span
             className={`text-green-500 ml-2 text-sm ${
-              copied ? "opacity-100" : "opacity-0"
+              copied?.caseCodeCopied ? "opacity-100" : "opacity-0"
             }`}
           >
             Copied!
           </span>
         </div>
+        {/* Whatsapp User Lists */}
+        {wpUserLists && wpUserLists?.length > 0 && (
+          <div className="h-auto w-[32rem] mt-1 px-4 py-2 space-y-1">
+            <div className="flex flex-row justify-between items-center">
+              <h1 className="font-medium text-sm">WhatsApp User Lists :</h1>
+              <span
+                className={`text-green-500 ml-2 text-sm ${
+                  copied?.wpNumberCopied ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                Number Copied!
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 p-1 border border-[#6aceb4] rounded-sm max-h-32 overflow-y-auto custom-scrollbar">
+              {wpUserLists &&
+                wpUserLists?.length &&
+                wpUserLists?.map((item, i) => (
+                  <p
+                    key={i + 1}
+                    className="text-sm rounded-md px-1 text-white bg-green-500 cursor-pointer"
+                    onClick={() => handleCopy(item, "wpNumberCopied")}
+                  >
+                    {item}
+                  </p>
+                ))}
+            </div>
+          </div>
+        )}
 
         {/* Form with Formik */}
         <Formik
@@ -498,21 +581,23 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
             dirty,
             isSubmitting,
           }) => (
-            <Form className="h-auto w-[20rem] mt-5 p-4">
-              <h2 className="text-xl font-bold mb-4">Enter WhatsApp Numbers</h2>
+            <Form className="h-auto w-[32rem]  p-4 ">
+              <h2 className="text-lg font-bold">Enter WhatsApp Numbers</h2>
 
               <FieldArray name="whatsAppNumbers">
                 {({ push, remove }) => (
                   <div>
                     <div
-                      className={` ${
-                        values.whatsAppNumbers?.length > 3
-                          ? "h-40 overflow-y-auto custom-scrollbar"
-                          : ""
-                      } `}
+                      className={` flex flex-wrap gap-2
+                        max-h-40 overflow-y-auto custom-scrollbar `}
+                      // className={` ${
+                      //   values.whatsAppNumbers?.length > 3
+                      //     ? "h-40 overflow-y-auto custom-scrollbar"
+                      //     : ""
+                      // } `}
                     >
                       {values.whatsAppNumbers.map((_, index) => (
-                        <div key={index} className="flex flex-col mb-3">
+                        <div key={index} className="flex flex-col gap-1">
                           <div className="flex items-center">
                             <Field
                               name={`whatsAppNumbers.${index}`}
@@ -523,7 +608,7 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                             <button
                               type="button"
                               onClick={() => remove(index)}
-                              className="ml-2 text-red-600 hover:text-red-800"
+                              className="ml-1 text-red-600 hover:text-red-800"
                               disabled={values.whatsAppNumbers.length === 1} // Prevent removing last input
                             >
                               ✖
@@ -532,7 +617,7 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                           <ErrorMessage
                             name={`whatsAppNumbers.${index}`}
                             component="div"
-                            className="text-red-500 text-sm mt-1"
+                            className="text-red-500 text-sm"
                           />
                         </div>
                       ))}
@@ -585,7 +670,7 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                   >
                     <FaRegFilePdf />
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     className={` px-4 py-3 rounded-lg mb-3 bg-gray-300 text-violet-700 text-md ${
                       reportState?.msWordFormat ? "bg-green-500" : ""
@@ -593,7 +678,7 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                     onClick={msWordFunc}
                   >
                     <FaRegFileWord />
-                  </button>
+                  </button> */}
                 </div>
                 <button
                   type="submit"
@@ -602,6 +687,11 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                   Send
                 </button>
               </div>
+              {reportState?.setErrorMessage && (
+                <div className="text-red-500 text-sm mb-2">
+                  {reportState?.setErrorMessage}
+                </div>
+              )}
             </Form>
           )}
         </Formik>
@@ -611,10 +701,18 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
 };
 
 const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
+  const msWordEmailUserLists =
+    modalState?.rowData?.reportDelivery?.emailStatus?.msWord?.emailUserLists;
+  const pdfEmailUserLists =
+    modalState?.rowData?.reportDelivery?.emailStatus?.pdf?.emailUserLists;
+
   const dispatch = useDispatch();
 
-  const [copied, setCopied] = useState(false);
-
+  const [copied, setCopied] = useState({
+    caseCodeCopied: false,
+    pdfEmailAddressCopied: false,
+    wordEmailAddressCopied: false,
+  });
   const [reportState, setReportSate] = useState({
     emailPdfFormat: false,
     emailMsWordFormat: false,
@@ -648,13 +746,22 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
       setErrorMessage: "",
     }));
   };
-  const handleCopy = (caseCode) => {
-    navigator.clipboard.writeText(caseCode);
-    setCopied(true);
+  const handleCopy = (copyItem, itemName) => {
+    if (!copyItem) return; // Prevent copying empty values
 
-    // Hide the "Copied" message after 2 seconds
+    navigator.clipboard.writeText(copyItem);
+
+    setCopied((prev) => ({
+      ...prev,
+      [itemName]: true,
+    }));
+
+    // Reset only the copied item after 3 seconds
     setTimeout(() => {
-      setCopied(false);
+      setCopied((prev) => ({
+        ...prev,
+        [itemName]: false,
+      }));
     }, 3000);
   };
 
@@ -663,7 +770,7 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
     if (!reportState.emailPdfFormat && !reportState.emailMsWordFormat) {
       setReportSate({
         ...reportState,
-        setErrorMessage: "Please select PDF or MS Word format to send.",
+        setErrorMessage: "Please select PDF or MS Word or both format to send.",
       });
       return;
     }
@@ -681,7 +788,6 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
       const promises = [];
 
       if (reportState?.emailPdfFormat) {
-        // console.log("emailPdfFormat activate");
         promises.push(
           dispatch(
             emailPdfReportSender(
@@ -694,7 +800,6 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
       }
 
       if (reportState?.emailMsWordFormat) {
-        // console.log("emailMsWordFormat activate");
         promises.push(
           dispatch(
             emailMSWordReportSender(
@@ -741,10 +846,12 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
                 {modalState?.rowData?.caseCode}
               </span>
               <button
-                onClick={() => handleCopy(modalState?.rowData?.caseCode)}
+                onClick={() =>
+                  handleCopy(modalState?.rowData?.caseCode, "caseCodeCopied")
+                }
                 className="text-blue-500 hover:text-blue-700"
               >
-                {copied ? (
+                {copied?.caseCodeCopied ? (
                   <TiTick className={`rounded-sm text-sm text-green-500`} />
                 ) : (
                   <FaCopy className={`rounded-sm text-sm  text-[#073b4c] `} />
@@ -755,12 +862,85 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
 
           <span
             className={`text-green-500 ml-2 text-sm ${
-              copied ? "opacity-100" : "opacity-0"
+              copied?.caseCodeCopied ? "opacity-100" : "opacity-0"
             }`}
           >
             Copied!
           </span>
         </div>
+        {(pdfEmailUserLists || msWordEmailUserLists) && (
+          <div className="flex flex-col">
+            {pdfEmailUserLists && pdfEmailUserLists?.length && (
+              <div className="h-auto w-[32rem] mt-1 px-4">
+                <div className="flex flex-row justify-between items-center">
+                  <h1 className="font-medium text-sm">
+                    Email PDF User Lists :
+                  </h1>
+                  <div
+                    className={`flex flex-row justify-center items-center text-green-500 ml-2 text-sm ${
+                      copied?.pdfEmailAddressCopied
+                        ? "opacity-100"
+                        : "opacity-0"
+                    }`}
+                  >
+                    <TiTick />
+                    <span>Email Copied!</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 p-1 border border-[#6aceb4] rounded-sm max-h-16 overflow-y-auto custom-scrollbar">
+                  {pdfEmailUserLists &&
+                    pdfEmailUserLists?.length &&
+                    pdfEmailUserLists?.map((item, i) => (
+                      <p
+                        key={i + 1}
+                        className="text-sm rounded-md px-1 text-white bg-green-500 cursor-pointer"
+                        onClick={() =>
+                          handleCopy(item, "pdfEmailAddressCopied")
+                        }
+                      >
+                        {item}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            )}
+            {msWordEmailUserLists && msWordEmailUserLists?.length > 0 && (
+              <div className="h-auto w-[32rem] mt-1 px-4">
+                <div className="flex flex-row justify-between items-center">
+                  <h1 className="font-medium text-sm">
+                    Email MsWord User Lists :
+                  </h1>
+                  <div
+                    className={`flex flex-row justify-center items-center text-green-500 ml-2 text-sm ${
+                      copied?.wordEmailAddressCopied
+                        ? "opacity-100"
+                        : "opacity-0"
+                    }`}
+                  >
+                    {" "}
+                    <TiTick />
+                    <span>Email Copied!</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 p-1 border border-[#6aceb4] rounded-sm max-h-16 overflow-y-auto custom-scrollbar">
+                  {msWordEmailUserLists &&
+                    msWordEmailUserLists?.length &&
+                    msWordEmailUserLists?.map((item, i) => (
+                      <p
+                        key={i + 1}
+                        className="text-sm rounded-md px-1 text-white bg-green-500 cursor-pointer"
+                        onClick={() =>
+                          handleCopy(item, "wordEmailAddressCopied")
+                        }
+                      >
+                        {item}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Form with Formik */}
         <Formik
@@ -777,21 +957,23 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
             dirty,
             isSubmitting,
           }) => (
-            <Form className="h-auto w-[20rem] mt-5 p-4">
-              <h2 className="text-xl font-bold mb-4">Enter Emails</h2>
+            <Form className="h-auto w-[32rem] px-4 py-1">
+              <h2 className="text-lg font-bold ">Enter Emails</h2>
 
               <FieldArray name="emails">
                 {({ push, remove }) => (
                   <div>
                     <div
-                      className={` ${
-                        values.emails?.length > 3
-                          ? "h-40 overflow-y-auto custom-scrollbar"
-                          : ""
-                      } `}
+                      className={` flex flex-wrap gap-2
+                      max-h-32 overflow-y-auto custom-scrollbar} `}
+                      // className={` ${
+                      //   values.emails?.length > 2
+                      //     ? "h-16 overflow-y-auto custom-scrollbar"
+                      //     : ""
+                      // } `}
                     >
                       {values.emails.map((_, index) => (
-                        <div key={index} className="flex flex-col mb-3">
+                        <div key={index} className="flex flex-col gap-1">
                           <div className="flex items-center">
                             <Field
                               name={`emails.${index}`}
@@ -802,7 +984,7 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
                             <button
                               type="button"
                               onClick={() => remove(index)}
-                              className="ml-2 text-red-600 hover:text-red-800"
+                              className="ml-1 text-red-600 hover:text-red-800"
                               disabled={values.emails.length === 1} // Prevent removing last input
                             >
                               ✖
@@ -811,7 +993,7 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
                           <ErrorMessage
                             name={`emails.${index}`}
                             component="div"
-                            className="text-red-500 text-sm mt-1"
+                            className="text-red-500 text-sm"
                           />
                         </div>
                       ))}

@@ -8,7 +8,11 @@ import { debounce } from "../../utils/halper";
 import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
 import { highlightMatch } from "../../utils/highlightMatch";
-import { formattedDate } from "../../utils/formattedDate";
+import {
+  formattedDate,
+  formatToDDMMYYYY,
+  formatToYYYYMMDD,
+} from "../../utils/formattedDate";
 import {
   getAllDistricts,
   getAllStates,
@@ -25,8 +29,11 @@ const AllCases = () => {
     data,
   } = useSelector((state) => state.caseReducer);
   // console.log("isLoading cases:==>", isLoadingCases);
-  const { message, currentPage, totalPages, totalCase, cases } = data;
-  const [currentPageState, setCurrentPageState] = useState(currentPage);
+  const { message, totalPages, currentPage, totalCase, cases } = data;
+  // const currentPage = 1;
+  const [currentPageState, setCurrentPageState] = useState(
+    currentPage === null ? 1 : currentPage
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     status: "",
@@ -173,8 +180,9 @@ const AllCases = () => {
             filters.district ||
             filters.zone
           }
-          goToPageLink={"/coordinator/all/cases/add"} // new form page link
-          addBtnEnable={role === "coordinator" ? true : false} // new form page link for btn enable/disable
+          goToPageLink={`/${role}/all/cases/add`} // new form page link
+          addBtnEnable={true}
+          // addBtnEnable={role === "coordinator" ? true : false} // new form page link for btn enable/disable
         />
 
         {/* Table Section */}
@@ -272,9 +280,10 @@ const AllCases = () => {
                         onClick={() => toggleDetails(index)}
                       >
                         <div className="flex gap-2 items-center">
-                          {role && role === "coordinator" && (
+                          {((role && role === "coordinator") ||
+                            role === "admin") && (
                             <Link
-                              to={`/coordinator/all/case/update?caseId=${row?._id}`}
+                              to={`/${role}/all/case/update?caseId=${row?._id}`}
                             >
                               <div className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300">
                                 <MdOutlineEdit />
@@ -348,15 +357,16 @@ const AllCases = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {new Date(row?.visitDate).toLocaleDateString(
+                                  {/* {new Date(row?.visitDate).toLocaleDateString(
                                     "en-US",
                                     {
                                       month: "2-digit",
                                       day: "2-digit",
                                       year: "numeric",
                                     }
-                                  )}{" "}
-                                  {"(mm/dd/yyyy)"}
+                                  )}{" "} */}
+                                  {formatToDDMMYYYY(row?.visitDate)} {""}
+                                  {"(dd/mm/yyyy)"}
                                 </div>
                               </div>
 

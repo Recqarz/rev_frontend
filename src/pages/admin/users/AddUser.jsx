@@ -339,7 +339,7 @@ const AddUser = () => {
                               <div className="space-y-2">
                                 {/* Chips Display for Selected Banks */}
                                 {values.workForBank.length > 0 && (
-                                  <div className="flex flex-wrap gap-2 border border-gray-300 p-2 rounded-lg bg-gray-100 h-32 overflow-y-auto custom-scrollbar">
+                                  <div className="flex flex-wrap gap-2 border border-gray-300 p-2 rounded-lg bg-gray-100 h-20 overflow-auto custom-scrollbar">
                                     {values.workForBank.map((selectedBank) => {
                                       const bankLabel =
                                         item?.options.find(

@@ -113,11 +113,11 @@ const CompareDataAuditor = () => {
       name: "Basic Info",
       data: [
         {
-          key: "Applicant Name:",
+          key: "CLient Name:",
           value: propertyDetails?.applicantName || "Not Provided",
         },
         {
-          key: "Applicant Mobile No:",
+          key: "CLient Mobile No:",
           value: propertyDetails?.mobileNo || "Not Provided",
         },
         {
@@ -128,14 +128,14 @@ const CompareDataAuditor = () => {
     },
 
     {
-      name: "Person Meet",
+      name: "Person Met",
       data: [
         {
-          key: "Person Meet At Site:",
+          key: "Person Met At Site:",
           value: propertyDetails?.personMetAtSite || "Not Provided",
         },
         {
-          key: "Person Meet Mobile No:",
+          key: "Person Met Mobile No:",
           value: propertyDetails?.personMetAtSiteMobileNo || "Not Provided",
         },
       ],

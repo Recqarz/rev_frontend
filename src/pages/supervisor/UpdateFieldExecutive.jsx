@@ -6,6 +6,7 @@ import {
   updateCaseDataBySupervisor,
 } from "../../redux/supervisor/supervisorAction";
 import { getAllBankData } from "../../redux/banks/bankAction";
+import { MdOutlineCancelPresentation } from "react-icons/md";
 
 const UpdateFieldExecutive = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,8 @@ const UpdateFieldExecutive = () => {
   const caseAllData =
     fieldExecutiveDataById?.data?.individualCompareData?.PropertyDetails;
   const propertyId = caseAllData?._id;
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [selectedImage, setSelectedImage] = useState("");
 
   const [feData, setFeData] = useState({
     bankName: "",
@@ -204,6 +207,7 @@ const UpdateFieldExecutive = () => {
               label: `${bank?.bankName} (${bank?.branchName})`,
             })),
           ],
+          disabled: true,
         },
         {
           label: "Applicant Name",
@@ -211,6 +215,7 @@ const UpdateFieldExecutive = () => {
           name: "applicantName",
           placeholder: "Enter Applicant Name",
           value: feData?.applicantName || "",
+          disabled: true,
         },
         {
           label: "Mobile Number",
@@ -218,6 +223,7 @@ const UpdateFieldExecutive = () => {
           name: "mobileNo",
           placeholder: "Enter Mobile Number",
           value: feData?.mobileNo || "",
+          disabled: true,
         },
       ],
     },
@@ -790,13 +796,23 @@ const UpdateFieldExecutive = () => {
       });
   };
 
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage("");
+  };
+
   return (
     <div>
       <div className="min-h-screen p-6 bg-gray-100 flex justify-center">
         <div className="container max-w-screen-lg mx-auto">
           <div>
             <h2 className="font-semibold text-xl text-gray-600 mb-5">
-              Update FE Details
+              Update Field Executive Details
             </h2>
             <form onSubmit={handleFormUpdateUser}>
               {formSections.map((section, index) => (
@@ -814,11 +830,15 @@ const UpdateFieldExecutive = () => {
                       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 text-sm mt-5">
                         {section.title === "Captured Photo"
                           ? section.fields.map((field, idx) => (
-                              <div key={idx}>
+                              <div
+                                key={idx}
+                                className="border rounded-md shadow-md shadow-slate-400 h-44 w-44"
+                              >
                                 <img
                                   src={field}
                                   alt={field}
-                                  className="h-40 w-full object-cover rounded-md shadow-md mt-2"
+                                  className="h-full w-full cursor-pointer"
+                                  onClick={() => openModal(field)}
                                 />
                               </div>
                             ))
@@ -835,7 +855,12 @@ const UpdateFieldExecutive = () => {
                                     id={field.name}
                                     value={field?.value}
                                     onChange={handleInputOnchange}
-                                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                    className={`h-10 border mt-1 rounded px-4 w-full  ${
+                                      field?.disabled
+                                        ? "cursor-not-allowed bg-sky-100"
+                                        : "bg-gray-50"
+                                    }`}
+                                    disabled={field?.disabled}
                                   >
                                     {field?.options?.map((option, i) => (
                                       <option key={i} value={option?.value}>
@@ -848,7 +873,11 @@ const UpdateFieldExecutive = () => {
                                     type={field.type}
                                     name={field.name}
                                     id={field.name}
-                                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                    className={`h-10 border mt-1 rounded px-4 w-full ${
+                                      field?.disabled
+                                        ? "cursor-not-allowed bg-sky-100"
+                                        : "bg-gray-50"
+                                    } `}
                                     value={field.value}
                                     placeholder={field.placeholder}
                                     onChange={(e) =>
@@ -856,6 +885,7 @@ const UpdateFieldExecutive = () => {
                                         ? handleInputOnchange(e, field.index)
                                         : handleInputOnchange(e)
                                     }
+                                    disabled={field?.disabled}
                                   />
                                 )}
                               </div>
@@ -878,6 +908,28 @@ const UpdateFieldExecutive = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal for Enlarged Image */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 md:left-44 flex items-center justify-center bg-black bg-opacity-70 z-50"
+          onClick={closeModal}
+        >
+          <div className="relative bg-white p-0.5 rounded-lg shadow-lg">
+            <button
+              className="absolute top-2 right-2 text-2xl bg-white text-gray-500 hover:text-red-600 rounded-sm"
+              onClick={closeModal}
+            >
+              <MdOutlineCancelPresentation />
+            </button>
+            <img
+              src={selectedImage}
+              alt={selectedImage}
+              className="max-h-[80vh] max-w-[100vw] object-contain mx-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

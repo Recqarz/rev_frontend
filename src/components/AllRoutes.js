@@ -32,6 +32,8 @@ const roleBasedRoutes = {
     { path: "/admin/dashboard/all/banks", element: <AllBank /> },
     { path: "/admin/dashboard/all/banks/add", element: <AddBank /> },
     { path: "/admin/dashboard/cases", element: <AllCases /> },
+    { path: "/admin/all/cases/add", element: <AddCases /> },
+    { path: "/admin/all/case/update", element: <AddCases /> },
     { path: "/admin/profile", element: <Profile /> },
     { path: "/admin/dashboard/location", element: <AddLocation /> },
   ],

@@ -36,7 +36,7 @@ export const getAllAssignCaseByAuditor =
   };
 
 // get case data of id
-export const caseDataIdByAuditor = (accessToken, id) => (dispatch) => {
+export const caseDataIdByAuditor = (accessToken, id) => async(dispatch) => {
   dispatch({ type: CASE_DATA_ID_AUDITOR_REQUEST });
   return axios
     .get(`${baseURL}/api/v1/auditor/cases/${id}`, {

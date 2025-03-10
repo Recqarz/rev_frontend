@@ -110,11 +110,11 @@ const CompareDisplay = () => {
       name: "Basic Info",
       data: [
         {
-          key: "Applicant Name:",
+          key: "Client Name:",
           value: propertyDetails?.applicantName || "Not Provided",
         },
         {
-          key: "Applicant Mobile No:",
+          key: "Client Mobile No:",
           value: propertyDetails?.mobileNo || "Not Provided",
         },
         {
@@ -125,14 +125,14 @@ const CompareDisplay = () => {
     },
 
     {
-      name: "Person Meet",
+      name: "Person Met",
       data: [
         {
-          key: "Person Meet At Site:",
+          key: "Person Met At Site:",
           value: propertyDetails?.personMetAtSite || "Not Provided",
         },
         {
-          key: "Person Meet Mobile No:",
+          key: "Person Met Mobile No:",
           value: propertyDetails?.personMetAtSiteMobileNo || "Not Provided",
         },
       ],

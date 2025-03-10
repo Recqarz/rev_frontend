@@ -74,7 +74,7 @@ const AllUser = () => {
   ]);
 
   // For Filtration
-  const filterOptions = [
+  const allFilterOptions = [
     {
       name: "role",
       value: filters.role,
@@ -134,6 +134,13 @@ const AllUser = () => {
       ],
     },
   ];
+  //role wise conditional for Field Executive
+  const filterOptions =
+    filters.role === "fieldExecutive"
+      ? allFilterOptions // Show all filters for "fieldExecutive"
+      : allFilterOptions.filter((option) =>
+          ["role", "status"].includes(option.name)
+        ); // Show only role & status for others
 
   const changeState = (stateId) => {
     stateId && dispatch(getAllDistricts(stateId, accessToken));

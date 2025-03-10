@@ -98,7 +98,7 @@ const AddCases = () => {
         ...(banks ?? [])?.map((bank, index) => ({
           key: index + 1,
           value: bank?._id,
-          label: `${bank?.bankName} (${bank?.branchName})`,
+          label: `${bank?.bankName} (${bank?.IFSC})`,
         })),
       ],
       validation: Yup.string().required("Bank Name is required"),
@@ -220,7 +220,7 @@ const AddCases = () => {
     },
     {
       key: 11,
-      label: "Street Name",
+      label: "Street/Sector Name",
       htmlFor: "streetName",
       name: "streetName",
       type: "text",

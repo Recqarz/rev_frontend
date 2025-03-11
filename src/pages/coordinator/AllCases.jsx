@@ -242,7 +242,7 @@ const AllCases = () => {
                         {highlightMatch(row?.BOV_ReportNo, searchQuery)}
                       </td>
                       <td className="py-3 px-6 border-b border-gray-200">
-                        {highlightMatch(row?.bankRefNo, searchQuery)}
+                        {highlightMatch(row?.bankRefNo || "N/A", searchQuery)}
                       </td>
                       <td className="py-3 px-6 border-b border-gray-200">
                         {highlightMatch(row?.bankId?.bankName, searchQuery)}

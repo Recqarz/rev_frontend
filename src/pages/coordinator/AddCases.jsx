@@ -114,7 +114,11 @@ const AddCases = () => {
       mainDivClassname: "col-span-4 md:col-span-4",
       inputFieldClassName: "",
       placeholder: "Enter Bank Ref No.",
-      validation: Yup.string().required("Bank Ref No. is required"),
+      // validation: Yup.string().required("Bank Ref No. is required"),
+      validation: Yup.string()
+        .nullable()
+        .notRequired() // Field is optional
+        .max(30, "Bank Ref No. must be at most 30 characters"),
       initialValue: caseData?.bankRefNo || "",
     },
     {
@@ -138,12 +142,17 @@ const AddCases = () => {
       type: "text",
       id: "BOV_ReportNo",
       mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName: "",
-      placeholder: "Enter BOV Report No.",
+      inputFieldClassName: "cursor-not-allowed !bg-gray-300",
+      placeholder: "No need to enter. It's auto generate BOV Report No.",
+      // validation: Yup.string()
+      //   .required("BOV Report No. is required")
+      //   .nullable(),
       validation: Yup.string()
-        .required("BOV Report No. is required")
-        .nullable(),
+        .nullable()
+        .notRequired() // Field is optional
+        .max(30, "BOV Report No. must be at most 30 characters"),
       initialValue: caseData?.BOV_ReportNo || "",
+      disabled: true,
     },
     ,
     {
@@ -342,6 +351,7 @@ const AddCases = () => {
             state: values?.stateId,
             district: values?.districtId,
             zone: values.zoneId,
+            ...(values?.BOV_ReportNo && { BOV_ReportNo: values.BOV_ReportNo }),
           }
         : {
             stateId: values?.stateId,
@@ -447,7 +457,9 @@ const AddCases = () => {
           {({ isSubmitting, resetForm, dirty, values, setFieldValue }) => {
             {
               {
-                /* console.log("values==>123==>", values); */
+                {
+                  /* console.log("values==>123==>", values); */
+                }
               }
             }
 
@@ -498,8 +510,9 @@ const AddCases = () => {
                             type={item?.type}
                             name={item?.name}
                             id={item?.id}
-                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                            className={`${item?.inputFieldClassName} shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5`}
                             placeholder={item?.placeholder}
+                            disabled={item?.disabled}
                           />
                         )}
                         <ErrorMessage
@@ -583,7 +596,7 @@ const AddCases = () => {
                           <option value="">Select Field Executive</option>
                           {fieldExecutives?.map((executive) => (
                             <option key={executive.id} value={executive._id}>
-                              {`${executive.firstName} ${executive.lastName}`}
+                              {`${executive.firstName} ${executive.lastName} (${executive.email} / ${executive.mobile})`}
                             </option>
                           ))}
                         </Field>
@@ -647,7 +660,7 @@ const AddCases = () => {
                             <option value="">Select Field Executive</option>
                             {fieldExecutives?.map((executive) => (
                               <option key={executive.id} value={executive._id}>
-                                {`${executive.firstName} ${executive.lastName}`}
+                                {`${executive.firstName} ${executive.lastName} (${executive.email} / ${executive.mobile})`}
                               </option>
                             ))}
                           </Field>

@@ -128,101 +128,48 @@ const AddBankFormSchema = [
     validation: Yup.string().required("Branch Name is required"),
     initialValue: "",
   },
-  // {
-  //   key: 3,
-  //   label: 'Email',
-  //   htmlFor: 'email',
-  //   name: 'email',
-  //   type: 'email',
-  //   id: 'email',
-  //   mainDivClassname: 'col-span-4',
-  //   inputFieldClassName:
-  //     'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5',
-  //   placeholder: 'Enter email',
-  //   validation: Yup.string()
-  //     .email('Invalid email format')
-  //     .required('Email is required'),
-  //   initialValue: '',
-  // },
-  // {
-  //   key: 5,
-  //   label: 'Mobile Code',
-  //   htmlFor: 'mobileCode',
-  //   as: 'select',
-  //   name: 'mobileCode',
-  //   // type: 'mobileCode',
-  //   id: 'mobileCode',
-  //   mainDivClassname: 'col-span-4 md:col-span-1',
-  //   inputFieldClassName:
-  //     'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5',
-  //   placeholder: 'Enter phone code',
-  //   options: [
-  //     // { key: 1, value: '', label: 'Select Code' }, // Default empty value
-  //     { key: 2, value: '+91', label: '+91' },
-  //   ],
-  //   validation: Yup.string().required('Mobile Code is required'),
-  //   initialValue: '+91',
-  // },
   {
-    key: 6,
-    label: "IFSC Code",
-    htmlFor: "IFSC",
-    name: "IFSC",
+    key: 3,
+    label: "City Name",
+    htmlFor: "city",
+    name: "city",
     type: "text",
-    id: "IFSC",
+    id: "branchName",
     mainDivClassname: "col-span-4",
     inputFieldClassName:
       "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
-    placeholder: "Enter IFSC code",
-    validation: Yup.string().required("IFSC code is required"),
+    placeholder: "Enter city name",
+    validation: Yup.string().required("City Name is required"),
     initialValue: "",
   },
-  // {
-  //   key: 8,
-  //   label: 'Role',
-  //   htmlFor: 'role',
-  //   as: 'select',
-  //   name: 'role',
-  //   // type: 'role',
-  //   id: 'role',
-  //   mainDivClassname: 'col-span-4',
-  //   inputFieldClassName:
-  //     'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5',
-  //   placeholder: 'Enter country name',
-  //   options: [
-  //     { key: 1, value: '', label: 'Select Role' }, // Default empty value
-  //     { key: 3, value: 'fieldExecutive', label: 'Field Executive' },
-  //     { key: 4, value: 'coordinator', label: 'Co-Ordinator' },
-  //     { key: 5, value: 'auditor', label: 'Auditor' },
-  //     { key: 6, value: 'superVisor', label: 'Supervisor' },
-  //   ],
-  //   validation: Yup.string().required('Role is required'),
-  //   initialValue: '',
-  // },
-  // {
-  //   key: 9,
-  //   label: 'Work for bank',
-  //   htmlFor: 'workForBank',
-  //   as: 'select',
-  //   name: 'workForBank',
-  //   // type: 'workForBank',
-  //   id: 'workForBank',
-  //   mainDivClassname: 'col-span-4',
-  //   inputFieldClassName:
-  //     'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5',
-  //   placeholder: 'Enter country name',
-
-  //   options: [
-  //     { key: 0, value: '', label: 'Select Bank' }, // Default empty value
-  //     ...(allBank ?? [])?.map((bank, index) => ({
-  //       key: index + 1, // Adjust index to avoid conflict with the default option key
-  //       value: bank?._id,
-  //       label: `${bank?.bankName} (${bank?.branchName})`,
-  //     })),
-  //   ],
-  //   validation: Yup.string().required('Bank Name is required'),
-  //   initialValue: '',
-  // },
+  {
+    key: 4,
+    label: "Business Vertical",
+    htmlFor: "businessVertical",
+    name: "businessVertical",
+    type: "text",
+    id: "branchName",
+    mainDivClassname: "col-span-4",
+    inputFieldClassName:
+      "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    placeholder: "Enter Business Vertical",
+    validation: Yup.string().required("Business Vertical is required"),
+    initialValue: "",
+  },
+  {
+    key: 5,
+    label: "GST Number",
+    htmlFor: "gstNumber",
+    name: "gstNumber",
+    type: "text",
+    id: "branchName",
+    mainDivClassname: "col-span-4",
+    inputFieldClassName:
+      "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5",
+    placeholder: "Enter GST No.",
+    validation: Yup.string().required("GST No. is required"),
+    initialValue: "",
+  },
 ];
 const validationSchema = Yup.object(
   AddBankFormSchema.reduce((schema, field) => {

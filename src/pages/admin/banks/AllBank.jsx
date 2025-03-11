@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 // import '../index.css'
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { HiUserAdd } from "react-icons/hi";
@@ -22,7 +22,7 @@ const AllBank = () => {
   } = useSelector((state) => state.allBankReducer);
   const { message, currentPage, totalPages, totalBank, banks } = data;
   const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({ sortOrder: "" });
   const [limit, setLimit] = useState(10);
   const [currentPageState, setCurrentPageState] = useState(currentPage);
   const [debouncedFilters, setDebouncedFilters] = useState({
@@ -40,12 +40,25 @@ const AllBank = () => {
   useEffect(() => {
     dispatch(
       getAllBankData(
-        `limit=${limit}&page=${currentPageState}&search=${searchQuery}`
+        `limit=${limit}&page=${currentPageState}&search=${searchQuery}&sortOrder=${filters.sortOrder}`
       )
     );
-  }, [limit, currentPageState, searchQuery]);
+  }, [limit, currentPageState, searchQuery, filters]);
 
-  const filterOptions = [];
+  const filterOptions = useMemo(
+    () => [
+      {
+        name: "sortOrder",
+        value: filters.sortOrder,
+        placeholder: "Filter by Alphabetically",
+        options: [
+          { label: "A to Z", value: "asc" },
+          { label: "Z to A", value: "desc" },
+        ],
+      },
+    ],
+    [filters]
+  );
   const handleFilterChange = (filterName, value) => {
     setFilters((prev) => ({ ...prev, [filterName]: value }));
   };
@@ -76,6 +89,8 @@ const AllBank = () => {
 
   const handleResetFilters = () => {
     setSearchQuery("");
+    setFilters({ sortOrder: "" });
+
     const searchInput = document.getElementById("searchInput");
     if (searchInput) searchInput.value = ""; // Reset input value
   };
@@ -98,8 +113,8 @@ const AllBank = () => {
           filterOptions={filterOptions}
           handleFilterChange={handleFilterChange}
           handleResetFilters={handleResetFilters}
-          disabledReset={!searchQuery}
-          enableReset={searchQuery}
+          disabledReset={!searchQuery && !filters.sortOrder}
+          enableReset={searchQuery || filters.sortOrder}
           goToPageLink={"/admin/dashboard/all/banks/add"}
           addBtnEnable={true}
         />
@@ -147,7 +162,7 @@ const AllBank = () => {
                       {highlightMatch(row?.branchName, searchQuery)}
                     </td>
                     <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
-                      {highlightMatch(row?.IFSC, searchQuery)}
+                      {highlightMatch(row?.IFSC || "N/A", searchQuery)}
                     </td>
 
                     <td className="py-2.5 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">

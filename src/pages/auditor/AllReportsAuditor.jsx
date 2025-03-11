@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllAssignCaseByAuditor } from "../../redux/auditor/auditorAction";
+import {
+  caseDataIdByAuditor,
+  getAllAssignCaseByAuditor,
+} from "../../redux/auditor/auditorAction";
 import { highlightMatch } from "../../utils/highlightMatch";
 import Pagination from "../../components/Pagination";
 import SearchFilterAddSection from "../../components/SearchFilterAddSection";
@@ -24,6 +27,7 @@ import {
   emailPdfReportSender,
   whatsappPdfReportSender,
 } from "../../redux/sendReport/sendReportAction";
+import { getCaseById, updateCaseDataId } from "../../redux/case/caseAction";
 
 const AllReportsAuditor = () => {
   const dispatch = useDispatch();
@@ -49,6 +53,8 @@ const AllReportsAuditor = () => {
     isEmailModalOpen: false,
     rowData: {},
   });
+  const [isFetch, setIsFetch] = useState(false);
+
   useEffect(() => {
     dispatch(
       getAllAssignCaseByAuditor(
@@ -63,6 +69,7 @@ const AllReportsAuditor = () => {
     filters.status,
     filters.verifiedByFieldExecutive,
     filters.verifiedBySupervisor,
+    isFetch,
   ]);
 
   const handleFilterChange = (filterName, value) => {
@@ -371,6 +378,7 @@ const AllReportsAuditor = () => {
           closeWhatsAppModal={closeWhatsAppModal}
           modalState={modalState}
           accessToken={accessToken}
+          setIsFetch={setIsFetch}
         />
       )}
       {/* Modal for Email Image */}
@@ -379,6 +387,7 @@ const AllReportsAuditor = () => {
           closeEmailModal={closeEmailModal}
           modalState={modalState}
           accessToken={accessToken}
+          setIsFetch={setIsFetch}
         />
       )}
     </div>
@@ -386,7 +395,13 @@ const AllReportsAuditor = () => {
 };
 
 export default AllReportsAuditor;
-const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
+
+const WhatsAppModal = ({
+  closeWhatsAppModal,
+  modalState,
+  accessToken,
+  setIsFetch,
+}) => {
   const wpUserLists =
     modalState?.rowData?.reportDelivery?.whatsAppStatus?.pdf?.wpUserLists;
 
@@ -407,6 +422,7 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
     whatsAppNumbers: Yup.array()
       .of(
         Yup.string()
+          .trim()
           .transform((value) => value.replace(/^0+/, "")) // Remove leading zeros
           .matches(/^\d{10}$/, "WhatsApp No. must be exactly 10 digits") // Only 10-digit numbers allowed
           .required("WhatsApp No. is required")
@@ -434,24 +450,15 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
       setErrorMessage: "",
     }));
   };
-  const handleCopy = (copyItem, itemName) => {
-    if (!copyItem) return; // Prevent copying empty values
-
+  const handleCopy = useCallback((copyItem, itemName) => {
+    if (!copyItem) return;
     navigator.clipboard.writeText(copyItem);
+    setCopied((prev) => ({ ...prev, [itemName]: true }));
 
-    setCopied((prev) => ({
-      ...prev,
-      [itemName]: true,
-    }));
-
-    // Reset only the copied item after 3 seconds
     setTimeout(() => {
-      setCopied((prev) => ({
-        ...prev,
-        [itemName]: false,
-      }));
+      setCopied((prev) => ({ ...prev, [itemName]: false }));
     }, 3000);
-  };
+  }, []);
 
   // Handle form submission
   const handleSubmit = async (values) => {
@@ -481,10 +488,13 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
           )
         );
       }
+
       await Promise.all(promises);
+      await setIsFetch(true);
     } catch (error) {
       console.error("Error sending reports:", error);
     } finally {
+      setIsFetch(false);
       closeWhatsAppModal();
     }
   };
@@ -539,16 +549,17 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
         </div>
         {/* Whatsapp User Lists */}
         {wpUserLists && wpUserLists?.length > 0 && (
-          <div className="h-auto w-[32rem] mt-1 px-4 py-2 space-y-1">
+          <div className="h-auto w-[17rem] md:w-[32rem] mt-1 px-4 py-2 space-y-1">
             <div className="flex flex-row justify-between items-center">
               <h1 className="font-medium text-sm">WhatsApp User Lists :</h1>
-              <span
-                className={`text-green-500 ml-2 text-sm ${
+              <div
+                className={`flex flex-row justify-center items-center text-green-500  text-sm ${
                   copied?.wpNumberCopied ? "opacity-100" : "opacity-0"
                 }`}
               >
-                Number Copied!
-              </span>
+                <TiTick />
+                <span>Number Copied!</span>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2 p-1 border border-[#6aceb4] rounded-sm max-h-32 overflow-y-auto custom-scrollbar">
               {wpUserLists &&
@@ -581,7 +592,7 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
             dirty,
             isSubmitting,
           }) => (
-            <Form className="h-auto w-[32rem]  p-4 ">
+            <Form className="h-auto w-[17rem] md:w-[32rem]  p-4 ">
               <h2 className="text-lg font-bold">Enter WhatsApp Numbers</h2>
 
               <FieldArray name="whatsAppNumbers">
@@ -590,11 +601,6 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                     <div
                       className={` flex flex-wrap gap-2
                         max-h-40 overflow-y-auto custom-scrollbar `}
-                      // className={` ${
-                      //   values.whatsAppNumbers?.length > 3
-                      //     ? "h-40 overflow-y-auto custom-scrollbar"
-                      //     : ""
-                      // } `}
                     >
                       {values.whatsAppNumbers.map((_, index) => (
                         <div key={index} className="flex flex-col gap-1">
@@ -670,15 +676,6 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
                   >
                     <FaRegFilePdf />
                   </button>
-                  {/* <button
-                    type="button"
-                    className={` px-4 py-3 rounded-lg mb-3 bg-gray-300 text-violet-700 text-md ${
-                      reportState?.msWordFormat ? "bg-green-500" : ""
-                    }`}
-                    onClick={msWordFunc}
-                  >
-                    <FaRegFileWord />
-                  </button> */}
                 </div>
                 <button
                   type="submit"
@@ -700,7 +697,12 @@ const WhatsAppModal = ({ closeWhatsAppModal, modalState, accessToken }) => {
   );
 };
 
-const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
+const EmailModal = ({
+  closeEmailModal,
+  modalState,
+  accessToken,
+  setIsFetch,
+}) => {
   const msWordEmailUserLists =
     modalState?.rowData?.reportDelivery?.emailStatus?.msWord?.emailUserLists;
   const pdfEmailUserLists =
@@ -746,24 +748,15 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
       setErrorMessage: "",
     }));
   };
-  const handleCopy = (copyItem, itemName) => {
-    if (!copyItem) return; // Prevent copying empty values
-
+  const handleCopy = useCallback((copyItem, itemName) => {
+    if (!copyItem) return;
     navigator.clipboard.writeText(copyItem);
+    setCopied((prev) => ({ ...prev, [itemName]: true }));
 
-    setCopied((prev) => ({
-      ...prev,
-      [itemName]: true,
-    }));
-
-    // Reset only the copied item after 3 seconds
     setTimeout(() => {
-      setCopied((prev) => ({
-        ...prev,
-        [itemName]: false,
-      }));
+      setCopied((prev) => ({ ...prev, [itemName]: false }));
     }, 3000);
-  };
+  }, []);
 
   const handleSubmit = async (values) => {
     // Check if no format is selected
@@ -813,9 +806,11 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
 
       // Execute all dispatch calls concurrently
       await Promise.all(promises);
+      await setIsFetch(true);
     } catch (error) {
       console.error("Error sending reports:", error);
     } finally {
+      setIsFetch(false);
       closeEmailModal();
     }
   };
@@ -871,13 +866,13 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
         {(pdfEmailUserLists || msWordEmailUserLists) && (
           <div className="flex flex-col">
             {pdfEmailUserLists && pdfEmailUserLists?.length && (
-              <div className="h-auto w-[32rem] mt-1 px-4">
+              <div className="h-auto w-[17rem] md:w-[32rem] mt-1 px-4">
                 <div className="flex flex-row justify-between items-center">
                   <h1 className="font-medium text-sm">
                     Email PDF User Lists :
                   </h1>
                   <div
-                    className={`flex flex-row justify-center items-center text-green-500 ml-2 text-sm ${
+                    className={`flex flex-row justify-center items-center text-green-500  text-sm ${
                       copied?.pdfEmailAddressCopied
                         ? "opacity-100"
                         : "opacity-0"
@@ -905,13 +900,13 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
               </div>
             )}
             {msWordEmailUserLists && msWordEmailUserLists?.length > 0 && (
-              <div className="h-auto w-[32rem] mt-1 px-4">
+              <div className="h-auto w-[17rem] md:w-[32rem] mt-1 px-4">
                 <div className="flex flex-row justify-between items-center">
                   <h1 className="font-medium text-sm">
                     Email MsWord User Lists :
                   </h1>
                   <div
-                    className={`flex flex-row justify-center items-center text-green-500 ml-2 text-sm ${
+                    className={`flex flex-row justify-center items-center text-green-500 text-sm ${
                       copied?.wordEmailAddressCopied
                         ? "opacity-100"
                         : "opacity-0"
@@ -957,7 +952,7 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
             dirty,
             isSubmitting,
           }) => (
-            <Form className="h-auto w-[32rem] px-4 py-1">
+            <Form className="h-auto w-[17rem] md:w-[32rem] px-4 py-1">
               <h2 className="text-lg font-bold ">Enter Emails</h2>
 
               <FieldArray name="emails">
@@ -966,14 +961,12 @@ const EmailModal = ({ closeEmailModal, modalState, accessToken }) => {
                     <div
                       className={` flex flex-wrap gap-2
                       max-h-32 overflow-y-auto custom-scrollbar} `}
-                      // className={` ${
-                      //   values.emails?.length > 2
-                      //     ? "h-16 overflow-y-auto custom-scrollbar"
-                      //     : ""
-                      // } `}
                     >
                       {values.emails.map((_, index) => (
-                        <div key={index} className="flex flex-col gap-1">
+                        <div
+                          key={index}
+                          className="flex flex-col gap-1 w-full md:w-auto"
+                        >
                           <div className="flex items-center">
                             <Field
                               name={`emails.${index}`}

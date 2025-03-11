@@ -1,6 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 // import '../index.css'
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import {
+  MdDeleteOutline,
+  MdKeyboardArrowRight,
+  MdOutlineEdit,
+} from "react-icons/md";
 import { HiUserAdd } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +25,7 @@ const AllBank = () => {
     data,
   } = useSelector((state) => state.allBankReducer);
   const { message, currentPage, totalPages, totalBank, banks } = data;
+  console.log("banks==>", banks);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({ sortOrder: "" });
   const [limit, setLimit] = useState(10);
@@ -35,6 +40,8 @@ const AllBank = () => {
     branchName: "",
     IFSC: "",
   });
+  const [expandedRow, setExpandedRow] = useState(null);
+
   const accessToken = useSelector((store) => store.authReducer.accessToken);
 
   useEffect(() => {
@@ -102,7 +109,9 @@ const AllBank = () => {
   const handleCurrentPageState = (val) => {
     setCurrentPageState((prev) => prev + val);
   };
-
+  const toggleDetails = useCallback((index) => {
+    setExpandedRow((prev) => (prev === index ? null : index)); // Toggle row expansion
+  }, []);
   return (
     <div className="flex justify-center">
       <div className="flex flex-col gap-5 w-[100%]">
@@ -115,7 +124,7 @@ const AllBank = () => {
           handleResetFilters={handleResetFilters}
           disabledReset={!searchQuery && !filters.sortOrder}
           enableReset={searchQuery || filters.sortOrder}
-          goToPageLink={"/admin/dashboard/all/banks/add"}
+          goToPageLink={"/admin/bank/add"}
           addBtnEnable={true}
         />
         {/* Table section */}
@@ -128,7 +137,8 @@ const AllBank = () => {
                 <th className="w-1/5 py-2 px-6 text-left text-xs">
                   Branch Name
                 </th>
-                <th className="w-1/5 py-2 px-6 text-left text-xs">IFSC Code</th>
+                <th className="w-1/5 py-2 px-6 text-left text-xs">City</th>
+                <th className="w-1/5 py-2 px-6 text-left text-xs">GST No.</th>
                 <th className="w-1/5 py-2 px-6 text-left text-xs">Action</th>
               </tr>
             </thead>
@@ -148,32 +158,251 @@ const AllBank = () => {
                 </tr>
               ) : banks && banks?.length > 0 ? (
                 banks?.map((row, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-100 cursor-pointer hover:shadow-md"
-                  >
-                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
-                      {index + 1}
-                    </td>
-                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
-                      {highlightMatch(row?.bankName, searchQuery)}
-                    </td>
-                    <td className="py-2.5 px-6 border-b border-gray-200 text-sm truncate">
-                      {highlightMatch(row?.branchName, searchQuery)}
-                    </td>
-                    <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
-                      {highlightMatch(row?.IFSC || "N/A", searchQuery)}
-                    </td>
+                  <React.Fragment key={index}>
+                    {/* Main Row */}
+                    <tr className="hover:bg-gray-100 cursor-pointer hover:shadow-md">
+                      <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
+                        {index + 1}
+                      </td>
+                      <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
+                        {highlightMatch(row?.bankName, searchQuery)}
+                      </td>
+                      <td className="py-2.5 px-6 border-b border-gray-200 text-sm truncate">
+                        {highlightMatch(row?.branchName, searchQuery)}
+                      </td>
+                      <td className="py-2.5 px-6 border-b border-gray-200 text-sm truncate">
+                        {highlightMatch(row?.city || "N/A", searchQuery)}
+                      </td>
+                      <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
+                        {highlightMatch(row?.gstNumber || "N/A", searchQuery)}
+                      </td>
 
-                    <td className="py-2.5 px-6 border-b border-gray-200 hover:bg-blue-50 flex gap-2">
-                      <div
-                        className="rounded-full hover:bg-gray-300 py-1 px-1 cursor-not-allowed "
-                        // onClick={() => handleUpdateStatusFunc(row)} //its working fine for bank update
+                      <td
+                        className={`py-2.5 px-6 border-b border-gray-200 hover:bg-blue-50 ${
+                          expandedRow === index ? "bg-blue-50" : ""
+                        }`}
                       >
-                        <MdOutlineEdit className="text-xl text-[#3fb597]" />
-                      </div>
-                    </td>
-                  </tr>
+                        <div className="flex gap-2 items-center">
+                          <Link to={`/admin/bank/update?bankId=${row?._id}`}>
+                            <div className="rounded-full hover:bg-gray-300 py-1 px-1">
+                              <MdOutlineEdit className="text-xl text-[#3fb597]" />
+                            </div>
+                          </Link>
+                          <div
+                            className="text-2xl p-1 text-[#3fb597] rounded-full hover:bg-gray-300"
+                            onClick={() => toggleDetails(index)} // Toggle the details panel
+                          >
+                            <MdKeyboardArrowRight
+                              className={`transform transition-transform duration-300 ease-in-out
+                             ${expandedRow === index ? "rotate-90" : ""}
+                            `}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    {/* Details Row */}
+
+                    {expandedRow === index && (
+                      <tr className="bg-blue-50">
+                        <td
+                          colSpan={6}
+                          className="p-4 border-b border-gray-200"
+                        >
+                          {/* <h1 className="uppercase font-semibold underline mb-1">
+                            Bank Details:
+                          </h1> */}
+                          <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Left Column */}
+                            <div className="flex flex-col gap-0.5">
+                              <h1 className="uppercase font-semibold underline">
+                                Bank Details:
+                              </h1>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Bank Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.bankName}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Branch Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.branchName}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">City</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.city}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">
+                                    Business Vertical
+                                  </h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.businessVertical}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">GST No.</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.gstNumber}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right Column - Contact Person */}
+                            <div className="flex flex-col gap-0.5">
+                              <h1 className="uppercase font-semibold underline">
+                                Contact Person:
+                              </h1>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.contactPerson?.name}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Email</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.contactPerson?.email}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Phone</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.contactPerson?.mobileNumber}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Designation</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.contactPerson?.designation}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Relationship Managers */}
+                          <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                            {/* Left Column */}
+                            <div className="flex flex-col gap-0.5">
+                              <h1 className="uppercase font-semibold underline">
+                                Relationship Manager One:
+                              </h1>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipOne?.name}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Email</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipOne?.email}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Phone</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipOne?.mobileNumber}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Designation</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipOne?.designation}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right Column */}
+                            <div className="flex flex-col gap-0.5">
+                              <h1 className="uppercase font-semibold underline">
+                                Relationship Manager Two:
+                              </h1>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Name</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipTwo?.name}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Email</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipTwo?.email}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Phone</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipTwo?.mobileNumber}
+                                </div>
+                              </div>
+                              <div className="flex gap-8 w-full font-normal">
+                                <div className="flex justify-between w-[30%]">
+                                  <h1 className="font-semibold">Designation</h1>
+                                  <h1>:</h1>
+                                </div>
+                                <div className="flex justify-between w-[70%]">
+                                  {row?.managerRelationshipTwo?.designation}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))
               ) : (
                 <tr>

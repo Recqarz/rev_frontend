@@ -35,6 +35,7 @@ const caseReducer = (state = initialData, { type, payload }) => {
       };
     }
     case GET_CASE_DATA_SUCCESS: {
+      // console.log("case payload****", payload);
       return {
         ...state,
         isLoading: false,

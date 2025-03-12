@@ -32,6 +32,7 @@ import LocationFields from "../../components/location/LocationFields";
 import { FaCopy } from "react-icons/fa";
 import { MdContentCopy } from "react-icons/md";
 import { TiTick } from "react-icons/ti";
+import axios from "axios";
 
 const AddCases = () => {
   const navigate = useNavigate();
@@ -55,6 +56,13 @@ const AddCases = () => {
   );
   const { fieldExecutives } = isDataFieldExecutive;
   // console.log("fieldExecutives==>", fieldExecutives);
+
+  const [isLngLat, setIsLongLat] = useState({
+    state: "",
+    district: "",
+    pincode: "",
+  });
+  // console.log("isLngLat==>", isLngLat);
 
   useEffect(() => {
     dispatch(getAllStates(accessToken));
@@ -114,7 +122,6 @@ const AddCases = () => {
       mainDivClassname: "col-span-4 md:col-span-4",
       inputFieldClassName: "",
       placeholder: "Enter Bank Ref No.",
-      // validation: Yup.string().required("Bank Ref No. is required"),
       validation: Yup.string()
         .nullable()
         .notRequired() // Field is optional
@@ -143,10 +150,7 @@ const AddCases = () => {
       id: "BOV_ReportNo",
       mainDivClassname: "col-span-4 md:col-span-4",
       inputFieldClassName: "cursor-not-allowed !bg-gray-300",
-      placeholder: "No need to enter. It's auto generate BOV Report No.",
-      // validation: Yup.string()
-      //   .required("BOV Report No. is required")
-      //   .nullable(),
+      placeholder: "Auto-generated BOV Report No.",
       validation: Yup.string()
         .nullable()
         .notRequired() // Field is optional
@@ -154,7 +158,6 @@ const AddCases = () => {
       initialValue: caseData?.BOV_ReportNo || "",
       disabled: true,
     },
-    ,
     {
       key: 6,
       label: "Contact No.",
@@ -181,8 +184,7 @@ const AddCases = () => {
       mainDivClassname: "col-span-4 md:col-span-4",
       inputFieldClassName: "",
       placeholder: "Enter Visit Date",
-      // validation: visitDateValidation,
-      validation: visitDateValidation(caseData?.visitDate), // Pass `isUpdate`,
+      validation: visitDateValidation(caseData?.visitDate),
       initialValue:
         caseData && caseData?.visitDate
           ? formattedDate(caseData?.visitDate)
@@ -253,22 +255,6 @@ const AddCases = () => {
       validation: Yup.string().required("Land Mark is required").nullable(),
       initialValue: caseData?.clientAddress?.landMark || "",
     },
-    {
-      key: 13,
-      label: "Pin code",
-      htmlFor: "pincode",
-      name: "pincode",
-      type: "number",
-      id: "pincode",
-      mainDivClassname: "col-span-4 md:col-span-4",
-      inputFieldClassName: "",
-      placeholder: "Enter Pin code",
-      validation: Yup.string()
-        .transform((value) => value.replace(/^0+/, ""))
-        .matches(/^\d{6}$/, "pincode must be 6 digits & non-negative")
-        .required("pincode is required"),
-      initialValue: caseData?.clientAddress?.pincode || "",
-    },
   ];
 
   const validationSchema = Yup.object({
@@ -299,7 +285,7 @@ const AddCases = () => {
     stateId: Yup.string().required("State name is required"),
     districtId: Yup.string().required("District name is required"),
     zoneId: Yup.string().required("Zone name is required"),
-    // assignType: Yup.string().required("Assign type is required"),
+    pincode: Yup.string().required("Pincode is required"),
     ...(isManual &&
       isManual === "manual" && {
         fieldExecutiveId: Yup.string().required("Field executive is required"),
@@ -322,9 +308,13 @@ const AddCases = () => {
     },
     assignType: "auto", // Add geoLocation manually
     fieldExecutiveId: caseData?.fieldExecutiveId ?? "",
-    stateId: caseData?.state ?? "",
-    districtId: caseData?.district ?? "",
-    zoneId: caseData?.zone ?? "",
+
+    stateId: caseData?.state ? caseData?.state : isLngLat?.state || "",
+    districtId: caseData?.district
+      ? caseData?.district
+      : isLngLat?.district || "",
+    zoneId: caseData?.zone ? caseData?.zone : "",
+    pincode: caseData?.pincode ? caseData?.pincode : isLngLat?.pincode || "",
   };
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -362,10 +352,6 @@ const AddCases = () => {
         (caseId && caseData && caseData?.fieldExecutiveId)) && {
         fieldExecutiveId: values?.fieldExecutiveId,
       }),
-      // ...(values?.assignType === "manual" ||
-      //   (caseData?.fieldExecutiveId && {
-      //     fieldExecutiveId: values?.fieldExecutiveId,
-      //   })),
     };
     // console.log("formattedValues==>", formattedValues);
     try {
@@ -405,6 +391,41 @@ const AddCases = () => {
       setCopied(false);
     }, 3000);
   };
+
+  // const fetchLocationDetails = async (latitude, longitude) => {
+  //   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+
+  //   try {
+  //     const response = await axios.get(url);
+  //     const data = await response?.data?.address;
+  //     // console.log("data location==>", data);
+  //     setIsLongLat({
+  //       state: data?.state || "",
+  //       district: data?.state_district || data?.city_district || "",
+  //       pincode: data?.postcode || "",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching location details:", error);
+  //   }
+  // };
+  const fetchLocationDetails = async (latitude, longitude) => {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+
+    try {
+      const response = await axios.get(url);
+      const data = response?.data?.address;
+
+      return {
+        state: data?.state || "",
+        district: data?.state_district || data?.city_district || "",
+        pincode: data?.postcode || "",
+      };
+    } catch (error) {
+      console.error("Error fetching location details:", error);
+      return null;
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-center">
@@ -425,11 +446,6 @@ const AddCases = () => {
                   ) : (
                     <FaCopy className={`rounded-sm text-sm  text-[#073b4c] `} />
                   )}
-                  {/* <FaCopy
-                    className={`rounded-sm text-sm ${
-                      copied ? "text-green-500" : "text-[#073b4c]"
-                    }`}
-                  /> */}
                 </button>
               </div>
             )}
@@ -456,11 +472,7 @@ const AddCases = () => {
         >
           {({ isSubmitting, resetForm, dirty, values, setFieldValue }) => {
             {
-              {
-                {
-                  /* console.log("values==>123==>", values); */
-                }
-              }
+              console.log("add case values==>", values);
             }
 
             return (
@@ -530,12 +542,29 @@ const AddCases = () => {
                           ? caseData?.clientGeoFormattedAddress
                           : ""
                       }
-                      onSelect={(val) => {
+                      onSelect={async (val) => {
                         setFieldValue("clientGeoFormattedAddress", val.address);
                         setFieldValue("clientGeolocation", {
                           longitude: val.longitude,
                           latitude: val.latitude,
                         });
+                        // Fetch location details and update form fields
+                        try {
+                          const locationData = await fetchLocationDetails(
+                            val.latitude,
+                            val.longitude
+                          );
+                          if (locationData) {
+                            setFieldValue("stateId", locationData.state);
+                            setFieldValue("districtId", locationData.district);
+                            setFieldValue("pincode", locationData.pincode);
+                          }
+                        } catch (error) {
+                          console.error(
+                            "Error fetching location details:",
+                            error
+                          );
+                        }
                       }}
                     />
                     <ErrorMessage
@@ -544,39 +573,40 @@ const AddCases = () => {
                       className="text-red-500 text-sm"
                     />
                   </div>
-
-                  <div key={"stateId"} className="col-span-4">
-                    <LocationFields
-                      data={locationData?.data?.states}
-                      label={"State"}
-                      selectTagName={"stateId"}
-                      changeLocation={(id) => {
-                        setFieldValue("stateId", id);
-                        changeState(id);
-                      }}
-                    />
-                  </div>
-                  <div key="districtId" className="col-span-4">
-                    <LocationFields
-                      data={locationData?.data?.districts}
-                      label={"District"}
-                      selectTagName={"districtId"}
-                      changeLocation={(id) => {
-                        setFieldValue("districtId", id);
-                        changeDistrict(id);
-                      }}
-                    />
-                  </div>
-                  <div key="zoneId" className="col-span-4">
-                    <LocationFields
-                      data={locationData?.data?.zones}
-                      label={"Zone"}
-                      selectTagName={"zoneId"}
-                      changeLocation={(id) => {
-                        setFieldValue("zoneId", id);
-                      }}
-                    />
-                  </div>
+                  <Fields
+                    key="stateId"
+                    label="State"
+                    name="stateId"
+                    type="text"
+                    placeholder="Enter State Name"
+                  />
+                  <Fields
+                    key="districtId"
+                    label="District"
+                    name="districtId"
+                    type="text"
+                    placeholder="Enter District Name"
+                  />
+                  <Fields
+                    key="zoneId"
+                    label="Zone"
+                    name="zoneId"
+                    type="select"
+                    placeholder="Select Zone"
+                    selectData={[
+                      { value: "East" },
+                      { value: "West" },
+                      { value: "North" },
+                      { value: "South" },
+                    ]}
+                  />
+                  <Fields
+                    key="pincode"
+                    label="Pin Code"
+                    name="pincode"
+                    type="number"
+                    placeholder="Enter Pincode"
+                  />
 
                   {caseId && caseData?.fieldExecutiveId ? (
                     <div key="fieldExecutiveId" className="col-span-4">
@@ -711,3 +741,48 @@ const AddCases = () => {
 };
 
 export default AddCases;
+const Fields = ({ key, label, name, type, placeholder, selectData }) => {
+  // console.log("changeLocation==>", changeLocation);
+  return (
+    <div key={key} className="col-span-4">
+      <div>
+        <label
+          htmlFor={name}
+          className="text-sm font-medium text-gray-900 block mb-2"
+        >
+          {label}
+        </label>
+        {type === "select" ? (
+          <Field
+            as="select"
+            name={name}
+            id={name}
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+          >
+            <option key="0" value={""}>
+              Select {label}
+            </option>
+            {selectData?.map((item, i) => (
+              <option key={i + 1} value={item?.value}>
+                {item?.value}
+              </option>
+            ))}
+          </Field>
+        ) : (
+          <Field
+            type={type}
+            name={name}
+            id={name}
+            className={` shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5`}
+            placeholder={placeholder}
+          />
+        )}
+        <ErrorMessage
+          name={name}
+          component="p"
+          className="text-red-500 text-sm"
+        />
+      </div>
+    </div>
+  );
+};

@@ -47,10 +47,10 @@ const GeolocationAutoComplete = ({
   return (
     <div className="flex flex-col gap-1">
       <label className="block text-sm font-medium text-gray-700 mb-1">
-         Geolocation
+        Geolocation
       </label>
       <input
-      autoComplete={false}
+        autoComplete={false}
         id="autocomplete" //make this fix, its from googleAPI
         type="text"
         name="autocomplete"

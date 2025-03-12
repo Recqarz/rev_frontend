@@ -25,7 +25,7 @@ const AllBank = () => {
     data,
   } = useSelector((state) => state.allBankReducer);
   const { message, currentPage, totalPages, totalBank, banks } = data;
-  console.log("banks==>", banks);
+  // console.log("banks==>", banks);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({ sortOrder: "" });
   const [limit, setLimit] = useState(10);

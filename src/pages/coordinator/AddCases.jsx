@@ -43,7 +43,7 @@ const AddCases = () => {
   const [copied, setCopied] = useState(false);
   const { accessToken } = useSelector((store) => store?.authReducer);
   const { data: caseData } = useSelector((state) => state.caseReducer);
-  // console.log("caseData==>", caseData);
+  console.log("caseData==>", caseData);
   const { isLoading, isError, data } = useSelector(
     (state) => state.allBankReducer
   );
@@ -71,17 +71,17 @@ const AddCases = () => {
       dispatch(getCaseById(caseId));
     }
     dispatch(getAllBankData(`limit=${Infinity}`));
-    if (caseData?.state) {
-      dispatch(getAllDistricts(caseData?.state, accessToken));
-    }
-    if (caseData?.district) {
-      dispatch(getAllZones(caseData?.district, accessToken));
-    }
-  }, [dispatch, caseId, caseData?.state, caseData?.district]);
+    // if (caseData?.state) {
+    //   dispatch(getAllDistricts(caseData?.state, accessToken));
+    // }
+    // if (caseData?.district) {
+    //   dispatch(getAllZones(caseData?.district, accessToken));
+    // }
+  }, [dispatch, caseId]);
 
-  const changeState = (stateId) => {
-    // console.log("stateId==>", stateId);
-    stateId && dispatch(getAllDistricts(stateId, accessToken));
+  const changeState = (state) => {
+    // console.log("state==>", state);
+    state && dispatch(getAllDistricts(state, accessToken));
   };
 
   const changeDistrict = (distId) => {
@@ -106,7 +106,7 @@ const AddCases = () => {
         ...(banks ?? [])?.map((bank, index) => ({
           key: index + 1,
           value: bank?._id,
-          label: `${bank?.bankName} (${bank?.IFSC})`,
+          label: `${bank?.bankName} (${bank?.branchName})`,
         })),
       ],
       validation: Yup.string().required("Bank Name is required"),
@@ -282,9 +282,9 @@ const AddCases = () => {
         })
         .required("Latitude is required"),
     }),
-    stateId: Yup.string().required("State name is required"),
-    districtId: Yup.string().required("District name is required"),
-    zoneId: Yup.string().required("Zone name is required"),
+    state: Yup.string().required("State name is required"),
+    district: Yup.string().required("District name is required"),
+    zone: Yup.string().required("Zone name is required"),
     pincode: Yup.string().required("Pincode is required"),
     ...(isManual &&
       isManual === "manual" && {
@@ -309,12 +309,14 @@ const AddCases = () => {
     assignType: "auto", // Add geoLocation manually
     fieldExecutiveId: caseData?.fieldExecutiveId ?? "",
 
-    stateId: caseData?.state ? caseData?.state : isLngLat?.state || "",
-    districtId: caseData?.district
+    state: caseData?.state ? caseData?.state : isLngLat?.state || "",
+    district: caseData?.district
       ? caseData?.district
       : isLngLat?.district || "",
-    zoneId: caseData?.zone ? caseData?.zone : "",
-    pincode: caseData?.pincode ? caseData?.pincode : isLngLat?.pincode || "",
+    zone: caseData?.zone ? caseData?.zone : "",
+    pincode: caseData?.clientAddress?.pincode
+      ? caseData?.clientAddress?.pincode
+      : isLngLat?.pincode || "",
   };
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -338,15 +340,15 @@ const AddCases = () => {
       },
       ...(caseId && caseData //while create & update for different key name
         ? {
-            state: values?.stateId,
-            district: values?.districtId,
-            zone: values.zoneId,
+            state: values?.state,
+            district: values?.district,
+            zone: values.zone,
             ...(values?.BOV_ReportNo && { BOV_ReportNo: values.BOV_ReportNo }),
           }
         : {
-            stateId: values?.stateId,
-            districtId: values?.districtId,
-            zoneId: values.zoneId,
+            state: values?.state,
+            district: values?.district,
+            zone: values.zone,
           }),
       ...((values?.assignType === "manual" ||
         (caseId && caseData && caseData?.fieldExecutiveId)) && {
@@ -392,22 +394,6 @@ const AddCases = () => {
     }, 3000);
   };
 
-  // const fetchLocationDetails = async (latitude, longitude) => {
-  //   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
-
-  //   try {
-  //     const response = await axios.get(url);
-  //     const data = await response?.data?.address;
-  //     // console.log("data location==>", data);
-  //     setIsLongLat({
-  //       state: data?.state || "",
-  //       district: data?.state_district || data?.city_district || "",
-  //       pincode: data?.postcode || "",
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching location details:", error);
-  //   }
-  // };
   const fetchLocationDetails = async (latitude, longitude) => {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
 
@@ -555,8 +541,8 @@ const AddCases = () => {
                             val.longitude
                           );
                           if (locationData) {
-                            setFieldValue("stateId", locationData.state);
-                            setFieldValue("districtId", locationData.district);
+                            setFieldValue("state", locationData.state);
+                            setFieldValue("district", locationData.district);
                             setFieldValue("pincode", locationData.pincode);
                           }
                         } catch (error) {
@@ -574,23 +560,23 @@ const AddCases = () => {
                     />
                   </div>
                   <Fields
-                    key="stateId"
+                    key="state"
                     label="State"
-                    name="stateId"
+                    name="state"
                     type="text"
                     placeholder="Enter State Name"
                   />
                   <Fields
-                    key="districtId"
+                    key="district"
                     label="District"
-                    name="districtId"
+                    name="district"
                     type="text"
                     placeholder="Enter District Name"
                   />
                   <Fields
-                    key="zoneId"
+                    key="zone"
                     label="Zone"
-                    name="zoneId"
+                    name="zone"
                     type="select"
                     placeholder="Select Zone"
                     selectData={[
@@ -741,7 +727,7 @@ const AddCases = () => {
 };
 
 export default AddCases;
-const Fields = ({ key, label, name, type, placeholder, selectData }) => {
+export const Fields = ({ key, label, name, type, placeholder, selectData }) => {
   // console.log("changeLocation==>", changeLocation);
   return (
     <div key={key} className="col-span-4">

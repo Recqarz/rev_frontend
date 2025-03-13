@@ -131,15 +131,14 @@ const AllBank = () => {
         <div className="shadow-lg rounded-lg overflow-x-auto custom-scrollbar">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
-              <tr className="bg-[#073c4e] text-white">
-                <th className="w-1/6 py-2 px-6 text-left text-xs">Sl No.</th>
-                <th className="w-1/5 py-2 px-6 text-left text-xs">Bank Name</th>
-                <th className="w-1/5 py-2 px-6 text-left text-xs">
-                  Branch Name
-                </th>
-                <th className="w-1/5 py-2 px-6 text-left text-xs">City</th>
-                <th className="w-1/5 py-2 px-6 text-left text-xs">GST No.</th>
-                <th className="w-1/5 py-2 px-6 text-left text-xs">Action</th>
+              <tr className="bg-[#073c4e] text-white text-xs text-left">
+                <th className="p-2">Sl No.</th>
+                <th className="p-2">Bank Name</th>
+                <th className="p-2">Branch Name</th>
+                <th className="p-2">City</th>
+                <th className="p-2">GST No.</th>
+                <th className="p-2">Contact Person</th>
+                <th className="p-2">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -161,24 +160,30 @@ const AllBank = () => {
                   <React.Fragment key={index}>
                     {/* Main Row */}
                     <tr className="hover:bg-gray-100 cursor-pointer hover:shadow-md">
-                      <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
+                      <td className="py-2.5 px-2 border-b border-gray-200 truncate text-sm">
                         {index + 1}
                       </td>
-                      <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
+                      <td className="py-2.5 px-2 border-b border-gray-200 truncate text-sm">
                         {highlightMatch(row?.bankName, searchQuery)}
                       </td>
-                      <td className="py-2.5 px-6 border-b border-gray-200 text-sm truncate">
+                      <td className="py-2.5 px-2 border-b border-gray-200 text-sm truncate">
                         {highlightMatch(row?.branchName, searchQuery)}
                       </td>
-                      <td className="py-2.5 px-6 border-b border-gray-200 text-sm truncate">
+                      <td className="py-2.5 px-2 border-b border-gray-200 text-sm truncate">
                         {highlightMatch(row?.city || "N/A", searchQuery)}
                       </td>
-                      <td className="py-2.5 px-6 border-b border-gray-200 truncate text-sm">
+                      <td className="py-2.5 px-2 border-b border-gray-200 truncate text-sm">
                         {highlightMatch(row?.gstNumber || "N/A", searchQuery)}
+                      </td>
+                      <td className="py-2.5 px-2 border-b border-gray-200 truncate text-sm">
+                        {highlightMatch(
+                          row?.contactPerson?.mobileNumber || "N/A",
+                          searchQuery
+                        )}
                       </td>
 
                       <td
-                        className={`py-2.5 px-6 border-b border-gray-200 hover:bg-blue-50 ${
+                        className={`py-2.5 px-2 border-b border-gray-200 hover:bg-blue-50 ${
                           expandedRow === index ? "bg-blue-50" : ""
                         }`}
                       >
@@ -206,17 +211,18 @@ const AllBank = () => {
                     {expandedRow === index && (
                       <tr className="bg-blue-50">
                         <td
-                          colSpan={6}
+                          colSpan={7}
                           className="p-4 border-b border-gray-200"
                         >
-                          {/* <h1 className="uppercase font-semibold underline mb-1">
+                          {/* <h1 className="uppercase font-semibold mb-1">
                             Bank Details:
                           </h1> */}
                           <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Left Column */}
                             <div className="flex flex-col gap-0.5">
-                              <h1 className="uppercase font-semibold underline">
-                                Bank Details:
+                              <h1 className="uppercase font-semibold">
+                                🏦{" "}
+                                <span className="underline">Bank Details</span>
                               </h1>
                               <div className="flex gap-8 w-full font-normal">
                                 <div className="flex justify-between w-[30%]">
@@ -224,7 +230,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.bankName}
+                                  {row?.bankName || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -233,7 +239,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.branchName}
+                                  {row?.branchName || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -242,7 +248,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.city}
+                                  {row?.city || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -253,7 +259,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.businessVertical}
+                                  {row?.businessVertical || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -262,15 +268,18 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.gstNumber}
+                                  {row?.gstNumber || "N/A"}
                                 </div>
                               </div>
                             </div>
 
                             {/* Right Column - Contact Person */}
                             <div className="flex flex-col gap-0.5">
-                              <h1 className="uppercase font-semibold underline">
-                                Contact Person:
+                              <h1 className="uppercase font-semibold">
+                                📞{" "}
+                                <span className="underline">
+                                  Contact Person
+                                </span>
                               </h1>
                               <div className="flex gap-8 w-full font-normal">
                                 <div className="flex justify-between w-[30%]">
@@ -278,7 +287,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.contactPerson?.name}
+                                  {row?.contactPerson?.name || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -287,7 +296,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.contactPerson?.email}
+                                  {row?.contactPerson?.email || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -296,7 +305,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.contactPerson?.mobileNumber}
+                                  {row?.contactPerson?.mobileNumber || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -305,7 +314,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.contactPerson?.designation}
+                                  {row?.contactPerson?.designation || "N/A"}
                                 </div>
                               </div>
                             </div>
@@ -315,8 +324,11 @@ const AllBank = () => {
                           <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                             {/* Left Column */}
                             <div className="flex flex-col gap-0.5">
-                              <h1 className="uppercase font-semibold underline">
-                                Relationship Manager One:
+                              <h1 className="uppercase font-semibold">
+                                👨‍💼{" "}
+                                <span className="underline">
+                                  Relationship Manager 1
+                                </span>
                               </h1>
                               <div className="flex gap-8 w-full font-normal">
                                 <div className="flex justify-between w-[30%]">
@@ -324,7 +336,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipOne?.name}
+                                  {row?.managerRelationshipOne?.name || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -333,7 +345,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipOne?.email}
+                                  {row?.managerRelationshipOne?.email || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -342,7 +354,8 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipOne?.mobileNumber}
+                                  {row?.managerRelationshipOne?.mobileNumber ||
+                                    "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -351,15 +364,19 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipOne?.designation}
+                                  {row?.managerRelationshipOne?.designation ||
+                                    "N/A"}
                                 </div>
                               </div>
                             </div>
 
                             {/* Right Column */}
                             <div className="flex flex-col gap-0.5">
-                              <h1 className="uppercase font-semibold underline">
-                                Relationship Manager Two:
+                              <h1 className="uppercase font-semibold">
+                                👨‍💼
+                                <span className="underline">
+                                  Relationship Manager 2
+                                </span>
                               </h1>
                               <div className="flex gap-8 w-full font-normal">
                                 <div className="flex justify-between w-[30%]">
@@ -367,7 +384,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipTwo?.name}
+                                  {row?.managerRelationshipTwo?.name || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -376,7 +393,7 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipTwo?.email}
+                                  {row?.managerRelationshipTwo?.email || "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -385,7 +402,8 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipTwo?.mobileNumber}
+                                  {row?.managerRelationshipTwo?.mobileNumber ||
+                                    "N/A"}
                                 </div>
                               </div>
                               <div className="flex gap-8 w-full font-normal">
@@ -394,7 +412,8 @@ const AllBank = () => {
                                   <h1>:</h1>
                                 </div>
                                 <div className="flex justify-between w-[70%]">
-                                  {row?.managerRelationshipTwo?.designation}
+                                  {row?.managerRelationshipTwo?.designation ||
+                                    "N/A"}
                                 </div>
                               </div>
                             </div>

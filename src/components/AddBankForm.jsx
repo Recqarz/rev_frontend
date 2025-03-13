@@ -391,7 +391,9 @@ const AddBankForm = () => {
           {({ isSubmitting, resetForm, dirty, values }) => {
             {
               {
+                /* {
                 console.log("values===>", values);
+              } */
               }
             }
             return (
@@ -423,7 +425,7 @@ const AddBankForm = () => {
                 {/* ===== Manager Relationship One Section ===== */}
                 <div className="mb-6">
                   <h4 className="text-lg font-bold text-gray-700 mb-4">
-                    👨‍💼 Manager Relationship One
+                    👨‍💼 Manager Relationship 1
                   </h4>
                   <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
                     {AddBankFormSchema?.managerRelationshipOne?.map((item) => (
@@ -435,7 +437,7 @@ const AddBankForm = () => {
                 {/* ===== Manager Relationship Two Section ===== */}
                 <div className="mb-6">
                   <h4 className="text-lg font-bold text-gray-700 mb-4">
-                    👩‍💼 Manager Relationship Two
+                    👩‍💼 Manager Relationship 2
                   </h4>
                   <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
                     {AddBankFormSchema?.managerRelationshipTwo?.map((item) => (

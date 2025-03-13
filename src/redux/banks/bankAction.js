@@ -29,6 +29,7 @@ export const getAllBankData = (queryString) => async (dispatch) => {
       },
     })
     .then((res) => {
+      // console.log("all bank res***", res);
       dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data });
     })
     .catch((err) => {
@@ -77,7 +78,6 @@ export const bankDataUpdate = (data, accessToken, id) => async (dispatch) => {
         },
       }
     );
-    // console.log("res", res?.data?.data?.bankdetails);
     dispatch({
       type: UPDATE_BANK_DATA_SUCCESS,
       payload: res?.data?.data?.bankdetails,
@@ -88,4 +88,25 @@ export const bankDataUpdate = (data, accessToken, id) => async (dispatch) => {
     toastUpdate(toastId, 400, err?.response?.data?.error);
     dispatch({ type: UPDATE_BANK_DATA_ERROR });
   }
+};
+
+export const getBankById = (queryString) => async (dispatch) => {
+  dispatch({ type: GET_BANK_DATA_REQUEST });
+
+  const token = localStorage.getItem("accessToken");
+  return axios
+    .get(`${baseURL}/api/v1/admin/bank/${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      // console.log("bankId res****", res);
+      dispatch({ type: GET_BANK_DATA_SUCCESS, payload: res?.data });
+    })
+    .catch((err) => {
+      console.log(err?.response?.data?.error);
+      dispatch({ type: GET_BANK_DATA_ERROR });
+      toastError(err?.response?.data?.error);
+    });
 };

@@ -40,8 +40,6 @@ export const getAllCaseData =
 export const getCaseById = (queryString) => async (dispatch) => {
   dispatch({ type: GET_CASE_DATA_REQUEST });
   const token = localStorage.getItem("accessToken");
-
-  // const queryString = new URLSearchParams(filters).toString(); // Build query string dynamically
   return axios
     .get(`${baseURL}/api/v1/coordinator/case/${queryString}`, {
       headers: {
